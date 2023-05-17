@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'dart:io';
+
 
 void main() {
   runApp(const MyApp());
@@ -28,14 +28,13 @@ class JankenPage extends StatefulWidget {
 }
 
 class _JankenPageState extends State<JankenPage> {
-  String myHand = '✊';
+  String SelectedHand = '✊';
   String computerHand = '✊';
   String result = '引き分け';
 
   void selectHand(String selectedHand)async {
     await Future.delayed(Duration(seconds: 3));
-    myHand = selectedHand;
-    print(myHand);
+    SelectedHand = selectedHand;
     generateComputerHand();
     judge();
     setState(() {});
@@ -60,11 +59,11 @@ class _JankenPageState extends State<JankenPage> {
   }
 
   void judge() {
-    if (myHand == computerHand) {
+    if (SelectedHand == computerHand) {
       result = '引き分け';
-    } else if (myHand == '✊' && computerHand == '✌️' ||
-        myHand == '✌️' && computerHand == '🖐' ||
-        myHand == '🖐' && computerHand == '✊') {
+    } else if (SelectedHand == '✊' && computerHand == '✌️' ||
+        SelectedHand == '✌️' && computerHand == '🖐' ||
+        SelectedHand == '🖐' && computerHand == '✊') {
       result = '勝ち';
     } else {
       result = '負け';
@@ -76,7 +75,7 @@ class _JankenPageState extends State<JankenPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('じゃんけん'),
+        title: const Text('じゃんけん'),
       ),
       body: Center(
         child: Column(
@@ -98,7 +97,7 @@ class _JankenPageState extends State<JankenPage> {
             ),
             SizedBox(height: 48),
             Text(
-              myHand,
+              SelectedHand,
               style: TextStyle(
                 fontSize: 32,
               ),
