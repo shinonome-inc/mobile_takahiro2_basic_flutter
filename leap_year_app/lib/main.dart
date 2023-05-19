@@ -1,41 +1,74 @@
 import 'package:flutter/material.dart';
-
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home:LeapYear(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
+class LeapYear extends StatefulWidget {
+  const LeapYear({Key? key}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<LeapYear> createState() => _LeapYearState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _LeapYearState extends State<LeapYear> {
+  int year = 0;
+  bool LepYear =false;
+  String text = "";
+  void main(){
+    LepYear=isLeapYear(year);
+    text = LepYear ? '$year年は閏年です' : '$year年は閏年ではありません';
+  }
+  bool isLeapYear(int year) {
+    if (year % 4 == 0) {
+      if (year % 100 == 0) {
+        if (year % 400 == 0) {
+          return true; // 400で割り切れる年は閏年
+        } else {
+          return false; // 100で割り切れて、400で割り切れない年は平年
+        }
+      } else {
+        return true; // 4で割り切れる年は閏年
+      }
+    } else {
+      return false; // 4で割り切れない年は平年
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: const Center(
-        child: Text(
-          'Basic Flutter 2023',
+      appBar: AppBar(),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children:<Widget>[
+            Text(text,
+              style: TextStyle(
+                fontSize: 20,),),
+            TextField(
+              onChanged: (text) {
+                year = int.parse(text);
+              },
+            ),
+            ElevatedButton(onPressed: (){
+              setState(() {
+                main();
+              });
+            }, child: Text("RUN"),
+            ),
+
+          ],
         ),
       ),
     );
