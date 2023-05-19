@@ -8,7 +8,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home:LeapYear(),
     );
   }
@@ -23,11 +23,11 @@ class LeapYear extends StatefulWidget {
 
 class _LeapYearState extends State<LeapYear> {
   int year = 0;
-  bool LepYear =false;
+  bool lepYear =false;
   String text = "";
   void main(){
-    LepYear=isLeapYear(year);
-    text = LepYear ? '$year年は閏年です' : '$year年は閏年ではありません';
+    lepYear=isLeapYear(year);
+    text = lepYear ? '$year年は閏年です' : '$year年は閏年ではありません';
   }
   bool isLeapYear(int year) {
     if (year % 4 == 0) {
@@ -54,7 +54,7 @@ class _LeapYearState extends State<LeapYear> {
           mainAxisAlignment: MainAxisAlignment.center,
           children:<Widget>[
             Text(text,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,),),
             TextField(
               onChanged: (text) {
@@ -65,7 +65,7 @@ class _LeapYearState extends State<LeapYear> {
               setState(() {
                 main();
               });
-            }, child: Text("RUN"),
+            }, child: const Text("RUN"),
             ),
 
           ],
