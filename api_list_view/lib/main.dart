@@ -8,7 +8,7 @@ Future<void> fetchQiitaItems() async {
   var url = Uri.parse('https://qiita.com/api/v2/items');
   var response = await http.get(url);
   if (response.statusCode == 200) {
-    // リクエスト成功
+    // リクエスト成功した場合。
     print(response.body);
   } else {
     // リクエスト失敗
