@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -15,37 +17,49 @@ class MyApp extends StatelessWidget {
         body: Stack(
           children: [
             Container(
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.2),
-                image: const DecorationImage(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
                   image: AssetImage('images/background.png'),
                   fit: BoxFit.cover,
                 ),
               ),
-              child: Center(
-                  child: Column(
+            ),
+            ColorFiltered(
+              colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            Center(
+              child: Column(
                 children: [
-                  const SizedBox(
-                    height: 250,
+                  Expanded(
+                    flex: 6,
+                    child: Container(
+                    ),
                   ),
                   const Text(
                     'Qiita Feed App',
                     style: TextStyle(
-                      color: Colors.white, // テキストの色を白に設定
-                      fontSize: 40, // テキストのフォントサイズを40に設定
+                      color: Colors.white,
+                      fontSize: 40,
                       fontFamily: 'Pacifico',
                     ),
                   ),
                   const Text(
                     '-PlayGround-',
                     style: TextStyle(
-                      color: Colors.white, // テキストの色を白に設定
-                      fontSize: 13, // テキストのフォントサイズを13に設定
+                      color: Colors.white,
+                      fontSize: 13,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Expanded(
-                    child: Container(),
+                    flex: 8,
+                    child: Container(
+                    ),
                   ),
                   Center(
                     child: Column(
@@ -56,9 +70,9 @@ class MyApp extends StatelessWidget {
                             // ボタンが押されたときの処理
                           },
                           style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white, backgroundColor: const Color.fromRGBO(70, 131, 1, 1),
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 14.0, horizontal: 130.0),
+                            foregroundColor: Colors.white,
+                            backgroundColor: const Color.fromRGBO(70, 131, 1, 1),
+                            padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 130.0),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20.0),
                             ),
@@ -79,21 +93,25 @@ class MyApp extends StatelessWidget {
                     height: 15,
                   ),
                   TextButton(
-                      onPressed: (){
-                        //クリックされた時の処理
-                  },
-                      child: const Text('ログインせずに利用する',
-                        style: TextStyle(
-                          color: Colors.white, // テキストの色を白に設定
-                          fontSize: 15, // テキストのフォントサイズを15に設定
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),),
-                  const SizedBox(
-                    height: 70,
+                    onPressed: () {
+                      // クリックされた時の処理
+                    },
+                    child: const Text(
+                      'ログインせずに利用する',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                    ),
                   ),
                 ],
-              )),
+              ),
             ),
           ],
         ),
@@ -101,3 +119,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
