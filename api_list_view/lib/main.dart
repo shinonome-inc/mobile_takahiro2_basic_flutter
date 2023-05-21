@@ -1,4 +1,5 @@
 import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
 void main() {
   fetchQiitaItems();
 }
@@ -8,9 +9,9 @@ Future<void> fetchQiitaItems() async {
   var response = await http.get(url);
   if (response.statusCode == 200) {
     // リクエスト成功
-    print(response.body);
+    debugPrint(response.body);
   } else {
     // リクエスト失敗
-    print('リクエストが失敗しました。ステータスコード: ${response.statusCode}');
+    debugPrint('リクエストが失敗しました。ステータスコード: ${response.statusCode}');
   }
 }

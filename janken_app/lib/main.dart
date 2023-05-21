@@ -28,13 +28,13 @@ class JankenPage extends StatefulWidget {
 }
 
 class _JankenPageState extends State<JankenPage> {
-  String SelectedHand = '✊';
+  String selectedHand = '✊';
   String computerHand = '✊';
   String result = '引き分け';
 
   void selectHand(String selectedHand)async {
-    await Future.delayed(Duration(seconds: 3));
-    SelectedHand = selectedHand;
+    await Future.delayed(const Duration(seconds: 3));
+    selectedHand = selectedHand;
     generateComputerHand();
     judge();
     setState(() {});
@@ -59,11 +59,11 @@ class _JankenPageState extends State<JankenPage> {
   }
 
   void judge() {
-    if (SelectedHand == computerHand) {
+    if (selectedHand == computerHand) {
       result = '引き分け';
-    } else if (SelectedHand == '✊' && computerHand == '✌️' ||
-        SelectedHand == '✌️' && computerHand == '🖐' ||
-        SelectedHand == '🖐' && computerHand == '✊') {
+    } else if (selectedHand == '✊' && computerHand == '✌️' ||
+        selectedHand == '✌️' && computerHand == '🖐' ||
+        selectedHand == '🖐' && computerHand == '✊') {
       result = '勝ち';
     } else {
       result = '負け';
@@ -83,26 +83,26 @@ class _JankenPageState extends State<JankenPage> {
           children: [
             Text(
               result,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 60,
               ),
             ),
-            SizedBox(height: 48),
+            const SizedBox(height: 48),
 
             Text(
               computerHand,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 32,
               ),
             ),
-            SizedBox(height: 48),
+            const SizedBox(height: 48),
             Text(
-              SelectedHand,
-              style: TextStyle(
+              selectedHand,
+              style: const TextStyle(
                 fontSize: 32,
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -111,19 +111,19 @@ class _JankenPageState extends State<JankenPage> {
                   onPressed: () {
                     selectHand('✊');
                   },
-                  child: Text('✊'),
+                  child: const Text('✊'),
                 ),
                 ElevatedButton(
                   onPressed: () {
                     selectHand('✌️');
                   },
-                  child: Text('✌️'),
+                  child: const Text('✌️'),
                 ),
                 ElevatedButton(
                   onPressed: () {
                     selectHand('🖐');
                   },
-                  child: Text('🖐'),
+                  child: const Text('🖐'),
                 ),
               ],
             ),
