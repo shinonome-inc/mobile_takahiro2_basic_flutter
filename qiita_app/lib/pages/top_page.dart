@@ -67,7 +67,7 @@ class TopPage extends StatelessWidget {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => BottomNavigationPage()),
+                              MaterialPageRoute(builder: (context) => const BottomNavigationPage()),
                             );
                           },
                           style: ElevatedButton.styleFrom(
@@ -97,7 +97,7 @@ class TopPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => BottomNavigationPage()),
+                        MaterialPageRoute(builder: (context) => const BottomNavigationPage()),
                       );
                     },
                     child: const Text(

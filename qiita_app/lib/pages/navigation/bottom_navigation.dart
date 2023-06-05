@@ -7,13 +7,14 @@ import 'setting_page.dart';
 
 
 class BottomNavigationPage extends StatefulWidget {
-  const BottomNavigationPage({super.key});
+  const BottomNavigationPage({Key? key}) : super(key: key);
 
   @override
-  _BottomNavigationPageState createState() => _BottomNavigationPageState();
+  BottomNavigationPageState createState() => BottomNavigationPageState();
 }
 
-class _BottomNavigationPageState extends State<BottomNavigationPage> {
+
+class BottomNavigationPageState extends State<BottomNavigationPage> {
   int _selectedIndex = 0;
   final List<Widget> _widgetOptions = [
     const FeedPage(),
