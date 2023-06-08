@@ -86,27 +86,6 @@ class ArticleListView extends StatelessWidget {
     );
   }
 }
-
-class ArticleDetailPage extends StatelessWidget {
-  final Article article;
-
-  const ArticleDetailPage({required Key key, required this.article}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Fetch Data Example',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const Scaffold(
-        body: Center(
-        ),
-      ),
-    );
-  }
-}
-
 class ArticleListPage extends StatefulWidget {
   const ArticleListPage({super.key});
 

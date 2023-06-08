@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'feed_page.dart';
+import 'article_list_page.dart';
 import 'tag_page.dart';
 import './my_page.dart';
 import 'setting_page.dart';
