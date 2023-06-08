@@ -108,11 +108,13 @@ class ArticleDetailPage extends StatelessWidget {
 }
 
 class ArticleListPage extends StatefulWidget {
+  const ArticleListPage({super.key});
+
   @override
-  _ArticleListPageState createState() => _ArticleListPageState();
+  ArticleListPageState createState() => ArticleListPageState();
 }
 
-class _ArticleListPageState extends State<ArticleListPage> {
+class ArticleListPageState extends State<ArticleListPage> {
   late Future<List<Article>> articles;
 
   @override
