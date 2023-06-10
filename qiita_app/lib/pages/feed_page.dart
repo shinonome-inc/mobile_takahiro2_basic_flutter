@@ -4,6 +4,8 @@ import 'package:qiita_app/models/article.model.dart';
 import 'package:qiita_app/services/repository.dart';
 import 'package:qiita_app/components/default_appbar.dart';
 
+import '../components/web_view.dart';
+
 class ArticleList extends StatelessWidget {
   final List<Article> articles;
   const ArticleList({required Key key, required this.articles})
@@ -16,6 +18,22 @@ class ArticleList extends StatelessWidget {
       itemBuilder: (BuildContext context, int index) {
         final article = articles[index];
         return GestureDetector(
+          onTap: () {
+            showModalBottomSheet<void>(
+              context: context,
+              useRootNavigator: true,
+              backgroundColor: Colors.transparent,
+              isScrollControlled: true,
+              builder: (BuildContext context) {
+                return SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.9,
+                  child: WebView(
+                    url: article.url,
+                  ),
+                );
+              },
+            );
+          },
           child: ListTile(
             leading: CircleAvatar(
               backgroundImage: NetworkImage(article.user.iconUrl),
