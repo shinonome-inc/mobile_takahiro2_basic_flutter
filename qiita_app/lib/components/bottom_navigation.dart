@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'article_list_page.dart';
-import 'tag_page.dart';
-import './my_page.dart';
-import 'setting_page.dart';
+import '../pages/feed_page.dart';
+import '../pages/tag_page.dart';
+import '../pages/my_page.dart';
+import '../pages/setting_page.dart';
 
 
 
@@ -17,7 +17,7 @@ class BottomNavigationPage extends StatefulWidget {
 class BottomNavigationPageState extends State<BottomNavigationPage> {
   int _selectedIndex = 0;
   final List<Widget> _widgetOptions = [
-    const ArticleListPage(),
+    const FeedPage(),
     const TagPage(),
     const MyPage(),
     const SettingPage(),
