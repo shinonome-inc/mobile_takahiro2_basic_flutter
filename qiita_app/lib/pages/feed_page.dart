@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:qiita_app/components/Search_Bar.dart';
+import 'package:qiita_app/components/search_bar.dart';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:qiita_app/services/repository.dart';
 import '../components/web_view.dart';
