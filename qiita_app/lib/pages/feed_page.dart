@@ -88,39 +88,47 @@ class FeedPage extends StatefulWidget {
 class FeedPageState extends State<FeedPage> {
   late Future<List<Article>> articles;
 
+  void _updateArticles(List<Article> updatedArticles) {
+    setState(() {
+      articles = Future.value(updatedArticles);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    articles = fetchArticle('Flutter');
+    articles = fetchArticle('Ruby');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: const PreferredSize(
-          preferredSize: Size.fromHeight(kToolbarHeight),
-          child: SearchBar()
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(142),
+        child: SearchBar(
+          onArticlesChanged: _updateArticles,
         ),
-        body: Center(
-          child: FutureBuilder<List<Article>>(
-            future: articles,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return ArticleList(
-                  key: UniqueKey(),
-                  articles: snapshot.data,
-                );
-              } else if (snapshot.hasError) {
-                return Text(
-                  "データの取得中にエラーが発生しました: ${snapshot.error}",
-                  style: const TextStyle(color: Colors.red),
-                );
-              } else {
-                return const CircularProgressIndicator();
-              }
-            },
-          ),
+      ),
+      body: Center(
+        child: FutureBuilder<List<Article>>(
+          future: articles,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return ArticleList(
+                key: UniqueKey(),
+                articles: snapshot.data!,
+              );
+            } else if (snapshot.hasError) {
+              return Text(
+                "データの取得中にエラーが発生しました: ${snapshot.error}",
+                style: TextStyle(color: Colors.red),
+              );
+            } else {
+              return CircularProgressIndicator();
+            }
+          },
         ),
+      ),
     );
   }
 }
