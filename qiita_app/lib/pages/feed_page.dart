@@ -1,22 +1,21 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:qiita_app/components/SearchBar.dart';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:qiita_app/services/repository.dart';
-import 'package:qiita_app/components/default_appbar.dart';
-
 import '../components/web_view.dart';
 
 class ArticleList extends StatelessWidget {
-  final List<Article> articles;
+  final List<Article>? articles;
   const ArticleList({required Key key, required this.articles})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      itemCount: articles.length,
+      itemCount: articles?.length ?? 0,
       itemBuilder: (BuildContext context, int index) {
-        final article = articles[index];
+        final article = articles![index];
         return GestureDetector(
           onTap: () {
             showModalBottomSheet<void>(
@@ -24,6 +23,7 @@ class ArticleList extends StatelessWidget {
               useRootNavigator: true,
               backgroundColor: Colors.transparent,
               isScrollControlled: true,
+
               builder: (BuildContext context) {
                 return SizedBox(
                   height: MediaQuery.of(context).size.height * 0.9,
@@ -43,11 +43,30 @@ class ArticleList extends StatelessWidget {
             ),
             subtitle: Row(
               children: [
-                Text('@${article.user.id}'),
-                Text(article.getFormattedDate()),
-                Text('いいね:${article.likesCount.toString()}'),
+                Flexible(
+                  child: Text(
+                    '@${article.user.id}',
+                    style: const TextStyle(fontSize: 12.0), // 適切なフォントサイズを指定してください
+                    overflow: TextOverflow.ellipsis, // テキストがオーバーフローした場合に省略記号で表示する設定
+                  ),
+                ),
+                Flexible(
+                  child: Text(
+                    article.getFormattedDate(),
+                    style: const TextStyle(fontSize: 12.0), // 適切なフォントサイズを指定してください
+                    overflow: TextOverflow.ellipsis, // テキストがオーバーフローした場合に省略記号で表示する設定
+                  ),
+                ),
+                Flexible(
+                  child: Text(
+                    'いいね:${article.likesCount.toString()}',
+                    style: const TextStyle(fontSize: 12.0), // 適切なフォントサイズを指定してください
+                    overflow: TextOverflow.ellipsis, // テキストがオーバーフローした場合に省略記号で表示する設定
+                  ),
+                ),
               ],
             ),
+
           ),
         );
       },
@@ -63,22 +82,25 @@ class FeedPage extends StatefulWidget {
   const FeedPage({Key? key}) : super(key: key);
 
   @override
-  _FeedPageState createState() => _FeedPageState();
+  FeedPageState createState() => FeedPageState();
 }
 
-class _FeedPageState extends State<FeedPage> {
+class FeedPageState extends State<FeedPage> {
   late Future<List<Article>> articles;
 
   @override
   void initState() {
     super.initState();
-    articles = QiitaClient.fetchArticle();
+    articles = fetchArticle('Flutter');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: const DefaultAppBar(text: 'Feeds'),
+        appBar: const PreferredSize(
+          preferredSize: Size.fromHeight(kToolbarHeight),
+          child: SearchBar()
+        ),
         body: Center(
           child: FutureBuilder<List<Article>>(
             future: articles,
@@ -86,7 +108,7 @@ class _FeedPageState extends State<FeedPage> {
               if (snapshot.hasData) {
                 return ArticleList(
                   key: UniqueKey(),
-                  articles: snapshot.data!,
+                  articles: snapshot.data,
                 );
               } else if (snapshot.hasError) {
                 return Text(

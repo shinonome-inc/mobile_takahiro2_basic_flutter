@@ -3,8 +3,8 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'default_appbar.dart';
 
 class WebView extends StatefulWidget {
-  const WebView({Key? key, required this.url}) : super(key: key);
   final String url;
+  const WebView({Key? key, required this.url}) : super(key: key);
 
   @override
   State<WebView> createState() => _WebViewState();

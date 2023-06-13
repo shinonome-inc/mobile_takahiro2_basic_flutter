@@ -51,7 +51,7 @@ class BottomNavigationPageState extends State<BottomNavigationPage> {
             label: 'マイページ',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings_outlined),
+            icon: Icon(Icons.format_list_bulleted),
             label: '設定',
           ),
         ],
