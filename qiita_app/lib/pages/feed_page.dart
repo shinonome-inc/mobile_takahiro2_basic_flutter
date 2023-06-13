@@ -104,7 +104,7 @@ class FeedPageState extends State<FeedPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(142),
+        preferredSize: const Size.fromHeight(142),
         child: SearchBar(
           onArticlesChanged: _updateArticles,
         ),
@@ -121,10 +121,10 @@ class FeedPageState extends State<FeedPage> {
             } else if (snapshot.hasError) {
               return Text(
                 "データの取得中にエラーが発生しました: ${snapshot.error}",
-                style: TextStyle(color: Colors.red),
+                style: const TextStyle(color: Colors.red),
               );
             } else {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             }
           },
         ),

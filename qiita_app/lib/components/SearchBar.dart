@@ -18,12 +18,8 @@ class SearchBarState extends State<SearchBar> {
   final _controller = TextEditingController();
 
   Future<void> _fetchArticles(String search) async {
-    try {
       final results = await fetchArticle(search);
       widget.onArticlesChanged(results); // コールバック関数の呼び出し
-    } catch (e) {
-      print('Failed to load articles: $e');
-    }
   }
 
   @override
