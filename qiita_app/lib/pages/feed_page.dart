@@ -103,12 +103,9 @@ class FeedPageState extends State<FeedPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(142),
-        child: SearchAppBar(
+      appBar: SearchAppBar(
           onArticlesChanged: _updateArticles,
         ),
-      ),
       body: Center(
         child: FutureBuilder<List<Article>>(
           future: articles,
@@ -132,3 +129,5 @@ class FeedPageState extends State<FeedPage> {
     );
   }
 }
+
+

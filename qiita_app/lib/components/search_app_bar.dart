@@ -8,15 +8,13 @@ class SearchAppBar extends StatefulWidget implements PreferredSizeWidget {
   const SearchAppBar({Key? key, required this.onArticlesChanged}) : super(key: key);
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight + kBottomNavigationBarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 60);
 
   @override
   State<SearchAppBar> createState() => _SearchBarState();
 }
 
 class _SearchBarState extends State<SearchAppBar> {
-  final _controller = TextEditingController();
-
   Future<void> _fetchArticles(String search) async {
       final results = await fetchArticle(search);
       widget.onArticlesChanged(results); // コールバック関数の呼び出し
@@ -25,52 +23,51 @@ class _SearchBarState extends State<SearchAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      toolbarHeight: 142,
+      title: const Text(
+        'Feed',
+        style: TextStyle(
+          fontSize: 17,
+          fontWeight: FontWeight.w400,
+          fontFamily: 'Pacifico',
+          color: Colors.black,
+        ),
+      ),
+      elevation: 0.0,
       backgroundColor: Colors.white,
       automaticallyImplyLeading: false,
-      title: Column(
-        mainAxisAlignment: MainAxisAlignment.start, // 追加：要素を左寄せにする
-        children: [
-          const Text(
-            "Feed",
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 17,
-              fontFamily: 'Pacifico',
-            ),
-          ),
-          const SizedBox(
-            height: 19,
-          ), // 不要な高さを削除
-          SizedBox(
-            height: 36,
+
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(36.0),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: SizedBox(
             width: 343,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(10.0),
+            height: 36,
+            child: TextFormField(
+              cursorColor: Colors.black,
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w400,
               ),
-              child: Center(
-                child: TextField(
-                  controller: _controller,
-                  decoration: const InputDecoration(
-                    hintText: 'Search',
-                    hintStyle: TextStyle(fontSize: 17),
-                    prefixIcon: Icon(Icons.search, color: Colors.grey),
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    isDense: true,
-                  ),
-                  onSubmitted: _fetchArticles,
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 15,
+                ),
+                filled: true,
+                fillColor: const Color.fromRGBO(192, 192, 192, 0.12),
+                prefixIcon: const Icon(Icons.search),
+                hintText: 'Search',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
                 ),
               ),
+              onFieldSubmitted: _fetchArticles,
             ),
           ),
-          const SizedBox(
-            height: 10,
-          ), // 不要な高さを削除
-        ],
+        ),
       ),
+
 
     );
   }

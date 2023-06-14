@@ -13,7 +13,7 @@ class Article {
     return Article(
       title: json['title'],
       url: json['url'],
-      createdAt: DateTime.parse(json['created_at'] ?? '0'),
+      createdAt: DateTime.parse(json['created_at'] ?? 0),
       likesCount: json['likes_count'] ?? 0,
       user: User.fromJson(json['user']),
     );
