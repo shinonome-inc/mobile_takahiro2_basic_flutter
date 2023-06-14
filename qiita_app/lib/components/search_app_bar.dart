@@ -23,6 +23,7 @@ class _SearchBarState extends State<SearchAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      toolbarHeight: 96,
       title: const Text(
         'Feed',
         style: TextStyle(
@@ -39,7 +40,7 @@ class _SearchBarState extends State<SearchAppBar> {
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(36.0),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          padding: const EdgeInsets.only(left: 16, right: 16, top: 19, bottom: 10),
           child: SizedBox(
             width: 343,
             height: 36,
