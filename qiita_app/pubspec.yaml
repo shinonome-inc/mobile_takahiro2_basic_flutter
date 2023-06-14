@@ -32,7 +32,6 @@ dependencies:
     sdk: flutter
   intl: ^0.18.1
   webview_flutter: ^4.2.2
-  flappy_search_bar: ^1.7.2
 
 
 

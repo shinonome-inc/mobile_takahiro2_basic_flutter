@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:qiita_app/services/repository.dart';
 
-class SearchBar extends StatefulWidget implements PreferredSizeWidget {
+class SearchAppBar extends StatefulWidget implements PreferredSizeWidget {
   final Function(List<Article>) onArticlesChanged; // 追加
 
-  const SearchBar({Key? key, required this.onArticlesChanged}) : super(key: key);
+  const SearchAppBar({Key? key, required this.onArticlesChanged}) : super(key: key);
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight + kBottomNavigationBarHeight);
 
   @override
-  State<SearchBar> createState() => SearchBarState();
+  State<SearchAppBar> createState() => _SearchBarState();
 }
 
-class SearchBarState extends State<SearchBar> {
+class _SearchBarState extends State<SearchAppBar> {
   final _controller = TextEditingController();
 
   Future<void> _fetchArticles(String search) async {

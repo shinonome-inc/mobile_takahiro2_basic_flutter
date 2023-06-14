@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:qiita_app/components/search_bar.dart';
+import 'package:qiita_app/components/search_app_bar.dart';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:qiita_app/services/repository.dart';
 import '../components/web_view.dart';
@@ -105,7 +105,7 @@ class FeedPageState extends State<FeedPage> {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(142),
-        child: SearchBar(
+        child: SearchAppBar(
           onArticlesChanged: _updateArticles,
         ),
       ),
