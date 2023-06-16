@@ -3,9 +3,13 @@ import 'package:qiita_app/models/article.model.dart';
 import 'package:qiita_app/services/repository.dart';
 
 class SearchAppBar extends StatefulWidget implements PreferredSizeWidget {
-  final Function(List<Article>) onArticlesChanged; // 追加
+  final Function(List<Article>) onArticlesChanged;
+  final Function onSearchStart;
 
-  const SearchAppBar({Key? key, required this.onArticlesChanged}) : super(key: key);
+  const SearchAppBar({Key? key,
+    required this.onArticlesChanged,
+    required this.onSearchStart,})
+      : super(key: key);
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight + 60);
@@ -16,14 +20,18 @@ class SearchAppBar extends StatefulWidget implements PreferredSizeWidget {
 
 class _SearchBarState extends State<SearchAppBar> {
   Future<void> _fetchArticles(String search) async {
-      final results = await fetchArticle(search);
-      widget.onArticlesChanged(results); // コールバック関数の呼び出し
+    widget.onSearchStart();
+    final results = await fetchArticle(search);
+    widget.onArticlesChanged(results); // コールバック関数の呼び出し
   }
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      toolbarHeight: 96,
+      toolbarHeight: 96,//AppBarの上部の高さ指定。
+      elevation: 0.0,
+      backgroundColor:Colors.white,
+      automaticallyImplyLeading: false,
       title: const Text(
         'Feed',
         style: TextStyle(
@@ -33,10 +41,6 @@ class _SearchBarState extends State<SearchAppBar> {
           color: Colors.black,
         ),
       ),
-      elevation: 0.0,
-      backgroundColor: Colors.white,
-      automaticallyImplyLeading: false,
-
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(36.0),
         child: Padding(
@@ -51,9 +55,7 @@ class _SearchBarState extends State<SearchAppBar> {
                 fontWeight: FontWeight.w400,
               ),
               decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 15,
-                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                 filled: true,
                 fillColor: const Color.fromRGBO(192, 192, 192, 0.12),
                 prefixIcon: const Icon(Icons.search),
@@ -68,8 +70,6 @@ class _SearchBarState extends State<SearchAppBar> {
           ),
         ),
       ),
-
-
     );
   }
 }

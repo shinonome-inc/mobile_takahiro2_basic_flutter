@@ -11,6 +11,10 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      elevation: 0.0,
+      toolbarHeight: 84,
+      backgroundColor:Colors.white,
+      automaticallyImplyLeading: false,
       title: Text(
         text,
         style: const TextStyle(
@@ -19,7 +23,6 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
           fontFamily: 'Pacifico',
         ),
       ),
-      backgroundColor: Colors.white,
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1.0),
         child: Container(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:qiita_app/components/search_app_bar.dart';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:qiita_app/services/repository.dart';
+import '../components/no_match.dart';
 import '../components/web_view.dart';
 
 class ArticleList extends StatelessWidget {
@@ -86,18 +87,26 @@ class FeedPage extends StatefulWidget {
 }
 
 class FeedPageState extends State<FeedPage> {
+  bool showLoadingIndicator = false;
   late Future<List<Article>> articles;
+
 
   void _updateArticles(List<Article> updatedArticles) {
     setState(() {
       articles = Future.value(updatedArticles);
+      showLoadingIndicator =false;
     });
   }
 
+  void _updateLoading(){
+    setState(() {
+      showLoadingIndicator = true; // ローディング表示フラグをtrueに設定
+    });
+  }
   @override
   void initState() {
     super.initState();
-    articles = fetchArticle('Ruby');
+    articles = fetchArticle('');
   }
 
   @override
@@ -105,12 +114,19 @@ class FeedPageState extends State<FeedPage> {
     return Scaffold(
       appBar: SearchAppBar(
           onArticlesChanged: _updateArticles,
+          onSearchStart: _updateLoading,
         ),
       body: Center(
         child: FutureBuilder<List<Article>>(
           future: articles,
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
+            if(snapshot.data == null || snapshot.data!.isEmpty){
+              return const NoMatch();
+            }
+            if (showLoadingIndicator){
+              return const CircularProgressIndicator();
+            }
+            else if (snapshot.hasData) {
               return ArticleList(
                 key: UniqueKey(),
                 articles: snapshot.data!,
