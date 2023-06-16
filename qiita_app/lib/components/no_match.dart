@@ -5,7 +5,9 @@ class NoMatch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Scaffold(
+        backgroundColor: Colors.white, // 全体の背景色を白に設定
+      body: Column(
       children: [
         Expanded(
           flex: 1,
@@ -34,6 +36,7 @@ class NoMatch extends StatelessWidget {
           child: Container(),
         ),
       ],
+    ),
     );
   }
 }
