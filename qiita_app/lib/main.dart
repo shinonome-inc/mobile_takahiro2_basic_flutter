@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 import 'package:flutter/material.dart';
 import 'pages/top_page.dart';
 
@@ -18,5 +16,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
->>>>>>> 08d3b8ec3cf0ac318561e41924a4b465007db815

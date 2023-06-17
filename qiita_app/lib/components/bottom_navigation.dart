@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'feed_page.dart';
-import 'tag_page.dart';
-import './my_page.dart';
-import 'setting_page.dart';
+import '../pages/feed_page.dart';
+import '../pages/tag_page.dart';
+import '../pages/my_page.dart';
+import '../pages/setting_page.dart';
 
 
 
@@ -51,7 +51,7 @@ class BottomNavigationPageState extends State<BottomNavigationPage> {
             label: 'マイページ',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings_outlined),
+            icon: Icon(Icons.format_list_bulleted),
             label: '設定',
           ),
         ],

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'navigation/bottom_navigation.dart';
+import 'package:qiita_app/components/bottom_navigation.dart';
 
 void main() {
   runApp(const TopPage());
