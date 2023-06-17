@@ -30,19 +30,18 @@ class FeedPageState extends State<FeedPage> {
       showLoadingIndicator = true; // ローディング表示フラグをtrueに設定
     });
   }
-  void _deleteLoading() {
+
+  void _setLoading(bool value) {
     setState(() {
-      showLoadingIndicator = false; // ローディング表示フラグをfalseに設定
+      showLoadingIndicator = value;
     });
   }
-
-
   @override
   void initState() {
     super.initState();
-    _getLoading();
+    _setLoading(true);
     articles = fetchArticle('').then((value) {
-      _deleteLoading();
+      _setLoading(false);
       return value;
     });
   }
