@@ -67,22 +67,17 @@ class FeedPageState extends State<FeedPage> {
                   }
                   else if (snapshot.hasData) {
                     return ListView.separated(
-                      itemCount: snapshot.data!.length + 1,
+                      itemCount: snapshot.data!.length,
                       itemBuilder: (BuildContext context, int index) {
-                        if (index == snapshot.data!.length) {
-                          return const CircularProgressIndicator();
-                        } else {
-                          final article = snapshot.data![index];
-                          return ArticleGestureDetector(article: article);
-                        }
+                        return ArticleGestureDetector(article: snapshot.data![index]);
                       },
-                      separatorBuilder: (BuildContext context, int index) =>
-                      const Divider(
+                      separatorBuilder: (BuildContext context, int index) => const Divider(
                         indent: 70.0,
                         height: 0.5,
                       ),
                     );
-                  } else if (snapshot.hasError) {
+                  }
+                  else if (snapshot.hasError) {
                     return Text(
                       "データの取得中にエラーが発生しました: ${snapshot.error}",
                       style: const TextStyle(color: Colors.red),
