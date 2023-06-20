@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:qiita_app/components/bottom_navigation.dart';
-
-void main() {
-  runApp(const TopPage());
-}
+import 'package:qiita_app/components/web_view.dart';
+import '../qiita_auth_key.dart';
 
 class TopPage extends StatelessWidget {
   const TopPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -65,9 +65,19 @@ class TopPage extends StatelessWidget {
                       children: [
                         ElevatedButton(
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const BottomNavigationPage()),
+                            showModalBottomSheet<void>(
+                              context: context,
+                              useRootNavigator: true,
+                              backgroundColor: Colors.transparent,
+                              isScrollControlled: true,
+                              builder: (BuildContext context) {
+                                return SizedBox(
+                                  height: MediaQuery.of(context).size.height * 0.9,
+                                  child: const WebView(
+                                    url: 'https://qiita.com/api/v2/oauth/authorize?client_id=${QiitaAuthKey.clientId}&scope=read_qiita',
+                                  ),
+                                );
+                              },
                             );
                           },
                           style: ElevatedButton.styleFrom(
