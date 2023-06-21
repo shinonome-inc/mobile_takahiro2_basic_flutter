@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qiita_app/components/bottom_navigation.dart';
+import 'package:qiita_app/pages/root_page.dart';
 import 'package:qiita_app/components/web_view.dart';
 import '../qiita_auth_key.dart';
 
@@ -107,7 +107,7 @@ class TopPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const BottomNavigationPage()),
+                        MaterialPageRoute(builder: (context) => const RootPage()),
                       );
                     },
                     child: const Text(

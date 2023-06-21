@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'bottom_navigation.dart';
+import '../pages/root_page.dart';
 import 'default_app_bar.dart.dart';
 
 class WebView extends StatefulWidget {
@@ -31,7 +31,7 @@ class _WebViewState extends State<WebView> {
     if (success) {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => const BottomNavigationPage(),
+          builder: (_) => const RootPage(),
         ),
       );
     }
