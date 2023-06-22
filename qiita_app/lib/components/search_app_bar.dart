@@ -1,25 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:qiita_app/models/article.model.dart';
-import 'package:qiita_app/services/repository.dart';
 
 class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final Function(List<Article>) onArticlesChanged;
-  final Function onSearchStart;
+  final Function(String) onArticlesChanged;
 
   const SearchAppBar({
     Key? key,
     required this.onArticlesChanged,
-    required this.onSearchStart,
   }) : super(key: key);
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight + 60);
 
-  Future<void> _fetchArticles(String search) async {
-    onSearchStart();
-    final results = await fetchArticle(search);
-    onArticlesChanged(results);
-  }
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -68,7 +59,7 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
                   borderSide: BorderSide.none,
                 ),
               ),
-              onFieldSubmitted: (search) => _fetchArticles(search),
+              onFieldSubmitted: (search) => onArticlesChanged(search),
             ),
           ),
         ),
