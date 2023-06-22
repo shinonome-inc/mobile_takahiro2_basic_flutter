@@ -96,6 +96,7 @@ class FeedPageState extends State<FeedPage> {
               return const NoMatch();
             } else if (snapshot.hasData) {
               return RefreshIndicator(
+                color: Colors.grey,
                 onRefresh: () async {
                   // リフレッシュ時の処理を実装するすればいいらしい。
                   await _serchArticles(_searchWord);
