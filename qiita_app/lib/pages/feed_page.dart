@@ -33,7 +33,7 @@ class FeedPageState extends State<FeedPage> {
       _searchWord=search;
       _currentPage = 1;
     });
-    final results = await fetchArticle(_searchWord,_currentPage);
+    final results = await QiitaClient.fetchArticle(_searchWord,_currentPage);
     _setArticles(results);
     _setLoading(false);
   }
@@ -49,7 +49,7 @@ class FeedPageState extends State<FeedPage> {
     _setLoading(true);
     _currentPage++;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      fetchArticle(_searchWord, _currentPage).then((value) {
+      QiitaClient.fetchArticle(_searchWord, _currentPage).then((value) {
         setState(() {
           articles = Future.value(value);
         });
@@ -63,7 +63,7 @@ class FeedPageState extends State<FeedPage> {
     super.initState();
     _scrollController.addListener(_scrollListener);
     _setLoading(true);
-    articles = fetchArticle(_searchWord,_currentPage).then((value) {
+    articles = QiitaClient.fetchArticle(_searchWord,_currentPage).then((value) {
       _setLoading(false);
       return value;
     });
@@ -100,7 +100,7 @@ class FeedPageState extends State<FeedPage> {
             } else if (snapshot.hasData) {
               return RefreshIndicator(
                 onRefresh: () async {
-                  // リフレッシュ時の処理を実装するすればいいらしい。
+                  // リフレッシュ時の処理を実装する.
                   await _serchArticles(_searchWord);
                 },
                 child: ListView.separated(

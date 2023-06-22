@@ -1,10 +1,71 @@
 import 'package:flutter/material.dart';
 import 'package:qiita_app/pages/root_page.dart';
 import 'package:qiita_app/components/web_view.dart';
-import '../qiita_auth_key.dart';
+import 'package:qiita_app/pages/qiita_auth_key.dart';
 
-class TopPage extends StatelessWidget {
-  const TopPage({Key? key}) : super(key: key);
+import '../models/url.model.dart';
+import '../services/repository.dart';
+
+// ignore: must_be_immutable
+class TopPage extends StatefulWidget {
+  String redirecturl;
+  TopPage({Key? key, required this.redirecturl}) : super(key: key);
+
+  @override
+  State<TopPage> createState() => _TopPageState();
+}
+
+class _TopPageState extends State<TopPage> {
+  bool _isLoading = false;
+  Future<String?>? accesstoken =QiitaClient.getAccessToken();//Future<String>?nullable型
+
+  @override
+  void initState(){
+    super.initState();
+    //2回目以降のログイン
+    if(accesstoken != null){
+      // ignore: use_build_context_synchronously
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        navigateToRootPage(context);
+      });
+    }
+    //初回ログイン
+    else if(widget.redirecturl.contains(Url.require_redirect)){
+      _loginToQiita();
+    }
+  }
+
+  void setLoading(bool value){
+    setState(() {
+      _isLoading = value;
+    });
+  }
+  void navigateToRootPage(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const RootPage()),
+    );
+  }
+
+
+
+
+  Future<void> _loginToQiita() async {
+    setLoading (true);
+    final token= await QiitaClient.fetchAccessToken(widget.redirecturl.toString());
+    debugPrint('[accessToken]: $token');
+    await QiitaClient.saveAccessToken(token!);
+    debugPrint(await QiitaClient.getAccessToken());
+    setLoading (false);
+    // ignore: use_build_context_synchronously
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (context) => const RootPage(),//TODO LoginURLは存在するが、アクセストークンが存在しない条件分岐
+      ),
+          (_) => false,
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -13,6 +74,10 @@ class TopPage extends StatelessWidget {
       home: Scaffold(
         body: Stack(
           children: [
+            if (_isLoading)//TODOローディング画面のデザインを綺麗にする。
+              const Center(
+                child: CircularProgressIndicator(),
+              ),
             Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
