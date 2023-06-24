@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:http/http.dart' as http;
-
+//aa
 class QiitaClient {
   static Future<List<Article>> fetchArticle(String searchWord, int page) async {
     final response = await http.get(Uri.parse(
