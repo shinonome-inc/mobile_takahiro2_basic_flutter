@@ -31,9 +31,10 @@ class FeedPageState extends State<FeedPage> {
     setState(() {
       _searchWord=search;
       _currentPage = 1;
-      _setLoading(true);
+      showLoadingIndicator = true;
     });
     final results = await QiitaClient.fetchArticle(_searchWord,_currentPage);
+    debugPrint("アクセストークンキーは ${await QiitaClient.getAccessToken()}");
     _setArticles(results);
     _setLoading(false);
   }
@@ -65,7 +66,9 @@ class FeedPageState extends State<FeedPage> {
       _setLoading(false);
       return value;
     });
+    //QiitaClient.deleteAccessToken();
   }
+
 
   @override
   void dispose() {

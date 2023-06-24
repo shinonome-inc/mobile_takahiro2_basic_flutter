@@ -3,7 +3,7 @@ import 'package:qiita_app/pages/root_page.dart';
 import 'package:qiita_app/components/web_view.dart';
 import 'package:qiita_app/pages/qiita_auth_key.dart';
 
-import '../models/url.model.dart';
+import '../components/login_loading.dart';
 import '../services/repository.dart';
 
 // ignore: must_be_immutable
@@ -17,22 +17,18 @@ class TopPage extends StatefulWidget {
 
 class _TopPageState extends State<TopPage> {
   bool _isLoading = false;
-  Future<String?>? accesstoken =QiitaClient.getAccessToken();//Future<String>?nullable型
+  Future<String>? accessToken;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    //2回目以降のログイン
-    if(accesstoken != null){
-      // ignore: use_build_context_synchronously
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        navigateToRootPage(context);
-      });
-    }
-    //初回ログイン
-    else if(widget.redirecturl.contains(Url.require_redirect)){
+    // 2回目以降のログイン
+    if (accessToken != null) {
+      navigateToRootPage(context);
+    } else {
       _loginToQiita();
     }
+    setLoading(false); // setStateを呼び出すタイミングを変更
   }
 
   void setLoading(bool value){
@@ -41,29 +37,21 @@ class _TopPageState extends State<TopPage> {
     });
   }
   void navigateToRootPage(BuildContext context) {
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => const RootPage()),
     );
   }
 
-
-
-
-  Future<void> _loginToQiita() async {
+  void _loginToQiita(){
     setLoading (true);
-    final token= await QiitaClient.fetchAccessToken(widget.redirecturl.toString());
-    debugPrint('[accessToken]: $token');
-    await QiitaClient.saveAccessToken(token!);
-    debugPrint(await QiitaClient.getAccessToken());
+    accessToken = QiitaClient.getAccessToken() as Future<String>?;
+    if (accessToken != null) {
+      QiitaClient.saveAccessToken(accessToken as String);//修正が必要
+    }
     setLoading (false);
     // ignore: use_build_context_synchronously
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(
-        builder: (context) => const RootPage(),//TODO LoginURLは存在するが、アクセストークンが存在しない条件分岐
-      ),
-          (_) => false,
-    );
+    navigateToRootPage(context);
   }
 
 
@@ -72,12 +60,10 @@ class _TopPageState extends State<TopPage> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: Stack(
+        body: _isLoading
+        ? const LoginLoading() // ローディング画面を表示する
+        : Stack(
           children: [
-            if (_isLoading)//TODOローディング画面のデザインを綺麗にする。
-              const Center(
-                child: CircularProgressIndicator(),
-              ),
             Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(

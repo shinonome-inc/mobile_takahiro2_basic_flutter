@@ -10,36 +10,33 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
-  late Future<List<User>> user = Future.value([]);
+  late Future<User>? user;
 
   @override
   void initState() {
     super.initState();
     initializeUser();
   }
-  void initializeUser() async {
-    user = (await QiitaClient.fetchAuthenticatedUser()) as Future<List<User>>;
-    print(user);
+
+  Future<void> initializeUser() async {
+    user = QiitaClient.fetchAuthenticatedUser();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder<List<User>>(
+      body: FutureBuilder<User>(
         future: user,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+          if (snapshot.hasData) {
+            final user = snapshot.data!;
+            return Center(child: Text(user.followeesCount.toString()));
           } else if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
+            return Center(child: Text('Failed to load user: ${snapshot.error}'));
           } else {
-            return Center(
-              child: Text("aa"),
-            );
+            return const CircularProgressIndicator();
           }
         },
       ),

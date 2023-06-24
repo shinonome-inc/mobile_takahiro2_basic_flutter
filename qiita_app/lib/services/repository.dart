@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 import '../pages/qiita_auth_key.dart';
+import 'package:flutter/material.dart';
+
 
 class QiitaClient {
   static Map<String, String> authorizationRequestHeader = {};
@@ -59,22 +61,36 @@ class QiitaClient {
     return prefs.getString('keyAccessToken');
   }
 
-
-//現在ログインしているユーザを表示する。
-  static Future<List<Article>> fetchAuthenticatedUser() async {
+//現在ログインしているユーザを表示する。List型ではないのに注意！
+  static Future<User> fetchAuthenticatedUser() async {
     final accessToken = await getAccessToken();
     const url = 'https://qiita.com/api/v2/authenticated_user';
-    var response =
-    await http.get(Uri.parse(url),
+    final response = await http.get(
+      Uri.parse(url),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
     );
+    debugPrint(response.body);
     if (response.statusCode == 200) {
-      final List<dynamic> jsonData = json.decode(response.body);
-      List<Article> user = jsonData.map((json) => User.fromJson(json)).toString() as List<Article>;
+      final dynamic jsonData = json.decode(response.body);
+      User user = User.fromJson(jsonData as Map<String, dynamic>);//型チェック！Map<String, dynamic>かどうか判定する。
       return user;
     } else {
-      throw Exception('Failed to load articles');
+      throw Exception('Failed to load user');
     }
-}
+  }
+
+  //ログアウト処理
+  //static Future<void> deleteAccessToken() async {
+    //final accessToken = await getAccessToken();
+    //String url = "https://qiita.com/api/v2/access_tokens/$accessToken";
+    //final response = await http.delete(Uri.parse(url));
+    //print(response.statusCode);
+    //if (response.statusCode == 204) {
+      //final SharedPreferences prefs = await SharedPreferences.getInstance();
+      //prefs.remove('keyAccessToken');
+    //} else {
+      //throw Exception('Failed to delete');
+    //}
+  }
