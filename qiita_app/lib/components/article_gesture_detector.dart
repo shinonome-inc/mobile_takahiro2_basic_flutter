@@ -48,7 +48,6 @@ class ArticleGestureDetector extends StatelessWidget {
               child: Text(
                 article.getFormattedDate(),
                 style: const TextStyle(fontSize: 12.0),
-                overflow: TextOverflow.ellipsis, // テキストがオーバーフローした場合に省略記号で表示する設定
                 maxLines:1,
               ),
             ),
