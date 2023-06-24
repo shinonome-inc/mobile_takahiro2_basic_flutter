@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qiita_app/components/search_app_bar.dart';
 import 'package:qiita_app/models/article.model.dart';
@@ -16,8 +17,10 @@ class FeedPage extends StatefulWidget {
 
 class FeedPageState extends State<FeedPage> {
   bool showLoadingIndicator = false;
+  bool childLoadingIndicator = false;
   late Future<List<Article>> articles;
   final ScrollController _scrollController = ScrollController();
+  int _currentPage = 1;
   String _searchWord = '';
 
   void _setArticles(List<Article> updatedArticles) {
@@ -27,13 +30,14 @@ class FeedPageState extends State<FeedPage> {
   }
 
   Future<void> _serchArticles(String search)async{
-    _setLoading(true);
+    _setchildLoading(true);
     setState(() {
       _searchWord=search;
+      _currentPage = 1;
     });
-    final results = await fetchArticle(_searchWord);
+    final results = await QiitaClient.fetchArticle(_searchWord,_currentPage);
     _setArticles(results);
-    _setLoading(false);
+    _setchildLoading(false);
   }
   void _setLoading(bool value) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -42,15 +46,23 @@ class FeedPageState extends State<FeedPage> {
       });
     });
   }
+  void _setchildLoading(bool value) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        childLoadingIndicator = value;
+      });
+    });
+  }
 
   void _addScroll() {
-    _setLoading(true);
+    _setchildLoading(true);
+    _currentPage++;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      fetchArticle(_searchWord).then((value) {
+      QiitaClient.fetchArticle(_searchWord, _currentPage).then((value) {
         setState(() {
           articles = Future.value(value);
         });
-        _setLoading(false);
+        _setchildLoading(false);
       });
     });
   }
@@ -60,7 +72,7 @@ class FeedPageState extends State<FeedPage> {
     super.initState();
     _scrollController.addListener(_scrollListener);
     _setLoading(true);
-    articles = fetchArticle(_searchWord).then((value) {
+    articles = QiitaClient.fetchArticle(_searchWord,_currentPage).then((value) {
       _setLoading(false);
       return value;
     });
@@ -91,27 +103,32 @@ class FeedPageState extends State<FeedPage> {
           future: articles,
           builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
             if (showLoadingIndicator) {
-              return const CircularProgressIndicator();
+              return const CircularProgressIndicator(
+                color: Colors.grey,
+              );
             } else if (snapshot.data == null || snapshot.data!.isEmpty) {
               return const NoMatch();
             } else if (snapshot.hasData) {
               return RefreshIndicator(
                 color: Colors.grey,
                 onRefresh: () async {
-                  // リフレッシュ時の処理を実装するすればいいらしい。
+                  // リフレッシュ時の処理を実装する.
                   await _serchArticles(_searchWord);
                 },
                 child: ListView.separated(
                   controller: _scrollController,
                   itemCount: snapshot.data!.length + 1, // +1はローディングインジケーターのためのアイテム
                   itemBuilder: (BuildContext context, int index) {
-                    // childLoadingIndicatorがtrueで、かつindexが0の場合、ローディングインジケーターを表示
+                      // childLoadingIndicatorがtrueで、かつindexが0の場合、ローディングインジケーターを表示
                     if (index < snapshot.data!.length) {
                       return ArticleGestureDetector(article: snapshot.data![index]);
-                    } else {
+                    } else if(childLoadingIndicator) {
                       // ローディングインジケーターを表示するウィジェットを返す
-                      return const Center(child: CircularProgressIndicator());
+                      return const Center(child: CupertinoActivityIndicator(
+                          radius: 20.0, color: CupertinoColors.inactiveGray,
+                      ));
                     }
+                    return null;
                   },
                   separatorBuilder: (BuildContext context, int index) => const Divider(
                     indent: 70.0,
@@ -133,5 +150,4 @@ class FeedPageState extends State<FeedPage> {
     );
   }
 }
-
 
