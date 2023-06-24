@@ -29,15 +29,15 @@ class FeedPageState extends State<FeedPage> {
     });
   }
 
-  Future<void> _serchArticles(String search)async{
-    _setchildLoading(true);
+  Future<void> _searchArticle(String search)async{
+    _setChildLoading(true);
     setState(() {
       _searchWord=search;
       _currentPage = 1;
     });
     final results = await QiitaClient.fetchArticle(_searchWord,_currentPage);
     _setArticles(results);
-    _setchildLoading(false);
+    _setChildLoading(false);
   }
   void _setLoading(bool value) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -46,7 +46,7 @@ class FeedPageState extends State<FeedPage> {
       });
     });
   }
-  void _setchildLoading(bool value) {
+  void _setChildLoading(bool value) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         childLoadingIndicator = value;
@@ -55,14 +55,14 @@ class FeedPageState extends State<FeedPage> {
   }
 
   void _addScroll() {
-    _setchildLoading(true);
+    _setChildLoading(true);
     _currentPage++;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       QiitaClient.fetchArticle(_searchWord, _currentPage).then((newArticles) {
         setState(() {
           articles = articles.then((existingArticles) => [...existingArticles, ...newArticles]);
         });
-        _setchildLoading(false);
+        _setChildLoading(false);
       });
     });
   }
@@ -97,7 +97,7 @@ class FeedPageState extends State<FeedPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: SearchAppBar(
-        onArticlesChanged: _serchArticles,
+        onArticlesChanged: _searchArticle,
       ),
       body: Center(
         child: FutureBuilder<List<Article>>(
@@ -114,7 +114,7 @@ class FeedPageState extends State<FeedPage> {
                 color: Colors.grey,
                 onRefresh: () async {
                   // リフレッシュ時の処理を実装する.
-                  await _serchArticles(_searchWord);
+                  await _searchArticle(_searchWord);
                 },
                 child: ListView.separated(
                   controller: _scrollController,
