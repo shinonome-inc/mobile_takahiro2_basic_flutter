@@ -28,20 +28,18 @@ class FeedPageState extends State<FeedPage> {
   }
 
   Future<void> _serchArticles(String search)async{
-    _setLoading(true);
     setState(() {
       _searchWord=search;
       _currentPage = 1;
+      _setLoading(true);
     });
     final results = await QiitaClient.fetchArticle(_searchWord,_currentPage);
     _setArticles(results);
     _setLoading(false);
   }
   void _setLoading(bool value) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        showLoadingIndicator = value;
-      });
+    setState(() {
+      showLoadingIndicator = value;
     });
   }
 
@@ -73,6 +71,7 @@ class FeedPageState extends State<FeedPage> {
   void dispose() {
     _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
+    articles = Future.value([]);
     super.dispose();
   }
 
