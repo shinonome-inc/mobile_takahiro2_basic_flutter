@@ -4,6 +4,7 @@ import 'package:qiita_app/components/web_view.dart';
 import 'package:qiita_app/pages/qiita_auth_key.dart';
 
 import '../components/login_loading.dart';
+import '../models/url.model.dart';
 import '../services/repository.dart';
 
 // ignore: must_be_immutable
@@ -19,17 +20,21 @@ class _TopPageState extends State<TopPage> {
   bool _isLoading = false;
   Future<String>? accessToken;
 
+
+
   @override
   void initState() {
     super.initState();
-    // 2回目以降のログイン
-    if (accessToken != null) {
-      navigateToRootPage(context);
-    } else {
-      _loginToQiita();
-    }
-    setLoading(false); // setStateを呼び出すタイミングを変更
+    QiitaClient.getAccessToken().then((String? accessToken) {
+      if (accessToken != null) {
+        navigateToRootPage(context);
+      } else if (widget.redirecturl.contains(Url.require_redirect)) {
+        _loginToQiita();
+      }
+      setLoading(false); // setStateを呼び出すタイミングを変更
+    });
   }
+
 
   void setLoading(bool value){
     setState(() {
@@ -43,16 +48,18 @@ class _TopPageState extends State<TopPage> {
     );
   }
 
-  void _loginToQiita(){
-    setLoading (true);
-    accessToken = QiitaClient.getAccessToken() as Future<String>?;
-    if (accessToken != null) {
-      QiitaClient.saveAccessToken(accessToken as String);//修正が必要
-    }
-    setLoading (false);
-    // ignore: use_build_context_synchronously
-    navigateToRootPage(context);
+  void _loginToQiita() {
+    setLoading(true);
+    QiitaClient.fetchAccessToken(widget.redirecturl).then((String? token) {
+      if (token != null) {
+        QiitaClient.saveAccessToken(token);
+        print(token);
+        navigateToRootPage(context);
+      }
+      setLoading(false);
+    });
   }
+
 
 
   @override
