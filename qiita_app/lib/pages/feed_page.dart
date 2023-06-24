@@ -58,14 +58,15 @@ class FeedPageState extends State<FeedPage> {
     _setchildLoading(true);
     _currentPage++;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      QiitaClient.fetchArticle(_searchWord, _currentPage).then((value) {
+      QiitaClient.fetchArticle(_searchWord, _currentPage).then((newArticles) {
         setState(() {
-          articles = Future.value(value);
+          articles = articles.then((existingArticles) => [...existingArticles, ...newArticles]);
         });
         _setchildLoading(false);
       });
     });
   }
+
 
   @override
   void initState() {
