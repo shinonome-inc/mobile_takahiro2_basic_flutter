@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 
 class QiitaClient {
   static Map<String, String> authorizationRequestHeader = {};
+
   static Future<List<Article>> fetchArticle(String searchWord, int page) async {
     final response = await http.get(Uri.parse(
         'https://qiita.com/api/v2/items?page=$page&per_page=20&query=body:$searchWord'));
@@ -74,7 +75,8 @@ class QiitaClient {
     debugPrint(response.body);
     if (response.statusCode == 200) {
       final dynamic jsonData = json.decode(response.body);
-      User user = User.fromJson(jsonData as Map<String, dynamic>);//型チェック！Map<String, dynamic>かどうか判定する。
+      User user = User.fromJson(jsonData as Map<String,
+          dynamic>); //型チェック！Map<String, dynamic>かどうか判定する。
       return user;
     } else {
       throw Exception('Failed to load user');
@@ -82,15 +84,16 @@ class QiitaClient {
   }
 
   //ログアウト処理
-  //static Future<void> deleteAccessToken() async {
-    //final accessToken = await getAccessToken();
-    //String url = "https://qiita.com/api/v2/access_tokens/$accessToken";
-    //final response = await http.delete(Uri.parse(url));
-    //print(response.statusCode);
-    //if (response.statusCode == 204) {
-      //final SharedPreferences prefs = await SharedPreferences.getInstance();
-      //prefs.remove('keyAccessToken');
-    //} else {
-      //throw Exception('Failed to delete');
-    //}
+  static Future<void> deleteAccessToken() async {
+    final accessToken = await getAccessToken();
+    String url = "https://qiita.com/api/v2/access_tokens/$accessToken";
+    final response = await http.delete(Uri.parse(url));
+    debugPrint(response.statusCode.toString());
+    if (response.statusCode == 204) {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.remove('keyAccessToken');
+    } else {
+      throw Exception('Failed to delete');
+    }
   }
+}

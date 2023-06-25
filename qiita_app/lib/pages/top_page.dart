@@ -27,11 +27,16 @@ class _TopPageState extends State<TopPage> {
     super.initState();
     QiitaClient.getAccessToken().then((String? accessToken) {
       if (accessToken != null) {
-        navigateToRootPage(context);
+        setLoading(true);
+        debugPrint('アクセストークンは$accessTokenです');
+        _navigateToRootPage(context);
+        setLoading(false);
       } else if (widget.redirecturl.contains(Url.require_redirect)) {
+        setLoading(true);
+        debugPrint('リダイレクトURLは${widget.redirecturl}です');
         _loginToQiita();
+        setLoading(false);
       }
-      setLoading(false); // setStateを呼び出すタイミングを変更
     });
   }
 
@@ -41,7 +46,7 @@ class _TopPageState extends State<TopPage> {
       _isLoading = value;
     });
   }
-  void navigateToRootPage(BuildContext context) {
+  void _navigateToRootPage(BuildContext context) {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => const RootPage()),
@@ -53,8 +58,8 @@ class _TopPageState extends State<TopPage> {
     QiitaClient.fetchAccessToken(widget.redirecturl).then((String? token) {
       if (token != null) {
         QiitaClient.saveAccessToken(token);
-        print(token);
-        navigateToRootPage(context);
+        debugPrint('アクセストークンを取得しました$token');
+        _navigateToRootPage(context);
       }
       setLoading(false);
     });
