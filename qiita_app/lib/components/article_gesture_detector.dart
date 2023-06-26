@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qiita_app/models/article.model.dart';
-import '../components/web_view.dart';
+import 'web_view.dart';
 class ArticleGestureDetector extends StatelessWidget {
   const ArticleGestureDetector({
     super.key,
