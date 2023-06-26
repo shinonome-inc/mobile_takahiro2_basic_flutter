@@ -59,5 +59,4 @@ class QiitaClient {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('keyAccessToken');
   }
-
 }
