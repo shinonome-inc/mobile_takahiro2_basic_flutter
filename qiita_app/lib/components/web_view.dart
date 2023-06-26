@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:qiita_app/models/url.model.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import '../pages/top_page.dart';
 import 'default_app_bar.dart.dart';
 
 class WebView extends StatefulWidget {
@@ -14,13 +16,33 @@ class _WebViewState extends State<WebView> {
   late WebViewController controller;
   double? pageHeight;
   bool isLoading = true;
-
+  String redirect = Url.require_redirect;
   Future<void> calculateWebViewHeight(String url) async {
     const String javaScript = 'document.documentElement.scrollHeight;';
     final result = await controller.runJavaScriptReturningResult(javaScript);
     setState(() {
       debugPrint('UPDATE WebView contents height: $result');
       pageHeight = double.parse(result.toString());
+    });
+  }
+
+  void onPageFinished(String url, {required WebViewController controller}) {
+    final bool redirectUrl =
+    url.contains(redirect);
+    if (redirectUrl) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => TopPage(redirecturl: url),
+        ),
+      );
+    }
+  }
+
+
+
+  void _setLoading(bool value) {
+    setState(() {
+      isLoading = value;
     });
   }
 
@@ -32,10 +54,8 @@ class _WebViewState extends State<WebView> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageFinished: (String url) {
-            setState(() {
-              isLoading = false;
-            });
-            calculateWebViewHeight(url); // Remove extra closing parenthesis
+            _setLoading(false);
+            onPageFinished(url, controller: controller);
           },
         ),
       )
