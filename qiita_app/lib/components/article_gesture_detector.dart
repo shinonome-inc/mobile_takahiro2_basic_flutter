@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qiita_app/models/article.model.dart';
-import '../components/web_view.dart';
+import 'web_view.dart';
 class ArticleGestureDetector extends StatelessWidget {
   const ArticleGestureDetector({
     super.key,
@@ -35,33 +35,38 @@ class ArticleGestureDetector extends StatelessWidget {
         ),
         title: Text(article.title,
           maxLines:2,
+          overflow: TextOverflow.ellipsis,
         ),
         subtitle: Row(
           children: [
-            Flexible(
-              child: Text(
-                '@${article.user.id}',
-                style: const TextStyle(fontSize: 12.0), // 適切なフォントサイズを指定してください
-                overflow: TextOverflow.ellipsis, // テキストがオーバーフローした場合に省略記号で表示する設定
+            Text(
+                '@${article.user.id}投稿日:',
+                style: const TextStyle(fontSize: 12.0),
+                maxLines:1,//テキストがオーバーフローしないように設定！
               ),
-            ),
             Flexible(
               child: Text(
                 article.getFormattedDate(),
-                style: const TextStyle(fontSize: 12.0), // 適切なフォントサイズを指定してください
-                overflow: TextOverflow.ellipsis, // テキストがオーバーフローした場合に省略記号で表示する設定
+                style: const TextStyle(fontSize: 12.0),
+                maxLines:1,
               ),
             ),
+
+            const Text(
+                'いいね:',
+                style: TextStyle(fontSize: 12.0),
+                maxLines:1,
+              ),
             Flexible(
               child: Text(
-                'いいね:${article.likesCount.toString()}',
-                style: const TextStyle(fontSize: 12.0), // 適切なフォントサイズを指定してください
+                article.likesCount.toString(),
+                style: const TextStyle(fontSize: 12.0),
                 overflow: TextOverflow.ellipsis, // テキストがオーバーフローした場合に省略記号で表示する設定
+                maxLines:1,
               ),
             ),
           ],
         ),
-
       ),
     );
   }
