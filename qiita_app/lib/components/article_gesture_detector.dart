@@ -18,7 +18,6 @@ class ArticleGestureDetector extends StatelessWidget {
           useRootNavigator: true,
           backgroundColor: Colors.transparent,
           isScrollControlled: true,
-
           builder: (BuildContext context) {
             return SizedBox(
               height: MediaQuery.of(context).size.height * 0.9,
@@ -61,7 +60,6 @@ class ArticleGestureDetector extends StatelessWidget {
             ),
           ],
         ),
-
       ),
     );
   }

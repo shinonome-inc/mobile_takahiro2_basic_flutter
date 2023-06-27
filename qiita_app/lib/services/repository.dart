@@ -40,8 +40,7 @@ class QiitaClient {
       }),
     );
     if (response.statusCode == 201) {
-      final body = json.decode(response.body) as Map<String,
-          dynamic>; //Json形式に変換
+      final body = json.decode(response.body) as Map<String, dynamic>; //Json形式に変換
       final String accessToken = body["token"].toString();
       authorizationRequestHeader = {
         'Authorization': 'Bearer $accessToken',
@@ -80,6 +79,25 @@ class QiitaClient {
       return user;
     } else {
       throw Exception('Failed to load user');
+    }
+  }
+
+  static Future<List<Article>> fetchAuthArticle(int page, String userId) async {
+    final accessToken = await getAccessToken();
+    final url = 'https://qiita.com/api/v2/items?page=$page&per_page=20&query=user:$userId';
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonData = json.decode(response.body);
+      final List<Article> articles = jsonData.map((dynamic item) => Article.fromJson(item)).toList();
+      return articles;
+    } else {
+      throw Exception('Failed to load articles');
     }
   }
 
