@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qiita_app/components/article_gesture_detector.dart';
 import 'package:qiita_app/components/current_user_info.dart';
+import 'package:qiita_app/components/no_login.dart';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:qiita_app/services/repository.dart';
 import '../components/default_app_bar.dart.dart';
@@ -20,7 +21,7 @@ class _MyPageState extends State<MyPage> {
   String userId = "";
   final ScrollController _scrollController = ScrollController();
   bool showLoadingIndicator = false;
-  bool currentUser = false;
+  bool currentUser = true;
 
   @override
   void initState() {
@@ -75,14 +76,14 @@ class _MyPageState extends State<MyPage> {
     return Scaffold(
       appBar: const DefaultAppBar(text: 'MyPage'),
       body: showLoadingIndicator
-      ?const Center(child: CircularProgressIndicator())
-      :RefreshIndicator(
+          ? const Center(child: CircularProgressIndicator())
+          : currentUser
+          ? const NoLogin()
+          : RefreshIndicator(
         onRefresh: () async {
           // リフレッシュ時の処理を実装する.
         },
-        child:
-
-        ListView(
+        child: ListView(
           children: [
             FutureBuilder<User>(
               future: user,
@@ -119,8 +120,7 @@ class _MyPageState extends State<MyPage> {
                         height: 0.5,
                       ),
                     );
-                  }
-                  else {
+                  } else {
                     return const SizedBox();
                   }
                 },
@@ -130,4 +130,17 @@ class _MyPageState extends State<MyPage> {
         ),
       ),
     );
-  }}
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+
