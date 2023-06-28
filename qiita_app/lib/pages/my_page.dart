@@ -20,6 +20,7 @@ class _MyPageState extends State<MyPage> {
   String userId = "";
   final ScrollController _scrollController = ScrollController();
   bool showLoadingIndicator = false;
+  bool currentUser = false;
 
   @override
   void initState() {
@@ -35,8 +36,6 @@ class _MyPageState extends State<MyPage> {
       return value;
     });
   }
-
-
 
   void _setLoading(bool value) {
     setState(() {
@@ -81,7 +80,9 @@ class _MyPageState extends State<MyPage> {
         onRefresh: () async {
           // リフレッシュ時の処理を実装する.
         },
-        child: ListView(
+        child:
+
+        ListView(
           children: [
             FutureBuilder<User>(
               future: user,
