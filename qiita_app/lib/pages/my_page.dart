@@ -95,7 +95,8 @@ class _MyPageState extends State<MyPage> {
                 }
               },
             ),
-            Expanded(
+            SizedBox(
+              height: 561,
               child: FutureBuilder<List<Article>>(
                 future: articles,
                 builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
