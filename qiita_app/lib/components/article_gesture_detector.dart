@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qiita_app/models/article.model.dart';
+import 'package:qiita_app/pages/my_page.dart';
 import 'web_view.dart';
 class ArticleGestureDetector extends StatelessWidget {
   const ArticleGestureDetector({
@@ -8,6 +9,9 @@ class ArticleGestureDetector extends StatelessWidget {
   });
 
   final Article article;
+
+
+
 
   @override
   Widget build(BuildContext context) {
