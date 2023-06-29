@@ -1,18 +1,74 @@
-import 'package:flutter/material.dart';
-import 'package:qiita_app/components/bottom_navigation.dart';
+// ignore_for_file: must_be_immutable
 
-void main() {
-  runApp(const TopPage());
+import 'package:flutter/material.dart';
+import 'package:qiita_app/components/login_loading.dart';
+import '../components/web_view.dart';
+import '../qiita_auth_key.dart';
+import '../services/repository.dart';
+import 'package:qiita_app/pages/root_page.dart';
+import '../models/url.model.dart';
+
+class TopPage extends StatefulWidget {
+  String redirecturl;
+  TopPage({Key? key, required this.redirecturl}) : super(key: key);
+
+
+  @override
+  State<TopPage> createState() => _TopPageState();
 }
 
-class TopPage extends StatelessWidget {
-  const TopPage({Key? key}) : super(key: key);
+class _TopPageState extends State<TopPage> {
+  bool _isLoading = false;
+  Future<String>? accessToken;
+  @override
+  void initState() {
+    super.initState();
+    QiitaClient.getAccessToken().then((String? accessToken) {
+      if (accessToken != null) {
+        setLoading(true);
+        debugPrint('アクセストークンは$accessTokenです');
+        _navigateToRootPage(context);
+        setLoading(false);
+      } else if (widget.redirecturl.contains(Url.require_redirect)) {
+        setLoading(true);
+        debugPrint('リダイレクトURLは${widget.redirecturl}です');
+        _loginToQiita();
+        setLoading(false);
+      }
+    });
+  }
+  void setLoading(bool value){
+    setState(() {
+      _isLoading = value;
+    });
+  }
+  void _navigateToRootPage(BuildContext context) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const RootPage()),
+    );
+  }
+
+
+  void _loginToQiita() {
+    setLoading(true);
+    QiitaClient.fetchAccessToken(widget.redirecturl).then((String? token) {
+      if (token != null) {
+        QiitaClient.saveAccessToken(token);
+        debugPrint('アクセストークンを取得しました$token');
+        _navigateToRootPage(context);
+      }
+      setLoading(false);
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: Stack(
+        body: _isLoading
+        ? const LoginLoading() // ローディング画面を表示する
+        : Stack(
           children: [
             Container(
               decoration: const BoxDecoration(
@@ -65,9 +121,19 @@ class TopPage extends StatelessWidget {
                       children: [
                         ElevatedButton(
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const BottomNavigationPage()),
+                            showModalBottomSheet<void>(
+                              context: context,
+                              useRootNavigator: true,
+                              backgroundColor: Colors.transparent,
+                              isScrollControlled: true,
+                              builder: (BuildContext context) {
+                                return SizedBox(
+                                  height: MediaQuery.of(context).size.height * 0.9,
+                                  child: const WebView(
+                                    url: 'https://qiita.com/api/v2/oauth/authorize?client_id=${QiitaAuthKey.clientId}&scope=read_qiita',
+                                  ),
+                                );
+                              },
                             );
                           },
                           style: ElevatedButton.styleFrom(
@@ -97,7 +163,7 @@ class TopPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const BottomNavigationPage()),
+                        MaterialPageRoute(builder: (context) => const RootPage()),
                       );
                     },
                     child: const Text(

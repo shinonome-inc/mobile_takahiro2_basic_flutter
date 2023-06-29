@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import '../pages/feed_page.dart';
-import '../pages/tag_page.dart';
-import '../pages/my_page.dart';
-import '../pages/setting_page.dart';
+import 'feed_page.dart';
+import 'tag_page.dart';
+import 'my_page.dart';
+import 'setting_page.dart';
 
 
 
-class BottomNavigationPage extends StatefulWidget {
-  const BottomNavigationPage({Key? key}) : super(key: key);
+class RootPage extends StatefulWidget {
+  const RootPage({Key? key}) : super(key: key);
 
   @override
   BottomNavigationPageState createState() => BottomNavigationPageState();
 }
 
 
-class BottomNavigationPageState extends State<BottomNavigationPage> {
+class BottomNavigationPageState extends State<RootPage> {
   int _selectedIndex = 0;
   final List<Widget> _widgetOptions = [
     const FeedPage(),

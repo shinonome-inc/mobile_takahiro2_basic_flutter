@@ -7,7 +7,7 @@ import 'package:qiita_app/services/repository.dart';
 import '../components/article_gesture_detector.dart';
 import '../components/network_error.dart';
 import '../components/no_match.dart';
-//あああaああああああああああ
+//
 class FeedPage extends StatefulWidget {
   const FeedPage({Key? key}) : super(key: key);
 
@@ -67,7 +67,6 @@ class FeedPageState extends State<FeedPage> {
     });
   }
 
-
   @override
   void initState() {
     super.initState();
@@ -87,10 +86,12 @@ class FeedPageState extends State<FeedPage> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+    double scrollPercentage = _scrollController.position.pixels / _scrollController.position.maxScrollExtent;
+    if (scrollPercentage >= 0.9) {
       _addScroll();
     }
   }
+
 
 
   @override
