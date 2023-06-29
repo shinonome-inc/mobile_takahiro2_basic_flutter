@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:qiita_app/components/network_error.dart';
+import 'package:qiita_app/components/no_login.dart';
 import 'feed_page.dart';
 import 'tag_page.dart';
 import 'my_page.dart';
@@ -18,7 +20,7 @@ class BottomNavigationPageState extends State<RootPage> {
   int _selectedIndex = 0;
   final List<Widget> _widgetOptions = [
     const FeedPage(),
-    const TagPage(),
+    const NetworkError(),
     const MyPage(),
     const SettingPage(),
   ];

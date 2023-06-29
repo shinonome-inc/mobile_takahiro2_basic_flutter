@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qiita_app/components/article_gesture_detector.dart';
 import 'package:qiita_app/components/current_user_info.dart';
 import 'package:qiita_app/components/no_login.dart';
+import 'package:qiita_app/components/no_refresh.dart';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:qiita_app/services/repository.dart';
 import '../components/default_app_bar.dart.dart';
@@ -22,6 +24,7 @@ class _MyPageState extends State<MyPage> {
   final ScrollController _scrollController = ScrollController();
   bool showLoadingIndicator = false;
   bool currentUser = false;
+  bool onRefresh = false;
 
   @override
   void initState() {
@@ -37,6 +40,13 @@ class _MyPageState extends State<MyPage> {
       return value;
     });
   }
+
+  void refresh(){
+    setState(() {
+      onRefresh=true;
+    });
+  }
+
 
   void _setLoading(bool value) {
     setState(() {
@@ -65,6 +75,14 @@ class _MyPageState extends State<MyPage> {
     super.dispose();
   }
 
+  getRefresh()async{
+    setState(() {
+      user = QiitaClient.fetchAuthenticatedUser();
+    });
+    setAuthArticle();
+  }
+
+
   void _scrollListener() {
     if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
       //下までスクロールした時の記述を追加する
@@ -76,11 +94,13 @@ class _MyPageState extends State<MyPage> {
     return Scaffold(
       appBar: const DefaultAppBar(text: 'MyPage'),
       body: showLoadingIndicator
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CupertinoActivityIndicator(radius: 20.0, color: CupertinoColors.inactiveGray))
           : currentUser
           ? const NoLogin()
           : RefreshIndicator(
+        color: Colors.grey,
         onRefresh: () async {
+          refresh();
           // リフレッシュ時の処理を実装するTODO
         },
         child: ListView(
@@ -89,7 +109,10 @@ class _MyPageState extends State<MyPage> {
               future: user,
               builder: (context, snapshot) {
                 if (snapshot.hasData && snapshot.data != null) {
-                  return CurrentUserInfo(user: snapshot.data);
+                  if(onRefresh){
+                    return CurrentUserInfo(user: snapshot.data);
+                  }
+                  return NoRefresh(user: snapshot.data);
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Failed to load user: ${snapshot.error}'));
                 } else {
