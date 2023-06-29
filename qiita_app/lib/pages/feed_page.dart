@@ -71,8 +71,8 @@ class FeedPageState extends State<FeedPage> {
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_scrollListener);
     _setLoading(true);
+    _scrollController.addListener(_scrollListener);
     articles = QiitaClient.fetchArticle(_searchWord,_currentPage).then((value) {
       _setLoading(false);
       return value;
@@ -91,7 +91,6 @@ class FeedPageState extends State<FeedPage> {
       _addScroll();
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
