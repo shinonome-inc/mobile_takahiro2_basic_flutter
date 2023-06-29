@@ -62,9 +62,7 @@ class _TopPageState extends State<TopPage> {
   }
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
-      child: MaterialApp(
+    return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
           body: _isLoading
@@ -187,7 +185,6 @@ class _TopPageState extends State<TopPage> {
             ],
           ),
         ),
-      ),
     );
   }
 }
