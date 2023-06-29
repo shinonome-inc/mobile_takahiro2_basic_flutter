@@ -160,9 +160,9 @@ class _TopPageState extends State<TopPage> {
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const RootPage()),
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (_) => const RootPage()),
                       );
                     },
                     child: const Text(
