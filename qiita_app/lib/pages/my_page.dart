@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qiita_app/components/article_gesture_detector.dart';
@@ -23,29 +25,49 @@ class _MyPageState extends State<MyPage> {
   String userId = "";
   final ScrollController _scrollController = ScrollController();
   bool showLoadingIndicator = false;
-  bool currentUser = false;
+  bool noLoginUser = false;
   bool onRefresh = false;
 
   @override
-  void initState() {
+  void initState() {//ユーザーがログインしていない時には、userを取得することができなので、永遠にローディングが表示される。
     super.initState();
     _setLoading(true);
     articles = Future.value([]);
-    _scrollController.addListener(_scrollListener);
-    user = QiitaClient.fetchAuthenticatedUser().then((User value) {
-      debugPrint(value.toString());
-      setAuthUser(value);
-      setAuthArticle();
+    checkUser();
+    if(noLoginUser){
       _setLoading(false);
-      return value;
-    });
-  }
-
+    }else{
+      _scrollController.addListener(_scrollListener);
+      setAuthArticle();
+        debugPrint(user.toString());
+        _setLoading(false);
+      }
+    }
   void refresh(){
     setState(() {
       onRefresh=true;
     });
   }
+
+  void checkUser() async {
+    try {
+      setState(() {
+        user = Future.value(QiitaClient.fetchAuthenticatedUser());
+      });
+      await user; // ユーザー情報の取得を待機
+    } catch (e) {
+      setState(() {
+        noLoginUser = true;
+      });
+    }
+  }
+
+  void setNoLogin(){
+      setState(() {
+        noLoginUser=true;
+      });
+  }
+
 
 
   void _setLoading(bool value) {
@@ -95,7 +117,7 @@ class _MyPageState extends State<MyPage> {
       appBar: const DefaultAppBar(text: 'MyPage'),
       body: showLoadingIndicator
           ? const Center(child: CupertinoActivityIndicator(radius: 20.0, color: CupertinoColors.inactiveGray))
-          : currentUser
+          : noLoginUser
           ? const NoLogin()
           : RefreshIndicator(
         color: Colors.grey,
