@@ -1,48 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
-
-class LoginWebView extends StatefulWidget {
-  final String initialUrl;
-  final String redirectUrl;
-  final Function(String) onTokenReceived;
-
-  const LoginWebView({
-    required this.initialUrl,
-    required this.redirectUrl,
-    required this.onTokenReceived,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  _LoginWebViewState createState() => _LoginWebViewState();
+import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart' as http;
+void main() {
+  fetchQiitaItems();
 }
 
-class _LoginWebViewState extends State<LoginWebView> {
-  late WebViewController _webViewController;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-      ),
-      body: WebView(
-        initialUrl: widget.initialUrl,
-        javascriptMode: JavascriptMode.unrestricted,
-        onWebViewCreated: (controller) {
-          _webViewController = controller;
-        },
-        navigationDelegate: (NavigationRequest request) {
-          if (request.url.startsWith(widget.redirectUrl)) {
-            // リダイレクトURLを検知したら、アクセストークン発行コードを抽出してコールバックする
-            final Uri uri = Uri.parse(request.url);
-            final String code = uri.queryParameters['code'] ?? '';
-            widget.onTokenReceived(code);
-            return NavigationDecision.prevent;
-          }
-          return NavigationDecision.navigate;
-        },
-      ),
-    );
+Future<void> fetchQiitaItems() async {
+  var url = Uri.parse('https://qiita.com/api/v2/items');
+  var response = await http.get(url);
+  if (response.statusCode == 200) {
+    // リクエスト成功
+    debugPrint(response.body);
+  } else {
+    // リクエスト失敗
+    debugPrint('リクエストが失敗しました。ステータスコード: ${response.statusCode}');
   }
 }
