@@ -67,7 +67,6 @@ class FeedPageState extends State<FeedPage> {
     });
   }
 
-
   @override
   void initState() {
     super.initState();
