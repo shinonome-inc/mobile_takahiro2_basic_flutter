@@ -21,7 +21,7 @@ class _MyPageState extends State<MyPage> {
   String userId = "";
   final ScrollController _scrollController = ScrollController();
   bool showLoadingIndicator = false;
-  bool currentUser = true;
+  bool currentUser = false;
 
   @override
   void initState() {
@@ -81,7 +81,7 @@ class _MyPageState extends State<MyPage> {
           ? const NoLogin()
           : RefreshIndicator(
         onRefresh: () async {
-          // リフレッシュ時の処理を実装する.
+          // リフレッシュ時の処理を実装するTODO
         },
         child: ListView(
           children: [
