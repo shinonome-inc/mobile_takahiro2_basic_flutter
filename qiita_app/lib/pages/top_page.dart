@@ -49,6 +49,7 @@ class _TopPageState extends State<TopPage> {
     );
   }
 
+
   void _loginToQiita() {
     setLoading(true);
     QiitaClient.fetchAccessToken(widget.redirecturl).then((String? token) {

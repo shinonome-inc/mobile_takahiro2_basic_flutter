@@ -87,10 +87,12 @@ class FeedPageState extends State<FeedPage> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+    double scrollPercentage = _scrollController.position.pixels / _scrollController.position.maxScrollExtent;
+    if (scrollPercentage >= 0.9) {
       _addScroll();
     }
   }
+
 
 
   @override
