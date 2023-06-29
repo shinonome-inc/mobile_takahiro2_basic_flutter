@@ -30,10 +30,12 @@ class _WebViewState extends State<WebView> {
     final bool redirectUrl =
     url.contains(redirect);
     if (redirectUrl) {
-      Navigator.pushReplacement(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => TopPage(redirecturl: url)),
+            (route) => false,
       );
+
     }
   }
 
