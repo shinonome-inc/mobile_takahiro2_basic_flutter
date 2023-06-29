@@ -94,57 +94,60 @@ class FeedPageState extends State<FeedPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: SearchAppBar(
-        onArticlesChanged: _searchArticle,
-      ),
-      body: Center(
-        child: FutureBuilder<List<Article>>(
-          future: articles,
-          builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
-            if (showLoadingIndicator) {
-              return const CircularProgressIndicator(
-                color: Colors.grey,
-              );
-            } else if (snapshot.data == null || snapshot.data!.isEmpty) {
-              return const NoMatch();
-            } else if (snapshot.hasData) {
-              return RefreshIndicator(
-                color: Colors.grey,
-                onRefresh: () async {
-                  // リフレッシュ時の処理を実装する.
-                  await _searchArticle(_searchWord);
-                },
-                child: ListView.separated(
-                  controller: _scrollController,
-                  itemCount: snapshot.data!.length + 1, // +1はローディングインジケーターのためのアイテム
-                  itemBuilder: (BuildContext context, int index) {
-                      // childLoadingIndicatorがtrueで、かつindexが0の場合、ローディングインジケーターを表示
-                    if (index < snapshot.data!.length) {
-                      return ArticleGestureDetector(article: snapshot.data![index]);
-                    } else if(childLoadingIndicator) {
-                      // ローディングインジケーターを表示するウィジェットを返す
-                      return const Center(child: CupertinoActivityIndicator(
-                          radius: 20.0, color: CupertinoColors.inactiveGray,
-                      ));
-                    }
-                    return null;
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: SearchAppBar(
+          onArticlesChanged: _searchArticle,
+        ),
+        body: Center(
+          child: FutureBuilder<List<Article>>(
+            future: articles,
+            builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
+              if (showLoadingIndicator) {
+                return const CircularProgressIndicator(
+                  color: Colors.grey,
+                );
+              } else if (snapshot.data == null || snapshot.data!.isEmpty) {
+                return const NoMatch();
+              } else if (snapshot.hasData) {
+                return RefreshIndicator(
+                  color: Colors.grey,
+                  onRefresh: () async {
+                    // リフレッシュ時の処理を実装する.
+                    await _searchArticle(_searchWord);
                   },
-                  separatorBuilder: (BuildContext context, int index) => const Divider(
-                    indent: 70.0,
-                    height: 0.5,
+                  child: ListView.separated(
+                    controller: _scrollController,
+                    itemCount: snapshot.data!.length + 1, // +1はローディングインジケーターのためのアイテム
+                    itemBuilder: (BuildContext context, int index) {
+                        // childLoadingIndicatorがtrueで、かつindexが0の場合、ローディングインジケーターを表示
+                      if (index < snapshot.data!.length) {
+                        return ArticleGestureDetector(article: snapshot.data![index]);
+                      } else if(childLoadingIndicator) {
+                        // ローディングインジケーターを表示するウィジェットを返す
+                        return const Center(child: CupertinoActivityIndicator(
+                            radius: 20.0, color: CupertinoColors.inactiveGray,
+                        ));
+                      }
+                      return null;
+                    },
+                    separatorBuilder: (BuildContext context, int index) => const Divider(
+                      indent: 70.0,
+                      height: 0.5,
+                    ),
                   ),
-                ),
-              );
-            } else if (snapshot.hasError) {
-              return Text(
-                "データの取得中にエラーが発生しました: ${snapshot.error}",
-                style: const TextStyle(color: Colors.red),
-              );
-            } else {
-              return const NetworkError();
-            }
-          },
+                );
+              } else if (snapshot.hasError) {
+                return Text(
+                  "データの取得中にエラーが発生しました: ${snapshot.error}",
+                  style: const TextStyle(color: Colors.red),
+                );
+              } else {
+                return const NetworkError();
+              }
+            },
+          ),
         ),
       ),
     );
