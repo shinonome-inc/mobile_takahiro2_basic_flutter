@@ -2,12 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:qiita_app/models/url.model.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../pages/top_page.dart';
-import 'default_app_bar.dart.dart';import 'package:flutter/material.dart';
-import 'package:qiita_app/models/url.model.dart';
-import 'package:webview_flutter/webview_flutter.dart';
-import '../pages/top_page.dart';
-import 'default_app_bar.dart.dart';
-
 class WebView extends StatefulWidget {
   final String url;
   const WebView({Key? key, required this.url}) : super(key: key);

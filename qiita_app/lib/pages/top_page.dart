@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:qiita_app/components/login_loading.dart';
 import '../components/web_view.dart';
-import '../qiita_auth_key.dart';
+import 'package:qiita_app/qiita_auth_key.dart';
 import '../services/repository.dart';
 import 'package:qiita_app/pages/root_page.dart';
 import '../models/url.model.dart';
@@ -49,7 +49,10 @@ class _TopPageState extends State<TopPage> {
     );
   }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3a3b8a788084a31f2b95c915a68b8625bb8c8a1c
   void _loginToQiita() {
     setLoading(true);
     QiitaClient.fetchAccessToken(widget.redirecturl).then((String? token) {
