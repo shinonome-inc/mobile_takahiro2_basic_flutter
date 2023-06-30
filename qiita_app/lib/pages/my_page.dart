@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qiita_app/components/article_gesture_detector.dart';
 import 'package:qiita_app/components/current_user_info.dart';
+import 'package:qiita_app/components/network_error.dart';
 import 'package:qiita_app/components/no_login.dart';
 import 'package:qiita_app/components/no_refresh.dart';
 import 'package:qiita_app/models/article.model.dart';
@@ -136,7 +137,7 @@ class _MyPageState extends State<MyPage> {
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Failed to load user: ${snapshot.error}'));
                 } else {
-                  return const SizedBox();
+                  return const NetworkError();
                 }
               },
             ),
@@ -164,7 +165,7 @@ class _MyPageState extends State<MyPage> {
                       ),
                     );
                   } else {
-                    return const SizedBox();
+                    return const NetworkError();
                   }
                 },
               ),
