@@ -31,33 +31,36 @@ class BottomNavigationPageState extends State<RootPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: _widgetOptions[_selectedIndex],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.format_list_bulleted),
-            label: 'フィード',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.label_outline),
-            label: 'タグ',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: 'マイページ',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.format_list_bulleted),
-            label: '設定',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.green,
-        onTap: _onItemTapped,
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        body: Center(
+          child: _widgetOptions[_selectedIndex],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.format_list_bulleted),
+              label: 'フィード',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.label_outline),
+              label: 'タグ',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              label: 'マイページ',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.format_list_bulleted),
+              label: '設定',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.green,
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }

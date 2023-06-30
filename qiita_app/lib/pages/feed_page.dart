@@ -7,7 +7,7 @@ import 'package:qiita_app/services/repository.dart';
 import '../components/article_gesture_detector.dart';
 import '../components/network_error.dart';
 import '../components/no_match.dart';
-//
+//aa
 class FeedPage extends StatefulWidget {
   const FeedPage({Key? key}) : super(key: key);
 
@@ -67,11 +67,12 @@ class FeedPageState extends State<FeedPage> {
     });
   }
 
+
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_scrollListener);
     _setLoading(true);
+    _scrollController.addListener(_scrollListener);
     articles = QiitaClient.fetchArticle(_searchWord,_currentPage).then((value) {
       _setLoading(false);
       return value;
@@ -86,70 +87,69 @@ class FeedPageState extends State<FeedPage> {
   }
 
   void _scrollListener() {
-    double scrollPercentage = _scrollController.position.pixels / _scrollController.position.maxScrollExtent;
-    if (scrollPercentage >= 0.9) {
+    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
       _addScroll();
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: SearchAppBar(
-        onArticlesChanged: _searchArticle,
-      ),
-      body: Center(
-        child: FutureBuilder<List<Article>>(
-          future: articles,
-          builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
-            if (showLoadingIndicator) {
-              return const CircularProgressIndicator(
-                color: Colors.grey,
-              );
-            } else if (snapshot.data == null || snapshot.data!.isEmpty) {
-              return const NoMatch();
-            } else if (snapshot.hasData) {
-              return RefreshIndicator(
-                color: Colors.grey,
-                onRefresh: () async {
-                  // リフレッシュ時の処理を実装する.
-                  await _searchArticle(_searchWord);
-                },
-                child: ListView.separated(
-                  controller: _scrollController,
-                  itemCount: snapshot.data!.length + 1, // +1はローディングインジケーターのためのアイテム
-                  itemBuilder: (BuildContext context, int index) {
-                      // childLoadingIndicatorがtrueで、かつindexが0の場合、ローディングインジケーターを表示
-                    if (index < snapshot.data!.length) {
-                      return ArticleGestureDetector(article: snapshot.data![index]);
-                    } else if(childLoadingIndicator) {
-                      // ローディングインジケーターを表示するウィジェットを返す
-                      return const Center(child: CupertinoActivityIndicator(
-                          radius: 20.0, color: CupertinoColors.inactiveGray,
-                      ));
-                    }
-                    return null;
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: SearchAppBar(
+          onArticlesChanged: _searchArticle,
+        ),
+        body: Center(
+          child: FutureBuilder<List<Article>>(
+            future: articles,
+            builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
+              if (showLoadingIndicator) {
+                return const CircularProgressIndicator(
+                  color: Colors.grey,
+                );
+              } else if (snapshot.data == null || snapshot.data!.isEmpty) {
+                return const NoMatch();
+              } else if (snapshot.hasData) {
+                return RefreshIndicator(
+                  color: Colors.grey,
+                  onRefresh: () async {
+                    // リフレッシュ時の処理を実装する.
+                    await _searchArticle(_searchWord);
                   },
-                  separatorBuilder: (BuildContext context, int index) => const Divider(
-                    indent: 70.0,
-                    height: 0.5,
+                  child: ListView.separated(
+                    controller: _scrollController,
+                    itemCount: snapshot.data!.length + 1, // +1はローディングインジケーターのためのアイテム
+                    itemBuilder: (BuildContext context, int index) {
+                      // childLoadingIndicatorがtrueで、かつindexが0の場合、ローディングインジケーターを表示
+                      if (index < snapshot.data!.length) {
+                        return ArticleGestureDetector(article: snapshot.data![index]);
+                      } else if(childLoadingIndicator) {
+                        // ローディングインジケーターを表示するウィジェットを返す
+                        return const Center(child: CupertinoActivityIndicator(
+                          radius: 20.0, color: CupertinoColors.inactiveGray,
+                        ));
+                      }
+                      return null;
+                    },
+                    separatorBuilder: (BuildContext context, int index) => const Divider(
+                      indent: 70.0,
+                      height: 0.5,
+                    ),
                   ),
-                ),
-              );
-            } else if (snapshot.hasError) {
-              return Text(
-                "データの取得中にエラーが発生しました: ${snapshot.error}",
-                style: const TextStyle(color: Colors.red),
-              );
-            } else {
-              return const NetworkError();
-            }
-          },
+                );
+              } else if (snapshot.hasError) {
+                return Text(
+                  "データの取得中にエラーが発生しました: ${snapshot.error}",
+                  style: const TextStyle(color: Colors.red),
+                );
+              } else {
+                return const NetworkError();
+              }
+            },
+          ),
         ),
       ),
     );
   }
 }
-
