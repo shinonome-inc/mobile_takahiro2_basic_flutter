@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:qiita_app/components/login_loading.dart';
 import '../components/web_view.dart';
