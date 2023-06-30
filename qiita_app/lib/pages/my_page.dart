@@ -141,35 +141,42 @@ class _MyPageState extends State<MyPage> {
                 }
               },
             ),
+
+
             SizedBox(
               height: 561,
-              child: FutureBuilder<List<Article>>(
-                future: articles,
-                builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
-                  if (snapshot.hasError) {
-                    return Center(child: Text('Failed to load articles: ${snapshot.error}'));
-                  } else if (snapshot.hasData && snapshot.data != null) {
-                    return ListView.separated(
-                      controller: _scrollController,
-                      itemCount: snapshot.data!.length + 1, // +1はローディングインジケーターのためのアイテム
-                      itemBuilder: (BuildContext context, int index) {
-                        if (index < snapshot.data!.length) {
-                          return ArticleGestureDetector(article: snapshot.data![index]);
-                        } else {
-                          return const SizedBox();
-                        }
-                      },
-                      separatorBuilder: (BuildContext context, int index) => const Divider(
-                        indent: 70.0,
-                        height: 0.5,
-                      ),
-                    );
-                  } else {
-                    return const NetworkError();
-                  }
+              child: ListView.builder(
+                itemCount: 50,
+                itemBuilder: (BuildContext context, int index) {
+                  return FutureBuilder<List<Article>>(
+                    future: articles,
+                    builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
+                      if (snapshot.hasError) {
+                        return Center(child: Text('Failed to load articles: ${snapshot.error}'));
+                      } else if (snapshot.hasData && snapshot.data != null) {
+                        return ListView.separated(
+                          controller: _scrollController,
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return ArticleGestureDetector(article: snapshot.data![index]);
+                          },
+                          separatorBuilder: (BuildContext context, int index) => const Divider(
+                            indent: 70.0,
+                            height: 0.5,
+                          ),
+                        );
+                      } else {
+                        return const NetworkError();
+                      }
+                    },
+                  );
                 },
               ),
             ),
+
+
+
+
           ],
         ),
       ),
