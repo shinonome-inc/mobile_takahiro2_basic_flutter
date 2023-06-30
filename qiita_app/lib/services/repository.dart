@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:http/http.dart' as http;
+import 'package:qiita_app/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../qiita_auth_key.dart';
 
@@ -58,5 +60,43 @@ class QiitaClient {
   static Future<String?> getAccessToken() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('keyAccessToken');
+  }
+
+
+  static Future<List<Article>> fetchAuthArticle(int page, String userId) async {
+    final accessToken = await getAccessToken();
+    final url = 'https://qiita.com/api/v2/items?page=$page&per_page=20&query=user:$userId';
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonData = json.decode(response.body);
+      final List<Article> articles = jsonData.map((dynamic item) => Article.fromJson(item)).toList();
+      return articles;
+    } else {
+      throw Exception('Failed to load articles');
+    }
+  }
+  static Future<User> fetchAuthenticatedUser() async {
+    final accessToken = await getAccessToken();
+    const url = 'https://qiita.com/api/v2/authenticated_user';
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      final dynamic jsonData = json.decode(response.body);
+      User user = User.fromJson(jsonData as Map<String,
+          dynamic>); //型チェック！Map<String, dynamic>かどうか判定する。
+      return user;
+    } else {
+      throw Exception('Failed to load user');
+    }
   }
 }

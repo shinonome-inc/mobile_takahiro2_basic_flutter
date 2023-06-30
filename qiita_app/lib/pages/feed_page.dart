@@ -123,7 +123,7 @@ class FeedPageState extends State<FeedPage> {
                     itemBuilder: (BuildContext context, int index) {
                       // childLoadingIndicatorがtrueで、かつindexが0の場合、ローディングインジケーターを表示
                       if (index < snapshot.data!.length) {
-                        return ArticleGestureDetector(article: snapshot.data![index]);
+                        return ArticleGestureDetector(article: snapshot.data![index],onLoadingChanged: _setLoading);
                       } else if(childLoadingIndicator) {
                         // ローディングインジケーターを表示するウィジェットを返す
                         return const Center(child: CupertinoActivityIndicator(
