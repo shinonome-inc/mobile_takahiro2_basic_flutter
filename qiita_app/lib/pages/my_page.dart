@@ -20,7 +20,7 @@ class MyPage extends StatefulWidget {
 
 class _MyPageState extends State<MyPage> {
   Future<User>? user;
-  late Future<List<Article>> articles;
+  late Future<List<Article>> articles=Future.value([]);
   final int _currentPage = 1;
   String userId = "";
   final ScrollController _scrollController = ScrollController();
@@ -29,10 +29,9 @@ class _MyPageState extends State<MyPage> {
   bool onRefresh = false;
 
   @override
-  void initState() {//ユーザーがログインしていない時には、userを取得することができなので、永遠にローディングが表示される。
+  void initState() {
     super.initState();
     _setLoading(true);
-    articles = Future.value([]);
     checkUser();
     if(noLoginUser){
       _setLoading(false);
@@ -107,7 +106,7 @@ class _MyPageState extends State<MyPage> {
 
   void _scrollListener() {
     if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-      //下までスクロールした時の記述を追加する
+      //下までスクロールした時の記述を追加
     }
   }
 
@@ -123,7 +122,6 @@ class _MyPageState extends State<MyPage> {
         color: Colors.grey,
         onRefresh: () async {
           refresh();
-          // リフレッシュ時の処理を実装するTODO
         },
         child: ListView(
           children: [
