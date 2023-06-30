@@ -47,25 +47,32 @@ class FeedPageState extends State<FeedPage> {
     });
   }
   void _setChildLoading(bool value) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        childLoadingIndicator = value;
+    if (mounted) { // mountedプロパティのチェック
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          childLoadingIndicator = value;
+        });
       });
-    });
+    }
   }
 
   void _addScroll() {
-    _setChildLoading(true);
-    _currentPage++;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      QiitaClient.fetchArticle(_searchWord, _currentPage).then((newArticles) {
-        setState(() {
-          articles = articles.then((existingArticles) => [...existingArticles, ...newArticles]);
+    if (mounted) { // mountedプロパティのチェック
+      _setChildLoading(true);
+      _currentPage++;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        QiitaClient.fetchArticle(_searchWord, _currentPage).then((newArticles) {
+          if (mounted) { // mountedプロパティのチェック
+            setState(() {
+              articles = articles.then((existingArticles) => [...existingArticles, ...newArticles]);
+            });
+            _setChildLoading(false);
+          }
         });
-        _setChildLoading(false);
       });
-    });
+    }
   }
+
 
 
   @override

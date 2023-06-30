@@ -36,7 +36,6 @@ class _MyPageState extends State<MyPage> {
   void subInitState() async {
     _setLoading(true);
     checkUser();
-    await user;
     if(noLoginUser){
       _setLoading(false);
     }else{
@@ -64,7 +63,8 @@ class _MyPageState extends State<MyPage> {
     } catch (e) {
       setState(() {
         noLoginUser = true;
-      });
+      }
+      );
     }
   }
 
@@ -158,7 +158,7 @@ class _MyPageState extends State<MyPage> {
                   } else if (snapshot.hasData && snapshot.data != null) {
                     return ListView.separated(
                       controller: _scrollController,
-                      itemCount: snapshot.data!.length + 1, // +1はローディングインジケーターのためのアイテム
+                      itemCount: snapshot.data!.length + 1,
                       itemBuilder: (BuildContext context, int index) {
                         if (index < snapshot.data!.length) {
                           return ArticleGestureDetector(article: snapshot.data![index],onLoadingChanged: _setLoading);
