@@ -25,11 +25,17 @@ class _MyPageState extends State<MyPage> {
   bool showLoadingIndicator = true;
   bool noLoginUser = false;
   bool onRefresh = false;
+  late double deviceHeight;
 
   @override
   void initState() {
     super.initState();
     subInitState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        deviceHeight = MediaQuery.of(context).size.height;
+      });
+    });
   }
 
   void subInitState() async {
@@ -153,8 +159,8 @@ class _MyPageState extends State<MyPage> {
                       ),
                       SizedBox(
                         height: onRefresh
-                            ? MediaQuery.of(context).size.height - 498
-                            : MediaQuery.of(context).size.height - 448,
+                            ? deviceHeight - 498
+                            : deviceHeight - 448,
                         child: FutureBuilder<List<Article>>(
                           future: articles,
                           builder: (BuildContext context,
