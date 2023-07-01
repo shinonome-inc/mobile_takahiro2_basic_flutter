@@ -31,16 +31,13 @@ class _MyPageState extends State<MyPage> {
   void initState() {
     super.initState();
     subInitState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        deviceHeight = MediaQuery.of(context).size.height;
-      });
-    });
+
   }
 
   void subInitState() async {
     _setLoading(true);
     checkUser();
+    getDeviceHeight();
     if (noLoginUser) {
       _setLoading(false);
     } else {
@@ -58,6 +55,17 @@ class _MyPageState extends State<MyPage> {
       onRefresh = true;
     });
   }
+
+  void getDeviceHeight() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        deviceHeight = MediaQuery.of(context).size.height;
+      });
+    });
+
+  }
+
+
 
   void checkUser() async {
     try {
