@@ -7,7 +7,7 @@ import 'package:qiita_app/services/repository.dart';
 import '../components/article_gesture_detector.dart';
 import '../components/network_error.dart';
 import '../components/no_match.dart';
-//gitの練習
+//
 class FeedPage extends StatefulWidget {
   const FeedPage({Key? key}) : super(key: key);
 
