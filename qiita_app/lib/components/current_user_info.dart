@@ -80,8 +80,6 @@ class CurrentUserInfo extends StatelessWidget {
                     ),
                   ],
                 ),
-
-
               ),
             ],
           ),
@@ -94,7 +92,8 @@ class CurrentUserInfo extends StatelessWidget {
                       color: const Color(0xFFF2F2F2),
                       height: 28,
                       child: const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 13),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 5, horizontal: 13),
                         child: Text(
                           "記事投稿",
                           style: TextStyle(

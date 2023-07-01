@@ -9,8 +9,7 @@ class NoLogin extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white, // 全体の背景色を白に設定
-      body:
-      Column(
+      body: Column(
         children: [
           Expanded(
             flex: 8,
@@ -57,7 +56,8 @@ class NoLogin extends StatelessWidget {
                   return SizedBox(
                     height: MediaQuery.of(context).size.height * 0.9,
                     child: const WebView(
-                      url: 'https://qiita.com/api/v2/oauth/authorize?client_id=${QiitaAuthKey.clientId}&scope=read_qiita',
+                      url:
+                          'https://qiita.com/api/v2/oauth/authorize?client_id=${QiitaAuthKey.clientId}&scope=read_qiita',
                     ),
                   );
                 },
@@ -66,7 +66,8 @@ class NoLogin extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
               backgroundColor: const Color.fromRGBO(70, 131, 1, 1),
-              padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 130.0),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 14.0, horizontal: 130.0),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20.0),
               ),

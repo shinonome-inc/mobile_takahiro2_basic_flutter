@@ -6,6 +6,7 @@ import 'default_app_bar.dart.dart';
 
 class WebView extends StatefulWidget {
   final String url;
+
   const WebView({Key? key, required this.url}) : super(key: key);
 
   @override
@@ -17,6 +18,7 @@ class _WebViewState extends State<WebView> {
   double? pageHeight;
   bool isLoading = true;
   String redirect = Url.require_redirect;
+
   Future<void> calculateWebViewHeight(String url) async {
     const String javaScript = 'document.documentElement.scrollHeight;';
     final result = await controller.runJavaScriptReturningResult(javaScript);
@@ -27,19 +29,15 @@ class _WebViewState extends State<WebView> {
   }
 
   void onPageFinished(String url, {required WebViewController controller}) {
-    final bool redirectUrl =
-    url.contains(redirect);
+    final bool redirectUrl = url.contains(redirect);
     if (redirectUrl) {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => TopPage(redirecturl: url)),
-            (route) => false,
+        (route) => false,
       );
-
     }
   }
-
-
 
   void _setLoading(bool value) {
     setState(() {
@@ -76,12 +74,11 @@ class _WebViewState extends State<WebView> {
               height: pageHeight ?? MediaQuery.of(context).size.height * 0.9,
               child: !isLoading
                   ? WebViewWidget(
-                controller: controller,
-              )
+                      controller: controller,
+                    )
                   : const Center(
-                child: CircularProgressIndicator(),
-              )
-          ),
+                      child: CircularProgressIndicator(),
+                    )),
         ),
       ),
     );

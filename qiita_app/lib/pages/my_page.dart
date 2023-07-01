@@ -18,11 +18,11 @@ class MyPage extends StatefulWidget {
 
 class _MyPageState extends State<MyPage> {
   Future<User>? user;
-  late Future<List<Article>> articles=Future.value([]);
+  late Future<List<Article>> articles = Future.value([]);
   final int _currentPage = 1;
   String userId = "";
   final ScrollController _scrollController = ScrollController();
-  bool showLoadingIndicator =true;
+  bool showLoadingIndicator = true;
   bool noLoginUser = false;
   bool onRefresh = false;
 
@@ -32,13 +32,12 @@ class _MyPageState extends State<MyPage> {
     subInitState();
   }
 
-
   void subInitState() async {
     _setLoading(true);
     checkUser();
-    if(noLoginUser){
+    if (noLoginUser) {
       _setLoading(false);
-    }else{
+    } else {
       _scrollController.addListener(_scrollListener);
       setAuthArticle();
       await articles;
@@ -48,9 +47,9 @@ class _MyPageState extends State<MyPage> {
     }
   }
 
-  void refresh(){
+  void refresh() {
     setState(() {
-      onRefresh=true;
+      onRefresh = true;
     });
   }
 
@@ -63,17 +62,15 @@ class _MyPageState extends State<MyPage> {
     } catch (e) {
       setState(() {
         noLoginUser = true;
-      }
-      );
+      });
     }
   }
 
-  void setNoLogin(){
+  void setNoLogin() {
     setState(() {
-      noLoginUser=true;
+      noLoginUser = true;
     });
   }
-
 
   void _setLoading(bool value) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -82,6 +79,7 @@ class _MyPageState extends State<MyPage> {
       });
     });
   }
+
   void setAuthUser(User value) {
     setState(() {
       user = Future.value(value);
@@ -104,16 +102,16 @@ class _MyPageState extends State<MyPage> {
     super.dispose();
   }
 
-  getRefresh()async{
+  getRefresh() async {
     setState(() {
       user = QiitaClient.fetchAuthenticatedUser();
     });
     setAuthArticle();
   }
 
-
   void _scrollListener() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
       debugPrint("下までスクロールされました");
     }
   }
@@ -123,65 +121,78 @@ class _MyPageState extends State<MyPage> {
     return Scaffold(
       appBar: const DefaultAppBar(text: 'MyPage'),
       body: showLoadingIndicator
-          ? const Center(child: CircularProgressIndicator(color: Colors.grey,))
+          ? const Center(
+              child: CircularProgressIndicator(
+              color: Colors.grey,
+            ))
           : noLoginUser
-          ? const NoLogin()
-          : RefreshIndicator(
-        color: Colors.grey,
-        onRefresh: () async {
-          refresh();
-        },
-        child: ListView(
-          children: [
-            FutureBuilder<User>(
-              future: user,
-              builder: (context, snapshot) {
-                if (snapshot.hasData && snapshot.data != null) {
-                  if(onRefresh){
-                    return CurrentUserInfo(user: snapshot.data);
-                  }
-                  return NoRefresh(user: snapshot.data);
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Failed to load user: ${snapshot.error}'));
-                } else {
-                  return const SizedBox();
-                }
-              },
-            ),
-            SizedBox(
-              height: onRefresh ?MediaQuery.of(context).size.height-468 :MediaQuery.of(context).size.height-418,
-              child: FutureBuilder<List<Article>>(
-                future: articles,
-                builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
-                  if (snapshot.hasError) {
-                    return Center(child: Text('Failed to load articles: ${snapshot.error}'));
-                  } else if (snapshot.hasData && snapshot.data != null) {
-                    return ListView.separated(
-                      controller: _scrollController,
-                      itemCount: snapshot.data!.length + 1,
-                      itemBuilder: (BuildContext context, int index) {
-                        if (index < snapshot.data!.length) {
-                          return ArticleGestureDetector(article: snapshot.data![index],onLoadingChanged: _setLoading);
-                        } else {
-                          return const SizedBox();
-                        }
-                      },
-                      separatorBuilder: (BuildContext context, int index) => const Divider(
-                        indent: 70.0,
-                        height: 0.5,
+              ? const NoLogin()
+              : RefreshIndicator(
+                  color: Colors.grey,
+                  onRefresh: () async {
+                    refresh();
+                  },
+                  child: ListView(
+                    children: [
+                      FutureBuilder<User>(
+                        future: user,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData && snapshot.data != null) {
+                            if (onRefresh) {
+                              return CurrentUserInfo(user: snapshot.data);
+                            }
+                            return NoRefresh(user: snapshot.data);
+                          } else if (snapshot.hasError) {
+                            return Center(
+                                child: Text(
+                                    'Failed to load user: ${snapshot.error}'));
+                          } else {
+                            return const SizedBox();
+                          }
+                        },
                       ),
-                    );
-                  } else {
-                    return const SizedBox();
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
+                      SizedBox(
+                        height: onRefresh
+                            ? MediaQuery.of(context).size.height - 498
+                            : MediaQuery.of(context).size.height - 448,
+                        child: FutureBuilder<List<Article>>(
+                          future: articles,
+                          builder: (BuildContext context,
+                              AsyncSnapshot<List<Article>> snapshot) {
+                            if (snapshot.hasError) {
+                              return Center(
+                                  child: Text(
+                                      'Failed to load articles: ${snapshot.error}'));
+                            } else if (snapshot.hasData &&
+                                snapshot.data != null) {
+                              return ListView.separated(
+                                controller: _scrollController,
+                                itemCount: snapshot.data!.length + 1,
+                                itemBuilder: (BuildContext context, int index) {
+                                  if (index < snapshot.data!.length) {
+                                    return ArticleGestureDetector(
+                                        article: snapshot.data![index],
+                                        onLoadingChanged: _setLoading);
+                                  } else {
+                                    return const SizedBox();
+                                  }
+                                },
+                                separatorBuilder:
+                                    (BuildContext context, int index) =>
+                                        const Divider(
+                                  indent: 70.0,
+                                  height: 0.5,
+                                ),
+                              );
+                            } else {
+                              return const SizedBox();
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
     );
   }
-
 }
-

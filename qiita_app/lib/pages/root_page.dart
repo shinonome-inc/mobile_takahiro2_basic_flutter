@@ -4,15 +4,12 @@ import 'tag_page.dart';
 import 'my_page.dart';
 import 'setting_page.dart';
 
-
-
 class RootPage extends StatefulWidget {
   const RootPage({Key? key}) : super(key: key);
 
   @override
   BottomNavigationPageState createState() => BottomNavigationPageState();
 }
-
 
 class BottomNavigationPageState extends State<RootPage> {
   int _selectedIndex = 0;

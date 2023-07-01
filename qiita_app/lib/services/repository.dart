@@ -5,7 +5,6 @@ import 'package:qiita_app/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../qiita_auth_key.dart';
 
-
 class QiitaClient {
   static Map<String, String> authorizationRequestHeader = {};
 
@@ -14,8 +13,8 @@ class QiitaClient {
         'https://qiita.com/api/v2/items?page=$page&per_page=20&query=body:$searchWord'));
     if (response.statusCode == 200) {
       final List<dynamic> jsonArray = json.decode(response.body);
-      List<Article> articles = jsonArray.map((json) => Article.fromJson(json))
-          .toList();
+      List<Article> articles =
+          jsonArray.map((json) => Article.fromJson(json)).toList();
       return articles;
     } else {
       throw Exception('Failed to load articles');
@@ -39,8 +38,8 @@ class QiitaClient {
       }),
     );
     if (response.statusCode == 201) {
-      final body = json.decode(response.body) as Map<String,
-          dynamic>; //Json形式に変換
+      final body =
+          json.decode(response.body) as Map<String, dynamic>; //Json形式に変換
       final String accessToken = body["token"].toString();
       authorizationRequestHeader = {
         'Authorization': 'Bearer $accessToken',
@@ -61,10 +60,10 @@ class QiitaClient {
     return prefs.getString('keyAccessToken');
   }
 
-
   static Future<List<Article>> fetchAuthArticle(int page, String userId) async {
     final accessToken = await getAccessToken();
-    final url = 'https://qiita.com/api/v2/items?page=$page&per_page=20&query=user:$userId';
+    final url =
+        'https://qiita.com/api/v2/items?page=$page&per_page=20&query=user:$userId';
     final response = await http.get(
       Uri.parse(url),
       headers: {
@@ -74,12 +73,14 @@ class QiitaClient {
 
     if (response.statusCode == 200) {
       final List<dynamic> jsonData = json.decode(response.body);
-      final List<Article> articles = jsonData.map((dynamic item) => Article.fromJson(item)).toList();
+      final List<Article> articles =
+          jsonData.map((dynamic item) => Article.fromJson(item)).toList();
       return articles;
     } else {
       throw Exception('Failed to load articles');
     }
   }
+
   static Future<User> fetchAuthenticatedUser() async {
     final accessToken = await getAccessToken();
     const url = 'https://qiita.com/api/v2/authenticated_user';
@@ -91,8 +92,8 @@ class QiitaClient {
     );
     if (response.statusCode == 200) {
       final dynamic jsonData = json.decode(response.body);
-      User user = User.fromJson(jsonData as Map<String,
-          dynamic>); //型チェック！Map<String, dynamic>かどうか判定する。
+      User user = User.fromJson(jsonData
+          as Map<String, dynamic>); //型チェック！Map<String, dynamic>かどうか判定する。
       return user;
     } else {
       throw Exception('Failed to load user');
