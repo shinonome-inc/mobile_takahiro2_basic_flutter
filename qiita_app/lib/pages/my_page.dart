@@ -114,7 +114,7 @@ class _MyPageState extends State<MyPage> {
 
   void _scrollListener() {
     if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-      //下までスクロールした時の記述を追加
+      debugPrint("下までスクロールされました");
     }
   }
 
@@ -149,7 +149,7 @@ class _MyPageState extends State<MyPage> {
               },
             ),
             SizedBox(
-              height: 561,
+              height: onRefresh ?MediaQuery.of(context).size.height-468 :MediaQuery.of(context).size.height-418,
               child: FutureBuilder<List<Article>>(
                 future: articles,
                 builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {

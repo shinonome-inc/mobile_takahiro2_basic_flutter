@@ -16,7 +16,7 @@ class NoRefresh extends StatelessWidget {
             children: [
               const SizedBox(width: 24),
               SizedBox(
-                height: 234,
+                height: 223,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,

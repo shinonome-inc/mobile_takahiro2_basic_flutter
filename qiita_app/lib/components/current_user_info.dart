@@ -16,7 +16,7 @@ class CurrentUserInfo extends StatelessWidget {
             children: [
               const SizedBox(width: 24),
               SizedBox(
-                height: 258,
+                height: 273,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -80,6 +80,8 @@ class CurrentUserInfo extends StatelessWidget {
                     ),
                   ],
                 ),
+
+
               ),
             ],
           ),

@@ -96,6 +96,7 @@ class FeedPageState extends State<FeedPage> {
   void _scrollListener() {
     if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
       _addScroll();
+      debugPrint("下までスクロールされました");
     }
   }
 
