@@ -104,7 +104,7 @@ class _MyPageState extends State<MyPage> {
     final resolvedUser = await user;
     if (resolvedUser != null) {
       setState(() {
-        articles = QiitaClient.fetchArticle("", _currentPage);
+        articles = QiitaClient.fetchAuthArticle(_currentPage, resolvedUser.id);
       });
     }
   }
@@ -130,80 +130,87 @@ class _MyPageState extends State<MyPage> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const DefaultAppBar(text: 'MyPage'),
-      body: Column(
-        children: [
-          Expanded(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                double myPageHeight = constraints.maxHeight;
-                return Column(
-                  children: [
-                    FutureBuilder<User>(
-                      future: user,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData && snapshot.data != null) {
-                          if (onRefresh) {
-                            return CurrentUserInfo(user: snapshot.data);
-                          }
-                          return NoRefresh(user: snapshot.data);
-                        } else if (snapshot.hasError) {
-                          return Center(
-                              child: Text(
-                                  'Failed to load user: ${snapshot.error}'));
-                        } else {
-                          return const SizedBox();
-                        }
-                      },
+      body: Container(
+        color: Colors.grey,
+        child: Column(
+          children: [
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  double myPageHeight = constraints.maxHeight;
+                  return Container(
+                    color: Colors.blue,
+                    child: Column(
+                      children: [
+                        FutureBuilder<User>(
+                          future: user,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData && snapshot.data != null) {
+                              if (onRefresh) {
+                                return CurrentUserInfo(user: snapshot.data);
+                              }
+                              return NoRefresh(user: snapshot.data);
+                            } else if (snapshot.hasError) {
+                              return Center(
+                                  child: Text(
+                                      'Failed to load user: ${snapshot.error}'));
+                            } else {
+                              return const SizedBox();
+                            }
+                          },
+                        ),
+                        SizedBox(
+                          height: onRefresh
+                              ? myPageHeight - 498
+                              : myPageHeight - 251,
+                          child: FutureBuilder<List<Article>>(
+                            future: articles,
+                            builder: (BuildContext context,
+                                AsyncSnapshot<List<Article>> snapshot) {
+                              if (snapshot.hasError) {
+                                return Center(
+                                    child: Text(
+                                        'Failed to load articles: ${snapshot.error}'));
+                              } else if (snapshot.hasData &&
+                                  snapshot.data != null) {
+                                return ListView.separated(
+                                  controller: _scrollController,
+                                  itemCount: snapshot.data!.length + 1,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    if (index < snapshot.data!.length) {
+                                      return ArticleGestureDetector(
+                                          article: snapshot.data![index],
+                                          onLoadingChanged: _setLoading);
+                                    } else {
+                                      return const SizedBox();
+                                    }
+                                  },
+                                  separatorBuilder:
+                                      (BuildContext context, int index) =>
+                                  const Divider(
+                                    indent: 70.0,
+                                    height: 0.5,
+                                  ),
+                                );
+                              } else {
+                                return const SizedBox();
+                              }
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(
-                      height: onRefresh
-                          ? myPageHeight - 498
-                          : myPageHeight - 262,
-                      child: FutureBuilder<List<Article>>(
-                        future: articles,
-                        builder: (BuildContext context,
-                            AsyncSnapshot<List<Article>> snapshot) {
-                          if (snapshot.hasError) {
-                            return Center(
-                                child: Text(
-                                    'Failed to load articles: ${snapshot.error}'));
-                          } else if (snapshot.hasData &&
-                              snapshot.data != null) {
-                            return ListView.separated(
-                              controller: _scrollController,
-                              itemCount: snapshot.data!.length + 1,
-                              itemBuilder: (BuildContext context, int index) {
-                                if (index < snapshot.data!.length) {
-                                  return ArticleGestureDetector(
-                                      article: snapshot.data![index],
-                                      onLoadingChanged: _setLoading);
-                                } else {
-                                  return const SizedBox();
-                                }
-                              },
-                              separatorBuilder:
-                                  (BuildContext context, int index) =>
-                              const Divider(
-                                indent: 70.0,
-                                height: 0.5,
-                              ),
-                            );
-                          } else {
-                            return const SizedBox();
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
