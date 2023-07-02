@@ -7,7 +7,8 @@ import 'package:qiita_app/services/repository.dart';
 import '../components/article_gesture_detector.dart';
 import '../components/network_error.dart';
 import '../components/no_match.dart';
-//aa
+
+//
 class FeedPage extends StatefulWidget {
   const FeedPage({Key? key}) : super(key: key);
 
@@ -29,16 +30,17 @@ class FeedPageState extends State<FeedPage> {
     });
   }
 
-  Future<void> _searchArticle(String search)async{
+  Future<void> _searchArticle(String search) async {
     _setChildLoading(true);
     setState(() {
-      _searchWord=search;
+      _searchWord = search;
       _currentPage = 1;
     });
-    final results = await QiitaClient.fetchArticle(_searchWord,_currentPage);
+    final results = await QiitaClient.fetchArticle(_searchWord, _currentPage);
     _setArticles(results);
     _setChildLoading(false);
   }
+
   void _setLoading(bool value) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
@@ -46,34 +48,45 @@ class FeedPageState extends State<FeedPage> {
       });
     });
   }
+
   void _setChildLoading(bool value) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        childLoadingIndicator = value;
+    if (mounted) {
+      // mountedプロパティのチェック
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          childLoadingIndicator = value;
+        });
       });
-    });
+    }
   }
 
   void _addScroll() {
-    _setChildLoading(true);
-    _currentPage++;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      QiitaClient.fetchArticle(_searchWord, _currentPage).then((newArticles) {
-        setState(() {
-          articles = articles.then((existingArticles) => [...existingArticles, ...newArticles]);
+    if (mounted) {
+      // mountedプロパティのチェック
+      _setChildLoading(true);
+      _currentPage++;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        QiitaClient.fetchArticle(_searchWord, _currentPage).then((newArticles) {
+          if (mounted) {
+            // mountedプロパティのチェック
+            setState(() {
+              articles = articles.then(
+                  (existingArticles) => [...existingArticles, ...newArticles]);
+            });
+            _setChildLoading(false);
+          }
         });
-        _setChildLoading(false);
       });
-    });
+    }
   }
-
 
   @override
   void initState() {
     super.initState();
     _setLoading(true);
     _scrollController.addListener(_scrollListener);
-    articles = QiitaClient.fetchArticle(_searchWord,_currentPage).then((value) {
+    articles =
+        QiitaClient.fetchArticle(_searchWord, _currentPage).then((value) {
       _setLoading(false);
       return value;
     });
@@ -87,8 +100,10 @@ class FeedPageState extends State<FeedPage> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
       _addScroll();
+      debugPrint("下までスクロールされました");
     }
   }
 
@@ -103,7 +118,8 @@ class FeedPageState extends State<FeedPage> {
         body: Center(
           child: FutureBuilder<List<Article>>(
             future: articles,
-            builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
+            builder:
+                (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
               if (showLoadingIndicator) {
                 return const CircularProgressIndicator(
                   color: Colors.grey,
@@ -119,20 +135,26 @@ class FeedPageState extends State<FeedPage> {
                   },
                   child: ListView.separated(
                     controller: _scrollController,
-                    itemCount: snapshot.data!.length + 1, // +1はローディングインジケーターのためのアイテム
+                    itemCount: snapshot.data!.length + 1,
+                    // +1はローディングインジケーターのためのアイテム
                     itemBuilder: (BuildContext context, int index) {
-                        // childLoadingIndicatorがtrueで、かつindexが0の場合、ローディングインジケーターを表示
+                      // childLoadingIndicatorがtrueで、かつindexが0の場合、ローディングインジケーターを表示
                       if (index < snapshot.data!.length) {
-                        return ArticleGestureDetector(article: snapshot.data![index]);
-                      } else if(childLoadingIndicator) {
+                        return ArticleGestureDetector(
+                            article: snapshot.data![index],
+                            onLoadingChanged: _setLoading);
+                      } else if (childLoadingIndicator) {
                         // ローディングインジケーターを表示するウィジェットを返す
-                        return const Center(child: CupertinoActivityIndicator(
-                            radius: 20.0, color: CupertinoColors.inactiveGray,
+                        return const Center(
+                            child: CupertinoActivityIndicator(
+                          radius: 20.0,
+                          color: CupertinoColors.inactiveGray,
                         ));
                       }
                       return null;
                     },
-                    separatorBuilder: (BuildContext context, int index) => const Divider(
+                    separatorBuilder: (BuildContext context, int index) =>
+                        const Divider(
                       indent: 70.0,
                       height: 0.5,
                     ),
@@ -153,4 +175,3 @@ class FeedPageState extends State<FeedPage> {
     );
   }
 }
-

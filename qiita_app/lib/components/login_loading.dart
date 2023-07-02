@@ -7,8 +7,7 @@ class LoginLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:
-      Stack(
+      body: Stack(
         children: [
           Container(
             decoration: const BoxDecoration(
@@ -19,7 +18,8 @@ class LoginLoading extends StatelessWidget {
             ),
           ),
           ColorFiltered(
-            colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
+            colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(0.2), BlendMode.dstATop),
             child: Container(
               decoration: const BoxDecoration(
                 color: Colors.black,
@@ -31,8 +31,7 @@ class LoginLoading extends StatelessWidget {
               children: [
                 Expanded(
                   flex: 6,
-                  child: Container(
-                  ),
+                  child: Container(),
                 ),
                 const Text(
                   'Qiita Feed App',
@@ -52,20 +51,19 @@ class LoginLoading extends StatelessWidget {
                 ),
                 Expanded(
                   flex: 8,
-                  child: Container(
-                  ),
+                  child: Container(),
                 ),
                 Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       ElevatedButton(
-                        onPressed: () {
-                        },
+                        onPressed: () {},
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
                           backgroundColor: const Color.fromRGBO(70, 131, 1, 1),
-                          padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 130.0),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 14.0, horizontal: 130.0),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20.0),
                           ),
@@ -86,8 +84,7 @@ class LoginLoading extends StatelessWidget {
                   height: 15,
                 ),
                 TextButton(
-                  onPressed: () {
-                  },
+                  onPressed: () {},
                   child: const Text(
                     'ログインせずに利用する',
                     style: TextStyle(
@@ -99,23 +96,25 @@ class LoginLoading extends StatelessWidget {
                 ),
                 Expanded(
                   flex: 2,
-                  child: Container(
-                  ),
+                  child: Container(),
                 ),
               ],
             ),
           ),
           ColorFiltered(
-            colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
+            colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(0.2), BlendMode.dstATop),
             child: Container(
               decoration: const BoxDecoration(
                 color: Colors.black,
               ),
             ),
           ),
-    const Center(child: CupertinoActivityIndicator(
-    radius: 20.0, color: Colors.white,
-    )),
+          const Center(
+              child: CupertinoActivityIndicator(
+            radius: 20.0,
+            color: Colors.white,
+          )),
         ],
       ),
     );

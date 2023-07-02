@@ -13,7 +13,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       elevation: 0.0,
       toolbarHeight: 84,
-      backgroundColor:Colors.white,
+      backgroundColor: Colors.white,
       automaticallyImplyLeading: false,
       title: Text(
         text,
