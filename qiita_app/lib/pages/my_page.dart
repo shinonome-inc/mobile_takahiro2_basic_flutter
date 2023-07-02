@@ -1,11 +1,7 @@
 import 'dart:async';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qiita_app/components/article_gesture_detector.dart';
 import 'package:qiita_app/components/current_user_info.dart';
-import 'package:qiita_app/components/network_error.dart';
-import 'package:qiita_app/components/no_login.dart';
 import 'package:qiita_app/components/no_refresh.dart';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:qiita_app/services/repository.dart';
@@ -21,33 +17,55 @@ class MyPage extends StatefulWidget {
 
 class _MyPageState extends State<MyPage> {
   Future<User>? user;
-  late Future<List<Article>> articles=Future.value([]);
+  late Future<List<Article>> articles = Future.value([]);
   final int _currentPage = 1;
   String userId = "";
   final ScrollController _scrollController = ScrollController();
-  bool showLoadingIndicator = false;
+  bool showLoadingIndicator = true;
   bool noLoginUser = false;
   bool onRefresh = false;
+  late double deviceHeight;
+  late double myPageHeight;
 
   @override
   void initState() {
     super.initState();
+    subInitState();
+
+  }
+
+  void subInitState() async {
     _setLoading(true);
     checkUser();
-    if(noLoginUser){
+    getDeviceHeight();
+    if (noLoginUser) {
       _setLoading(false);
-    }else{
+    } else {
       _scrollController.addListener(_scrollListener);
       setAuthArticle();
-        debugPrint(user.toString());
-        _setLoading(false);
-      }
+      await articles;
+      debugPrint(user.toString());
+      debugPrint(articles.toString());
+      _setLoading(false);
     }
-  void refresh(){
+  }
+
+  void refresh() {
     setState(() {
-      onRefresh=true;
+      onRefresh = true;
     });
   }
+
+  void getDeviceHeight() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        deviceHeight = MediaQuery.of(context).size.height;
+      });
+    });
+
+  }
+
+
 
   void checkUser() async {
     try {
@@ -62,19 +80,20 @@ class _MyPageState extends State<MyPage> {
     }
   }
 
-  void setNoLogin(){
-      setState(() {
-        noLoginUser=true;
-      });
-  }
-
-
-
-  void _setLoading(bool value) {
+  void setNoLogin() {
     setState(() {
-      showLoadingIndicator = value;
+      noLoginUser = true;
     });
   }
+
+  void _setLoading(bool value) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        showLoadingIndicator = value;
+      });
+    });
+  }
+
   void setAuthUser(User value) {
     setState(() {
       user = Future.value(value);
@@ -85,7 +104,7 @@ class _MyPageState extends State<MyPage> {
     final resolvedUser = await user;
     if (resolvedUser != null) {
       setState(() {
-        articles = QiitaClient.fetchAuthArticle(_currentPage, resolvedUser.id);
+        articles = QiitaClient.fetchArticle("", _currentPage);
       });
     }
   }
@@ -97,17 +116,17 @@ class _MyPageState extends State<MyPage> {
     super.dispose();
   }
 
-  getRefresh()async{
+  getRefresh() async {
     setState(() {
       user = QiitaClient.fetchAuthenticatedUser();
     });
     setAuthArticle();
   }
 
-
   void _scrollListener() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-      //下までスクロールした時の記述を追加
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      debugPrint("下までスクロールされました");
     }
   }
 
@@ -115,81 +134,80 @@ class _MyPageState extends State<MyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const DefaultAppBar(text: 'MyPage'),
-      body: showLoadingIndicator
-          ? const Center(child: CupertinoActivityIndicator(radius: 20.0, color: CupertinoColors.inactiveGray))
-          : noLoginUser
-          ? const NoLogin()
-          : RefreshIndicator(
-        color: Colors.grey,
-        onRefresh: () async {
-          refresh();
-        },
-        child: ListView(
-          children: [
-            FutureBuilder<User>(
-              future: user,
-              builder: (context, snapshot) {
-                if (snapshot.hasData && snapshot.data != null) {
-                  if(onRefresh){
-                    return CurrentUserInfo(user: snapshot.data);
-                  }
-                  return NoRefresh(user: snapshot.data);
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Failed to load user: ${snapshot.error}'));
-                } else {
-                  return const NetworkError();
-                }
+      body: Column(
+        children: [
+          Expanded(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                double myPageHeight = constraints.maxHeight;
+                return Column(
+                  children: [
+                    FutureBuilder<User>(
+                      future: user,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData && snapshot.data != null) {
+                          if (onRefresh) {
+                            return CurrentUserInfo(user: snapshot.data);
+                          }
+                          return NoRefresh(user: snapshot.data);
+                        } else if (snapshot.hasError) {
+                          return Center(
+                              child: Text(
+                                  'Failed to load user: ${snapshot.error}'));
+                        } else {
+                          return const SizedBox();
+                        }
+                      },
+                    ),
+                    SizedBox(
+                      height: onRefresh
+                          ? myPageHeight - 498
+                          : myPageHeight - 262,
+                      child: FutureBuilder<List<Article>>(
+                        future: articles,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<List<Article>> snapshot) {
+                          if (snapshot.hasError) {
+                            return Center(
+                                child: Text(
+                                    'Failed to load articles: ${snapshot.error}'));
+                          } else if (snapshot.hasData &&
+                              snapshot.data != null) {
+                            return ListView.separated(
+                              controller: _scrollController,
+                              itemCount: snapshot.data!.length + 1,
+                              itemBuilder: (BuildContext context, int index) {
+                                if (index < snapshot.data!.length) {
+                                  return ArticleGestureDetector(
+                                      article: snapshot.data![index],
+                                      onLoadingChanged: _setLoading);
+                                } else {
+                                  return const SizedBox();
+                                }
+                              },
+                              separatorBuilder:
+                                  (BuildContext context, int index) =>
+                              const Divider(
+                                indent: 70.0,
+                                height: 0.5,
+                              ),
+                            );
+                          } else {
+                            return const SizedBox();
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                );
               },
             ),
-
-
-            SizedBox(
-              height: 561,
-              child: ListView.builder(
-                itemCount: 50,
-                itemBuilder: (BuildContext context, int index) {
-                  return FutureBuilder<List<Article>>(
-                    future: articles,
-                    builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
-                      if (snapshot.hasError) {
-                        return Center(child: Text('Failed to load articles: ${snapshot.error}'));
-                      } else if (snapshot.hasData && snapshot.data != null) {
-                        return ListView.separated(
-                          controller: _scrollController,
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return ArticleGestureDetector(article: snapshot.data![index]);
-                          },
-                          separatorBuilder: (BuildContext context, int index) => const Divider(
-                            indent: 70.0,
-                            height: 0.5,
-                          ),
-                        );
-                      } else {
-                        return const NetworkError();
-                      }
-                    },
-                  );
-                },
-              ),
-            ),
-
-
-
-
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
-
 }
-
-
-
-
-
-
 
 
 
