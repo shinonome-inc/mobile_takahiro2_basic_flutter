@@ -157,76 +157,69 @@ class _MyPageState extends State<MyPage> {
       body: showLoadingIndicator
           ? const Center(child: CircularProgressIndicator(color: Colors.grey,))
           : netError
-          ?const NetworkError()
+          ? const NetworkError()
           : noLoginUser
-              ? const NoLogin()
-              : Center(
-                    child: ListView(
-                      children: [
-                        FutureBuilder<User>(
-                          future: user,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting){
-                              _setLoading(true);
-                              return const SizedBox();
-                            }
-                            else if (snapshot.hasData && snapshot.data != null) {
-                              _setLoading(false);
-                              if (onRefresh) {
-                                return CurrentUserInfo(user: snapshot.data);
-                              }
-                              return NoRefresh(user: snapshot.data);
-                            } else if (snapshot.hasError) {
-                              return Center(
-                                  child: Text(
-                                      'Failed to load user: ${snapshot.error}'));
-                            } else {
-                              return const NetworkError();
-                            }
-                          },
-                        ),
-                        SizedBox(
-                          height: onRefresh
-                              ? deviceHeight - 498
-                              : deviceHeight - 448,
-                          child: FutureBuilder<List<Article>>(
-                            future: articles,
-                            builder: (BuildContext context,
-                                AsyncSnapshot<List<Article>> snapshot) {
-                              if (snapshot.hasError) {
-                                return Center(
-                                    child: Text(
-                                        'Failed to load articles: ${snapshot.error}'));
-                              } else if (snapshot.hasData &&
-                                  snapshot.data != null) {
-                                return ListView.separated(
-                                  controller: _scrollController,
-                                  itemCount: snapshot.data!.length + 1,
-                                  itemBuilder: (BuildContext context, int index) {
-                                    if (index < snapshot.data!.length) {
-                                      return ArticleGestureDetector(
-                                          article: snapshot.data![index],
-                                          onLoadingChanged: _setLoading);
-                                    } else {
-                                      return const SizedBox();
-                                    }
-                                  },
-                                  separatorBuilder:
-                                      (BuildContext context, int index) =>
-                                          const Divider(
-                                    indent: 70.0,
-                                    height: 0.5,
-                                  ),
-                                );
-                              } else {
-                                return const NetworkError();
-                              }
-                            },
-                          ),
-                        ),
-                      ],
+          ? const NoLogin()
+          : ListView(
+        children: [
+          Center(
+            child: FutureBuilder<User>(
+              future: user,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator(color: Colors.red);
+                } else if (snapshot.hasData && snapshot.data != null) {
+                  if (onRefresh) {
+                    return CurrentUserInfo(user: snapshot.data);
+                  }
+                  return NoRefresh(user: snapshot.data);
+                } else if (snapshot.hasError) {
+                  return Center(
+                      child: Text('Failed to load user: ${snapshot.error}')
+                  );
+                } else {
+                  return const NetworkError();
+                }
+              },
+            ),
+          ),
+          SizedBox(
+            height: onRefresh ? deviceHeight - 498 : deviceHeight - 448,
+            child: FutureBuilder<List<Article>>(
+              future: articles,
+              builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
+                if (snapshot.hasError) {
+                  return Center(
+                      child: Text('Failed to load articles: ${snapshot.error}')
+                  );
+                } else if (snapshot.hasData && snapshot.data != null) {
+                  return ListView.separated(
+                    controller: _scrollController,
+                    itemCount: snapshot.data!.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index < snapshot.data!.length) {
+                        return ArticleGestureDetector(
+                            article: snapshot.data![index],
+                            onLoadingChanged: _setLoading
+                        );
+                      } else {
+                        return const SizedBox();
+                      }
+                    },
+                    separatorBuilder: (BuildContext context, int index) => const Divider(
+                      indent: 70.0,
+                      height: 0.5,
                     ),
-                  ),
+                  );
+                } else {
+                  return const NetworkError();
+                }
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
+
 }
