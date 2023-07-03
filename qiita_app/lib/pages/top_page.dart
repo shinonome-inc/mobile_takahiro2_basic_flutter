@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:qiita_app/components/login_loading.dart';
 import '../components/web_view.dart';
@@ -20,6 +21,7 @@ class TopPage extends StatefulWidget {
 class _TopPageState extends State<TopPage> {
   bool _isLoading = false;
   Future<String>? accessToken;
+  bool netError = false;
 
   @override
   void initState() {
@@ -36,6 +38,26 @@ class _TopPageState extends State<TopPage> {
         _loginToQiita();
         setLoading(false);
       }
+    });
+  }
+
+  Future<void> checkConnectivityStatus() async {
+    setState(() {});
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      debugPrint('インターネットに接続されていません');
+      setNetError();
+      setLoading(false);
+    } else if (connectivityResult == ConnectivityResult.mobile) {
+      debugPrint('モバイルデータで接続されています');
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      debugPrint('Wi-Fiで接続されています');
+    }
+  }
+
+  void setNetError(){
+    setState(() {
+      netError=true;
     });
   }
 

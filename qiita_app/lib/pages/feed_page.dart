@@ -25,6 +25,7 @@ class FeedPageState extends State<FeedPage> {
   int _currentPage = 1;
   String _searchWord = '';
   bool netError = false;
+  final redirectWidget =const FeedPage();
 
   void _setArticles(List<Article> updatedArticles) {
     setState(() {
@@ -85,20 +86,25 @@ class FeedPageState extends State<FeedPage> {
   @override
   void initState() {
     super.initState();
+    subInitState();
+  }
+
+  Future<void> subInitState()async{
     checkConnectivityStatus();
     getArticle();
+    await articles;
     _scrollController.addListener(_scrollListener);
     _setLoading(false);
   }
 
-  void getArticle()async{
+  Future<void> getArticle()async{
     setState(() {
       articles = QiitaClient.fetchArticle(_searchWord, _currentPage);
     });
-    await articles;
   }
 
-  void checkConnectivityStatus() async {
+  Future<void> checkConnectivityStatus() async {
+    setState(() {});
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
       debugPrint('インターネットに接続されていません');
@@ -131,6 +137,10 @@ class FeedPageState extends State<FeedPage> {
       debugPrint("下までスクロールされました");
     }
   }
+  void setLoading(){
+    setState(() {
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,16 +153,13 @@ class FeedPageState extends State<FeedPage> {
         body: showLoadingIndicator
             ? const Center(child: CircularProgressIndicator(color: Colors.grey,))
             : netError
-            ?const NetworkError()
+            ?NetworkError(redirectWidget:redirectWidget)
             : Center(
           child: FutureBuilder<List<Article>>(
             future: articles,
             builder:
                 (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting){//late article をnullに設定したので、ConnectionState.waitingを追加しました。
-                return const Center(child: CircularProgressIndicator(color: Colors.red,));
-              }
-              else if (snapshot.data == null || snapshot.data!.isEmpty) {
+              if (snapshot.data == null || snapshot.data!.isEmpty) {
                 return const NoMatch();
               } else if (snapshot.hasData) {
                 return RefreshIndicator(

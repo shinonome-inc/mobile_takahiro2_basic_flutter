@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class NetworkError extends StatelessWidget {
-  const NetworkError({Key? key}) : super(key: key);
+  const NetworkError({Key? key,required this.redirectWidget}) : super(key: key);
+  final Widget redirectWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +55,7 @@ class NetworkError extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              //再度表示する関数を呼び出す記述
+              redirectWidget;
             },
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
