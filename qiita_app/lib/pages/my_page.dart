@@ -145,10 +145,6 @@ class _MyPageState extends State<MyPage> {
     }
   }
 
-  void _setStateLoading(){
-    setState(() {});
-    debugPrint("aaa");
-  }
 
   @override
   Widget build(BuildContext context) {
