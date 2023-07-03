@@ -27,12 +27,12 @@ class _TopPageState extends State<TopPage> {
     QiitaClient.getAccessToken().then((String? accessToken) {
       if (accessToken != null) {
         setLoading(true);
-        debugPrint('アクセストークンは$accessTokenです');
+        debugPrint('アクセストークンは$accessToken');
         _navigateToRootPage(context);
         setLoading(false);
       } else if (widget.redirecturl.contains(Url.require_redirect)) {
         setLoading(true);
-        debugPrint('リダイレクトURLは${widget.redirecturl}です');
+        debugPrint('リダイレクトURLは${widget.redirecturl}');
         _loginToQiita();
         setLoading(false);
       }

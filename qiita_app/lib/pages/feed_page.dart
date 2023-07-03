@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qiita_app/components/search_app_bar.dart';
@@ -17,12 +18,13 @@ class FeedPage extends StatefulWidget {
 }
 
 class FeedPageState extends State<FeedPage> {
-  bool showLoadingIndicator = false;
+  bool showLoadingIndicator = true;
   bool childLoadingIndicator = false;
-  late Future<List<Article>> articles;
+  late Future<List<Article>> articles = Future.value([]);
   final ScrollController _scrollController = ScrollController();
   int _currentPage = 1;
   String _searchWord = '';
+  bool netError = false;
 
   void _setArticles(List<Article> updatedArticles) {
     setState(() {
@@ -71,7 +73,7 @@ class FeedPageState extends State<FeedPage> {
             // mountedプロパティのチェック
             setState(() {
               articles = articles.then(
-                  (existingArticles) => [...existingArticles, ...newArticles]);
+                      (existingArticles) => [...existingArticles, ...newArticles]);
             });
             _setChildLoading(false);
           }
@@ -83,12 +85,35 @@ class FeedPageState extends State<FeedPage> {
   @override
   void initState() {
     super.initState();
-    _setLoading(true);
+    checkConnectivityStatus();
+    getArticle();
     _scrollController.addListener(_scrollListener);
-    articles =
-        QiitaClient.fetchArticle(_searchWord, _currentPage).then((value) {
+    _setLoading(false);
+  }
+
+  void getArticle()async{
+    setState(() {
+      articles = QiitaClient.fetchArticle(_searchWord, _currentPage);
+    });
+    await articles;
+  }
+
+  void checkConnectivityStatus() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      debugPrint('インターネットに接続されていません');
+      setNetError();
       _setLoading(false);
-      return value;
+    } else if (connectivityResult == ConnectivityResult.mobile) {
+      debugPrint('モバイルデータで接続されています');
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      debugPrint('Wi-Fiで接続されています');
+    }
+  }
+
+  void setNetError(){
+    setState(() {
+      netError=true;
     });
   }
 
@@ -115,16 +140,19 @@ class FeedPageState extends State<FeedPage> {
         appBar: SearchAppBar(
           onArticlesChanged: _searchArticle,
         ),
-        body: Center(
+        body: showLoadingIndicator
+            ? const Center(child: CircularProgressIndicator(color: Colors.grey,))
+            : netError
+            ?const NetworkError()
+            : Center(
           child: FutureBuilder<List<Article>>(
             future: articles,
             builder:
                 (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
-              if (showLoadingIndicator) {
-                return const CircularProgressIndicator(
-                  color: Colors.grey,
-                );
-              } else if (snapshot.data == null || snapshot.data!.isEmpty) {
+              if (snapshot.connectionState == ConnectionState.waiting){//late article をnullに設定したので、ConnectionState.waitingを追加しました。
+                return const Center(child: CircularProgressIndicator(color: Colors.red,));
+              }
+              else if (snapshot.data == null || snapshot.data!.isEmpty) {
                 return const NoMatch();
               } else if (snapshot.hasData) {
                 return RefreshIndicator(
@@ -147,14 +175,14 @@ class FeedPageState extends State<FeedPage> {
                         // ローディングインジケーターを表示するウィジェットを返す
                         return const Center(
                             child: CupertinoActivityIndicator(
-                          radius: 20.0,
-                          color: CupertinoColors.inactiveGray,
-                        ));
+                              radius: 20.0,
+                              color: CupertinoColors.inactiveGray,
+                            ));
                       }
                       return null;
                     },
                     separatorBuilder: (BuildContext context, int index) =>
-                        const Divider(
+                    const Divider(
                       indent: 70.0,
                       height: 0.5,
                     ),
@@ -166,7 +194,7 @@ class FeedPageState extends State<FeedPage> {
                   style: const TextStyle(color: Colors.red),
                 );
               } else {
-                return const NetworkError();
+                return const Text('不明なエラーが発生しました。運営までお問い合わせください');
               }
             },
           ),

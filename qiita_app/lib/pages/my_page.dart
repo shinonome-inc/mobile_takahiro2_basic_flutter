@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:qiita_app/components/article_gesture_detector.dart';
 import 'package:qiita_app/components/current_user_info.dart';
+import 'package:qiita_app/components/network_error.dart';
 import 'package:qiita_app/components/no_login.dart';
 import 'package:qiita_app/components/no_refresh.dart';
 import 'package:qiita_app/models/article.model.dart';
@@ -26,6 +28,7 @@ class _MyPageState extends State<MyPage> {
   bool noLoginUser = false;
   bool onRefresh = false;
   late double deviceHeight;
+  bool netError = false;
 
   @override
   void initState() {
@@ -35,7 +38,7 @@ class _MyPageState extends State<MyPage> {
   }
 
   void subInitState() async {
-    _setLoading(true);
+    checkConnectivityStatus();
     checkUser();
     getDeviceHeight();
     if (noLoginUser) {
@@ -44,8 +47,6 @@ class _MyPageState extends State<MyPage> {
       _scrollController.addListener(_scrollListener);
       setAuthArticle();
       await articles;
-      debugPrint(user.toString());
-      debugPrint(articles.toString());
       _setLoading(false);
     }
   }
@@ -63,6 +64,25 @@ class _MyPageState extends State<MyPage> {
       });
     });
 
+  }
+
+  void checkConnectivityStatus() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      debugPrint('インターネットに接続されていません');
+      setNetError();
+      _setLoading(false);
+    } else if (connectivityResult == ConnectivityResult.mobile) {
+      debugPrint('モバイルデータで接続されています');
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      debugPrint('Wi-Fiで接続されています');
+    }
+  }
+
+  void setNetError(){
+    setState(() {
+      netError=true;
+    });
   }
 
 
@@ -135,78 +155,78 @@ class _MyPageState extends State<MyPage> {
     return Scaffold(
       appBar: const DefaultAppBar(text: 'MyPage'),
       body: showLoadingIndicator
-          ? const Center(
-              child: CircularProgressIndicator(
-              color: Colors.grey,
-            ))
+          ? const Center(child: CircularProgressIndicator(color: Colors.grey,))
+          : netError
+          ?const NetworkError()
           : noLoginUser
               ? const NoLogin()
-              : RefreshIndicator(
-                  color: Colors.grey,
-                  onRefresh: () async {
-                    refresh();
-                  },
-                  child: ListView(
-                    children: [
-                      FutureBuilder<User>(
-                        future: user,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData && snapshot.data != null) {
-                            if (onRefresh) {
-                              return CurrentUserInfo(user: snapshot.data);
+              : Center(
+                    child: ListView(
+                      children: [
+                        FutureBuilder<User>(
+                          future: user,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting){
+                              _setLoading(true);
+                              return const SizedBox();
                             }
-                            return NoRefresh(user: snapshot.data);
-                          } else if (snapshot.hasError) {
-                            return Center(
-                                child: Text(
-                                    'Failed to load user: ${snapshot.error}'));
-                          } else {
-                            return const SizedBox();
-                          }
-                        },
-                      ),
-                      SizedBox(
-                        height: onRefresh
-                            ? deviceHeight - 498
-                            : deviceHeight - 448,
-                        child: FutureBuilder<List<Article>>(
-                          future: articles,
-                          builder: (BuildContext context,
-                              AsyncSnapshot<List<Article>> snapshot) {
-                            if (snapshot.hasError) {
+                            else if (snapshot.hasData && snapshot.data != null) {
+                              _setLoading(false);
+                              if (onRefresh) {
+                                return CurrentUserInfo(user: snapshot.data);
+                              }
+                              return NoRefresh(user: snapshot.data);
+                            } else if (snapshot.hasError) {
                               return Center(
                                   child: Text(
-                                      'Failed to load articles: ${snapshot.error}'));
-                            } else if (snapshot.hasData &&
-                                snapshot.data != null) {
-                              return ListView.separated(
-                                controller: _scrollController,
-                                itemCount: snapshot.data!.length + 1,
-                                itemBuilder: (BuildContext context, int index) {
-                                  if (index < snapshot.data!.length) {
-                                    return ArticleGestureDetector(
-                                        article: snapshot.data![index],
-                                        onLoadingChanged: _setLoading);
-                                  } else {
-                                    return const SizedBox();
-                                  }
-                                },
-                                separatorBuilder:
-                                    (BuildContext context, int index) =>
-                                        const Divider(
-                                  indent: 70.0,
-                                  height: 0.5,
-                                ),
-                              );
+                                      'Failed to load user: ${snapshot.error}'));
                             } else {
-                              return const SizedBox();
+                              return const NetworkError();
                             }
                           },
                         ),
-                      ),
-                    ],
+                        SizedBox(
+                          height: onRefresh
+                              ? deviceHeight - 498
+                              : deviceHeight - 448,
+                          child: FutureBuilder<List<Article>>(
+                            future: articles,
+                            builder: (BuildContext context,
+                                AsyncSnapshot<List<Article>> snapshot) {
+                              if (snapshot.hasError) {
+                                return Center(
+                                    child: Text(
+                                        'Failed to load articles: ${snapshot.error}'));
+                              } else if (snapshot.hasData &&
+                                  snapshot.data != null) {
+                                return ListView.separated(
+                                  controller: _scrollController,
+                                  itemCount: snapshot.data!.length + 1,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    if (index < snapshot.data!.length) {
+                                      return ArticleGestureDetector(
+                                          article: snapshot.data![index],
+                                          onLoadingChanged: _setLoading);
+                                    } else {
+                                      return const SizedBox();
+                                    }
+                                  },
+                                  separatorBuilder:
+                                      (BuildContext context, int index) =>
+                                          const Divider(
+                                    indent: 70.0,
+                                    height: 0.5,
+                                  ),
+                                );
+                              } else {
+                                return const NetworkError();
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
     );
   }
 }
