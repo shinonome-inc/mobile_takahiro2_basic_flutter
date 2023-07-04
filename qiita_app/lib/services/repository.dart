@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:http/http.dart' as http;
 import 'package:qiita_app/models/user_model.dart';
@@ -99,4 +100,18 @@ class QiitaClient {
       throw Exception('Failed to load user');
     }
   }
+  //ログアウト処理
+  static Future<void> deleteAccessToken() async {
+    final accessToken = await getAccessToken();
+    String url = "https://qiita.com/api/v2/access_tokens/$accessToken";
+    final response = await http.delete(Uri.parse(url));
+    debugPrint(response.statusCode.toString());
+    if (response.statusCode == 204) {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.remove('keyAccessToken');
+    } else {
+      throw Exception('Failed to delete');
+    }
+  }
+
 }
