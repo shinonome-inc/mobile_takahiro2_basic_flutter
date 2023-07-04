@@ -18,13 +18,13 @@ class FeedPage extends StatefulWidget {
 }
 
 class FeedPageState extends State<FeedPage> {
-  bool showLoadingIndicator = true;
-  bool childLoadingIndicator = false;
+  bool hasBigIndicator = true;
+  bool hasSmallIndicator = false;
   late Future<List<Article>> articles = Future.value([]);
   final ScrollController _scrollController = ScrollController();
   int _currentPage = 1;
   String _searchWord = '';
-  bool netError = false;
+  bool hasNetError = false;
   final redirectWidget =const FeedPage();
 
   void _setArticles(List<Article> updatedArticles) {
@@ -47,7 +47,7 @@ class FeedPageState extends State<FeedPage> {
   void _setLoading(bool value) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        showLoadingIndicator = value;
+        hasBigIndicator = value;
       });
     });
   }
@@ -57,7 +57,7 @@ class FeedPageState extends State<FeedPage> {
       // mountedプロパティのチェック
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
-          childLoadingIndicator = value;
+          hasSmallIndicator = value;
         });
       });
     }
@@ -70,14 +70,11 @@ class FeedPageState extends State<FeedPage> {
       _currentPage++;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         QiitaClient.fetchArticle(_searchWord, _currentPage).then((newArticles) {
-          if (mounted) {
-            // mountedプロパティのチェック
             setState(() {
               articles = articles.then(
                       (existingArticles) => [...existingArticles, ...newArticles]);
             });
             _setChildLoading(false);
-          }
         });
       });
     }
@@ -104,7 +101,6 @@ class FeedPageState extends State<FeedPage> {
   }
 
   Future<void> checkConnectivityStatus() async {
-    setState(() {});
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
       debugPrint('インターネットに接続されていません');
@@ -119,7 +115,7 @@ class FeedPageState extends State<FeedPage> {
 
   void setNetError(){
     setState(() {
-      netError=true;
+      hasNetError=true;
     });
   }
 
@@ -150,9 +146,9 @@ class FeedPageState extends State<FeedPage> {
         appBar: SearchAppBar(
           onArticlesChanged: _searchArticle,
         ),
-        body: showLoadingIndicator
+        body: hasBigIndicator
             ? const Center(child: CircularProgressIndicator(color: Colors.grey,))
-            : netError
+            : hasNetError
             ?NetworkError(redirectWidget:redirectWidget)
             : Center(
           child: FutureBuilder<List<Article>>(
@@ -178,7 +174,7 @@ class FeedPageState extends State<FeedPage> {
                         return ArticleGestureDetector(
                             article: snapshot.data![index],
                             onLoadingChanged: _setLoading);
-                      } else if (childLoadingIndicator) {
+                      } else if (hasSmallIndicator) {
                         // ローディングインジケーターを表示するウィジェットを返す
                         return const Center(
                             child: CupertinoActivityIndicator(

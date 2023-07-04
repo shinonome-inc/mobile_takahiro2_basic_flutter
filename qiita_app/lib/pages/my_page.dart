@@ -24,11 +24,11 @@ class _MyPageState extends State<MyPage> {
   final int _currentPage = 1;
   String userId = "";
   final ScrollController _scrollController = ScrollController();
-  bool showLoadingIndicator = true;
-  bool noLoginUser = false;
-  bool onRefresh = false;
+  bool hasBigIndicator = true;
+  bool isNoLogin = false;
+  bool isRefresh = false;
   late double deviceHeight;
-  bool netError = false;
+  bool hasNetError = false;
   final redirectWidget = const MyPage();
 
   @override
@@ -41,7 +41,7 @@ class _MyPageState extends State<MyPage> {
     await checkConnectivityStatus();
     checkUser();
     getDeviceHeight();
-    if (noLoginUser) {
+    if (isNoLogin) {
       _setLoading(false);
     } else {
       _scrollController.addListener(_scrollListener);
@@ -52,7 +52,7 @@ class _MyPageState extends State<MyPage> {
 
   void refresh() {
     setState(() {
-      onRefresh = true;
+      isRefresh = true;
     });
   }
 
@@ -79,7 +79,7 @@ class _MyPageState extends State<MyPage> {
 
   void setNetError() {
     setState(() {
-      netError = true;
+      hasNetError = true;
     });
   }
 
@@ -90,21 +90,21 @@ class _MyPageState extends State<MyPage> {
       }); // ユーザー情報の取得を待機
     } catch (e) {
       setState(() {
-        noLoginUser = true;
+        isNoLogin = true;
       });
     }
   }
 
   void setNoLogin() {
     setState(() {
-      noLoginUser = true;
+      isNoLogin = true;
     });
   }
 
   void _setLoading(bool value) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        showLoadingIndicator = value;
+        hasBigIndicator = value;
       });
     });
   }
@@ -150,9 +150,9 @@ class _MyPageState extends State<MyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const DefaultAppBar(text: 'MyPage'),
-      body: netError
+      body: hasNetError
           ? NetworkError(redirectWidget: redirectWidget)
-          : noLoginUser
+          : isNoLogin
               ? const NoLogin()
               : Center(
                   child: FutureBuilder<User>(
@@ -188,12 +188,12 @@ class _MyPageState extends State<MyPage> {
                               child: ListView(
                                 children: [
                                   if (userSnapshot.data != null)
-                                    if (onRefresh)
+                                    if (isRefresh)
                                       CurrentUserInfo(user: userSnapshot.data)
                                     else
                                       NoRefresh(user: userSnapshot.data),
                                   SizedBox(
-                                    height: onRefresh
+                                    height: isRefresh
                                         ? deviceHeight - 498
                                         : deviceHeight - 448,
                                     child: ListView.separated(

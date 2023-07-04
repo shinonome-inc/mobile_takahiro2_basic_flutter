@@ -19,9 +19,9 @@ class TopPage extends StatefulWidget {
 }
 
 class _TopPageState extends State<TopPage> {
-  bool _isLoading = false;
+  bool isLoading = false;
   Future<String>? accessToken;
-  bool netError = false;
+  bool hasNetError = false;
 
   @override
   void initState() {
@@ -57,13 +57,13 @@ class _TopPageState extends State<TopPage> {
 
   void setNetError(){
     setState(() {
-      netError=true;
+      hasNetError=true;
     });
   }
 
   void setLoading(bool value) {
     setState(() {
-      _isLoading = value;
+      isLoading = value;
     });
   }
 
@@ -91,7 +91,7 @@ class _TopPageState extends State<TopPage> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: _isLoading
+        body: isLoading
             ? const LoginLoading() // ローディング画面を表示する
             : Stack(
                 children: [
