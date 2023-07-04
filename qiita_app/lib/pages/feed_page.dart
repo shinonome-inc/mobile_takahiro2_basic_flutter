@@ -139,13 +139,10 @@ class FeedPageState extends State<FeedPage> {
     });
   }
   Future<void> _reload() async {
-    debugPrint("あああああ");
     setState(() {
       hasNetError=false;
-      searchWord="";
-      currentPage=1;
+      articles =QiitaClient.fetchArticle(searchWord, currentPage);
     });
-    await QiitaClient.fetchArticle(searchWord, currentPage);
   }
 
   @override
