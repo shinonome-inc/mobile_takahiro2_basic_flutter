@@ -182,7 +182,7 @@ class _MyPageState extends State<MyPage> {
                     userSnapshot.data != null &&
                     articlesSnapshot.hasData &&
                     articlesSnapshot.data != null) {
-                  return LayoutBuilder(//変更しました
+                  return LayoutBuilder(
                       builder: (context, constraints) {
                         double myPageHeight = constraints.maxHeight;
                         return RefreshIndicator(
