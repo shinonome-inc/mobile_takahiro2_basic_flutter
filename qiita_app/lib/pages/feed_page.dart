@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:qiita_app/components/default_app_bar.dart.dart';
 import 'package:qiita_app/components/search_app_bar.dart';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:qiita_app/services/repository.dart';
@@ -21,10 +22,10 @@ class FeedPageState extends State<FeedPage> {
   bool hasBigIndicator = true;
   bool hasSmallIndicator = false;
   late Future<List<Article>> articles = Future.value([]);
-  final ScrollController _scrollController = ScrollController();
-  int _currentPage = 1;
-  String _searchWord = '';
-  bool hasNetError = false;
+  final ScrollController scrollController = ScrollController();
+  int currentPage = 1;
+  String searchWord = '';
+  bool hasNetError = true;
   final redirectWidget =const FeedPage();
 
   void _setArticles(List<Article> updatedArticles) {
@@ -36,10 +37,10 @@ class FeedPageState extends State<FeedPage> {
   Future<void> _searchArticle(String search) async {
     _setChildLoading(true);
     setState(() {
-      _searchWord = search;
-      _currentPage = 1;
+      searchWord = search;
+      currentPage = 1;
     });
-    final results = await QiitaClient.fetchArticle(_searchWord, _currentPage);
+    final results = await QiitaClient.fetchArticle(searchWord, currentPage);
     _setArticles(results);
     _setChildLoading(false);
   }
@@ -67,9 +68,9 @@ class FeedPageState extends State<FeedPage> {
     if (mounted) {
       // mountedプロパティのチェック
       _setChildLoading(true);
-      _currentPage++;
+      currentPage++;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        QiitaClient.fetchArticle(_searchWord, _currentPage).then((newArticles) {
+        QiitaClient.fetchArticle(searchWord, currentPage).then((newArticles) {
             setState(() {
               articles = articles.then(
                       (existingArticles) => [...existingArticles, ...newArticles]);
@@ -90,13 +91,13 @@ class FeedPageState extends State<FeedPage> {
     checkConnectivityStatus();
     getArticle();
     await articles;
-    _scrollController.addListener(_scrollListener);
+    scrollController.addListener(_scrollListener);
     _setLoading(false);
   }
 
   Future<void> getArticle()async{
     setState(() {
-      articles = QiitaClient.fetchArticle(_searchWord, _currentPage);
+      articles = QiitaClient.fetchArticle(searchWord, currentPage);
     });
   }
 
@@ -121,14 +122,14 @@ class FeedPageState extends State<FeedPage> {
 
   @override
   void dispose() {
-    _scrollController.removeListener(_scrollListener);
-    _scrollController.dispose();
+    scrollController.removeListener(_scrollListener);
+    scrollController.dispose();
     super.dispose();
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
+    if (scrollController.position.pixels ==
+        scrollController.position.maxScrollExtent) {
       _addScroll();
       debugPrint("下までスクロールされました");
     }
@@ -137,19 +138,28 @@ class FeedPageState extends State<FeedPage> {
     setState(() {
     });
   }
+  Future<void> _reload() async {
+    debugPrint("あああああ");
+    setState(() {
+      hasNetError=false;
+      searchWord="";
+      currentPage=1;
+    });
+    await QiitaClient.fetchArticle(searchWord, currentPage);
+  }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        appBar: SearchAppBar(
-          onArticlesChanged: _searchArticle,
-        ),
+        appBar: hasNetError
+            ? const DefaultAppBar(text: '') as PreferredSizeWidget?
+            : SearchAppBar(onArticlesChanged: _searchArticle),
         body: hasBigIndicator
             ? const Center(child: CircularProgressIndicator(color: Colors.grey,))
             : hasNetError
-            ?NetworkError(redirectWidget:redirectWidget)
+            ?NetworkError(onTapReload:_reload)
             : Center(
           child: FutureBuilder<List<Article>>(
             future: articles,
@@ -162,10 +172,10 @@ class FeedPageState extends State<FeedPage> {
                   color: Colors.grey,
                   onRefresh: () async {
                     // リフレッシュ時の処理を実装する.
-                    await _searchArticle(_searchWord);
+                    await _searchArticle(searchWord);
                   },
                   child: ListView.separated(
-                    controller: _scrollController,
+                    controller: scrollController,
                     itemCount: snapshot.data!.length + 1,
                     // +1はローディングインジケーターのためのアイテム
                     itemBuilder: (BuildContext context, int index) {

@@ -21,9 +21,9 @@ class MyPage extends StatefulWidget {
 class _MyPageState extends State<MyPage> {
   Future<User>? user;
   late Future<List<Article>> articles = Future.value([]);
-  final int _currentPage = 1;
+  late int currentPage = 1;
   String userId = "";
-  final ScrollController _scrollController = ScrollController();
+  final ScrollController scrollController = ScrollController();
   bool hasBigIndicator = true;
   bool isNoLogin = false;
   bool isRefresh = false;
@@ -44,7 +44,7 @@ class _MyPageState extends State<MyPage> {
     if (isNoLogin) {
       _setLoading(false);
     } else {
-      _scrollController.addListener(_scrollListener);
+      scrollController.addListener(_scrollListener);
       setAuthArticle();
       await articles;
     }
@@ -119,15 +119,15 @@ class _MyPageState extends State<MyPage> {
     final resolvedUser = await user;
     if (resolvedUser != null) {
       setState(() {
-        articles = QiitaClient.fetchAuthArticle(_currentPage, resolvedUser.id);
+        articles = QiitaClient.fetchAuthArticle(currentPage, resolvedUser.id);
       });
     }
   }
 
   @override
   void dispose() {
-    _scrollController.removeListener(_scrollListener);
-    _scrollController.dispose();
+    scrollController.removeListener(_scrollListener);
+    scrollController.dispose();
     super.dispose();
   }
 
@@ -139,19 +139,32 @@ class _MyPageState extends State<MyPage> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
+    if (scrollController.position.pixels ==
+        scrollController.position.maxScrollExtent) {
       debugPrint("下までスクロールされました");
     }
+  }
+
+  Future<void> _reload() async {
+    await QiitaClient.fetchAuthenticatedUser();
+    final resolvedUser = await user;
+    setState(() {
+      currentPage= 1;
+      userId=resolvedUser!.id;
+    });
+    await QiitaClient.fetchAuthenticatedUser();
+    await QiitaClient.fetchAuthArticle(currentPage, userId);
   }
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const DefaultAppBar(text: 'MyPage'),
+      appBar: hasNetError
+          ? const DefaultAppBar(text: '') as PreferredSizeWidget?
+          : const DefaultAppBar(text: 'MyPage'),
       body: hasNetError
-          ? NetworkError(redirectWidget: redirectWidget)
+          ? NetworkError(onTapReload: _reload)
           : isNoLogin
               ? const NoLogin()
               : Center(
@@ -197,7 +210,7 @@ class _MyPageState extends State<MyPage> {
                                         ? deviceHeight - 498
                                         : deviceHeight - 448,
                                     child: ListView.separated(
-                                      controller: _scrollController,
+                                      controller: scrollController,
                                       itemCount:
                                           articlesSnapshot.data!.length + 1,
                                       itemBuilder:

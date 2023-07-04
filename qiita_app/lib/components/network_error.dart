@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class NetworkError extends StatelessWidget {
-  const NetworkError({Key? key,required this.redirectWidget}) : super(key: key);
-  final Widget redirectWidget;
+  const NetworkError({Key? key,required this.onTapReload}) : super(key: key);
+  final Future<void> Function() onTapReload;
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +55,7 @@ class NetworkError extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              redirectWidget;
+              onTapReload;
             },
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
