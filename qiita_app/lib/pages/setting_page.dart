@@ -28,7 +28,7 @@ class _SettingPageState extends State<SettingPage> {
     }
   }
 
-  void deleteAccessToken() async {
+  Future<void> deleteAccessToken() async {
     await QiitaClient.deleteAccessToken();
     Navigator.push(
       context,
@@ -37,6 +37,8 @@ class _SettingPageState extends State<SettingPage> {
       }),
     );
   }
+
+
 
 
   @override

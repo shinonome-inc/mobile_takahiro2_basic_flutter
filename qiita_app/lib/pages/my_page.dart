@@ -30,23 +30,34 @@ class _MyPageState extends State<MyPage> {
   double deviceHeight=0;
   bool hasNetError = false;
   final redirectWidget = const MyPage();
+  Future<String>? accessToken;
 
   @override
   void initState() {
     super.initState();
-    subInitState();
+    checkConnectivityStatus();
+    checkAccessToken();
+    getDeviceHeight();
+
   }
 
-  Future<void> subInitState() async {
-    await checkConnectivityStatus();
-    checkUser();
-    getDeviceHeight();
-    if (isNoLogin) {
-      _setLoading(false);
+  Future<void> checkAccessToken() async {
+    String? token = await QiitaClient.getAccessToken();
+    if (token == null) {
+      setState(() {
+        isNoLogin = true;
+        _setLoading(false);
+      });
     } else {
-      scrollController.addListener(_scrollListener);
-      setAuthArticle();
-      await articles;
+      setState(() {
+        accessToken = Future.value(token);
+        scrollController.addListener(_scrollListener);
+        user = Future.value(QiitaClient.fetchAuthenticatedUser());
+      });
+      final resolvedUser = await user;
+      setState(() {
+        articles = Future.value(QiitaClient.fetchAuthArticle(currentPage, resolvedUser!.id));
+      });
     }
   }
 
@@ -83,17 +94,7 @@ class _MyPageState extends State<MyPage> {
     });
   }
 
-  void checkUser() {
-    try {
-      setState(() {
-        user = Future.value(QiitaClient.fetchAuthenticatedUser());
-      }); // ユーザー情報の取得を待機
-    } catch (e) {
-      setState(() {
-        isNoLogin = true;
-      });
-    }
-  }
+
 
   void setNoLogin() {
     setState(() {
@@ -109,20 +110,7 @@ class _MyPageState extends State<MyPage> {
     });
   }
 
-  void setAuthUser(User value) {
-    setState(() {
-      user = Future.value(value);
-    });
-  }
 
-  Future<void> setAuthArticle() async {
-    final resolvedUser = await user;
-    if (resolvedUser != null) {
-      setState(() {
-        articles = QiitaClient.fetchAuthArticle(currentPage, resolvedUser.id);
-      });
-    }
-  }
 
   @override
   void dispose() {
@@ -132,10 +120,12 @@ class _MyPageState extends State<MyPage> {
   }
 
   Future<void> getRefresh() async {
+    final resolvedUser = await user;
     setState(() {
       user = QiitaClient.fetchAuthenticatedUser();
+      articles = QiitaClient.fetchAuthArticle(currentPage, resolvedUser!.id);
     });
-    setAuthArticle();
+
   }
 
   void _scrollListener() {
@@ -149,11 +139,9 @@ class _MyPageState extends State<MyPage> {
     await QiitaClient.fetchAuthenticatedUser();
     final resolvedUser = await user;
     setState(() {
-      currentPage= 1;
-      userId=resolvedUser!.id;
+      user=QiitaClient.fetchAuthenticatedUser();
+      articles=QiitaClient.fetchAuthArticle(currentPage, resolvedUser!.id);
     });
-    await QiitaClient.fetchAuthenticatedUser();
-    await QiitaClient.fetchAuthArticle(currentPage, userId);
   }
 
 
