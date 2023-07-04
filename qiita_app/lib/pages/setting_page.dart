@@ -1,11 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:qiita_app/components/default_app_bar.dart.dart';
 import 'package:qiita_app/models/privacy_policy.dart';
 import 'package:qiita_app/pages/top_page.dart';
 import 'package:qiita_app/services/repository.dart';
-import 'package/package_info_plus/package_info_plus.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+
+
 
 class SettingPage extends StatefulWidget {
   const SettingPage({Key? key}) : super(key: key);
@@ -15,6 +16,18 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
+  Future<String>? accessToken;
+  bool isNoLogin = false;
+
+  Future<void>checkAccessToken()async{
+    accessToken = await QiitaClient.getAccessToken() as Future<String>?;
+    if(accessToken==null){
+      setState(() {
+        isNoLogin=true;
+      });
+    }
+  }
+
   void deleteAccessToken() async {
     await QiitaClient.deleteAccessToken();
     Navigator.push(
@@ -25,9 +38,24 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
+
+  @override
+  void initState() {
+    super.initState();
+    checkAccessToken();
+    getAppVersion();
+  }
   Future<String> getAppVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     return packageInfo.version;
+  }
+  void deleteCurrentAccessToken() async {
+    await QiitaClient.deleteAccessToken();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+          builder: (_) => TopPage(redirecturl: 'https://',)),
+      );
   }
 
   @override
@@ -176,11 +204,7 @@ class _SettingPageState extends State<SettingPage> {
                   ),
                 ),
               ),
-              GestureDetector(
-                onTap: () {
-                  debugPrint("タップされました");
-                },
-                child: Container(
+                Container(
                   color: Colors.white,
                   child: Row(
                     children: [
@@ -200,9 +224,17 @@ class _SettingPageState extends State<SettingPage> {
                         ),
 
                       ),
-                      const Icon(
-                          Icons.arrow_forward_ios_outlined,
-                          color: Colors.grey
+                      FutureBuilder<String>(
+                        future: getAppVersion(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return Text('v ${snapshot.data}',style: const TextStyle(fontSize: 14));
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else {
+                            return const CircularProgressIndicator();
+                          }
+                        },
                       ),
                       const SizedBox(
                         width: 16,
@@ -210,7 +242,6 @@ class _SettingPageState extends State<SettingPage> {
                     ],
                   ),
                 ),
-              ),
               const SizedBox(
                 height: 20,
               ),
@@ -224,7 +255,7 @@ class _SettingPageState extends State<SettingPage> {
               ),
               GestureDetector(
                 onTap: () {
-                  QiitaClient.deleteAccessToken();
+                  deleteCurrentAccessToken();
                 },
                 child: Container(
                   color: Colors.white,
@@ -233,13 +264,9 @@ class _SettingPageState extends State<SettingPage> {
                       Container(
                         padding: const EdgeInsets.fromLTRB(16, 8.0,8, 0),
                         height: 40,
-                        child: const Text(
-                          'ログアウトする',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        child: isNoLogin
+                            ?const Text('そもそもログインしてません', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold,),)
+                            :const Text('ログアウトする', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold,),),
                       ),
                       Expanded(
                         child: Container(
