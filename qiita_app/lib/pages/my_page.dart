@@ -54,9 +54,8 @@ class _MyPageState extends State<MyPage> {
         scrollController.addListener(_scrollListener);
         user = Future.value(QiitaClient.fetchAuthenticatedUser());
       });
-      final resolvedUser = await user;
       setState(() {
-        articles = Future.value(QiitaClient.fetchAuthArticle(currentPage, resolvedUser!.id));
+        articles = Future.value(QiitaClient.fetchArticle("", 1));
       });
     }
   }
@@ -154,85 +153,85 @@ class _MyPageState extends State<MyPage> {
       body: hasNetError
           ? NetworkError(onTapReload: _reload)
           : isNoLogin
-              ? const NoLogin()
-              : Center(
-                  child: FutureBuilder<User>(
-                    future: user,
-                    builder: (context, userSnapshot) {
-                      return FutureBuilder<List<Article>>(
-                        future: articles,
-                        builder: (BuildContext context,
-                            AsyncSnapshot<List<Article>> articlesSnapshot) {
-                          if (userSnapshot.connectionState ==
-                                  ConnectionState.waiting ||
-                              articlesSnapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                            return const CircularProgressIndicator(
-                                color: Colors.grey);
-                          } else if (userSnapshot.hasError) {
-                            return Center(
-                              child: Text(
-                                  'Failed to load user: ${userSnapshot.error}'),
-                            );
-                          } else if (articlesSnapshot.hasError) {
-                            return Center(
-                              child: Text(
-                                  'Failed to load articles: ${articlesSnapshot.error}'),
-                            );
-                          } else if (userSnapshot.hasData &&
-                              userSnapshot.data != null &&
-                              articlesSnapshot.hasData &&
-                              articlesSnapshot.data != null) {
-                            return RefreshIndicator(
-                              color: Colors.grey,
-                              onRefresh: ()async { refresh();},
-                              child: ListView(
-                                children: [
-                                  if (userSnapshot.data != null)
-                                    if (isRefresh)
-                                      CurrentUserInfo(user: userSnapshot.data)
-                                    else
-                                      NoRefresh(user: userSnapshot.data),
-                                  SizedBox(
-                                    height: isRefresh
-                                        ? deviceHeight - 498
-                                        : deviceHeight - 448,
-                                    child: ListView.separated(
-                                      controller: scrollController,
-                                      itemCount:
-                                          articlesSnapshot.data!.length + 1,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        if (index <
-                                            articlesSnapshot.data!.length) {
-                                          return ArticleGestureDetector(
-                                            article:
-                                                articlesSnapshot.data![index],
-                                            onLoadingChanged: _setLoading,
-                                          );
-                                        } else {
-                                          return const SizedBox();
-                                        }
-                                      },
-                                      separatorBuilder:
-                                          (BuildContext context, int index) =>
-                                              const Divider(
-                                        indent: 70.0,
-                                        height: 0.5,
-                                      ),
-                                    ),
+          ? const NoLogin()
+          : Center(
+        child: FutureBuilder<User>(
+          future: user,
+          builder: (context, userSnapshot) {
+            return FutureBuilder<List<Article>>(
+              future: articles,
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<Article>> articlesSnapshot) {
+                if (userSnapshot.connectionState ==
+                    ConnectionState.waiting ||
+                    articlesSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                  return const CircularProgressIndicator(
+                      color: Colors.grey);
+                } else if (userSnapshot.hasError) {
+                  return Center(
+                    child: Text(
+                        'Failed to load user: ${userSnapshot.error}'),
+                  );
+                } else if (articlesSnapshot.hasError) {
+                  return Center(
+                    child: Text(
+                        'Failed to load articles: ${articlesSnapshot.error}'),
+                  );
+                } else if (userSnapshot.hasData &&
+                    userSnapshot.data != null &&
+                    articlesSnapshot.hasData &&
+                    articlesSnapshot.data != null) {
+                  return LayoutBuilder(
+                      builder: (context, constraints) {
+                        double myPageHeight = constraints.maxHeight;
+                        return RefreshIndicator(
+                          color: Colors.grey,
+                          onRefresh: () async {
+                            refresh();
+                          },
+                          child: ListView(
+                            children: [
+                              if (userSnapshot.data != null)
+                                if (isRefresh)
+                                  CurrentUserInfo(user: userSnapshot.data)
+                                else
+                                  NoRefresh(user: userSnapshot.data),
+                              SizedBox(
+                                height: isRefresh ? myPageHeight - 291 : myPageHeight - 251,
+                                child: ListView.separated(
+                                  controller: scrollController,
+                                  itemCount: articlesSnapshot.data!.length + 1,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    if (index < articlesSnapshot.data!.length) {
+                                      return ArticleGestureDetector(
+                                        article: articlesSnapshot.data![index],
+                                        onLoadingChanged: _setLoading,
+                                      );
+                                    } else {
+                                      return const SizedBox();
+                                    }
+                                  },
+                                  separatorBuilder: (BuildContext context, int index) =>
+                                  const Divider(
+                                    indent: 70.0,
+                                    height: 0.5,
                                   ),
-                                ],
+                                ),
                               ),
-                            );
-                          } else {
-                            return const SizedBox();
-                          }
-                        },
-                      );
-                    },
-                  ),
-                ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                } else {
+                  return const SizedBox();
+                }
+              },
+            );
+          },
+        ),
+      ),
     );
   }
 }
