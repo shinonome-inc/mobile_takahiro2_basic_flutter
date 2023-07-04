@@ -20,33 +20,44 @@ class MyPage extends StatefulWidget {
 
 class _MyPageState extends State<MyPage> {
   Future<User>? user;
-  late Future<List<Article>> articles = Future.value([]);
-  late int currentPage = 1;
+  Future<List<Article>> articles = Future.value([]);
+  int currentPage = 1;
   String userId = "";
   final ScrollController scrollController = ScrollController();
   bool hasBigIndicator = true;
   bool isNoLogin = false;
   bool isRefresh = false;
-  late double deviceHeight;
+  double deviceHeight=0;
   bool hasNetError = false;
   final redirectWidget = const MyPage();
+  Future<String>? accessToken;
 
   @override
   void initState() {
     super.initState();
-    subInitState();
+    checkConnectivityStatus();
+    checkAccessToken();
+    getDeviceHeight();
+
   }
 
-  Future<void> subInitState() async {
-    await checkConnectivityStatus();
-    checkUser();
-    getDeviceHeight();
-    if (isNoLogin) {
-      _setLoading(false);
+  Future<void> checkAccessToken() async {
+    String? token = await QiitaClient.getAccessToken();
+    if (token == null) {
+      setState(() {
+        isNoLogin = true;
+        _setLoading(false);
+      });
     } else {
-      scrollController.addListener(_scrollListener);
-      setAuthArticle();
-      await articles;
+      setState(() {
+        accessToken = Future.value(token);
+        scrollController.addListener(_scrollListener);
+        user = Future.value(QiitaClient.fetchAuthenticatedUser());
+      });
+      final resolvedUser = await user;
+      setState(() {
+        articles = Future.value(QiitaClient.fetchAuthArticle(currentPage, resolvedUser!.id));
+      });
     }
   }
 
@@ -83,17 +94,7 @@ class _MyPageState extends State<MyPage> {
     });
   }
 
-  void checkUser() {
-    try {
-      setState(() {
-        user = Future.value(QiitaClient.fetchAuthenticatedUser());
-      }); // ユーザー情報の取得を待機
-    } catch (e) {
-      setState(() {
-        isNoLogin = true;
-      });
-    }
-  }
+
 
   void setNoLogin() {
     setState(() {
@@ -109,20 +110,7 @@ class _MyPageState extends State<MyPage> {
     });
   }
 
-  void setAuthUser(User value) {
-    setState(() {
-      user = Future.value(value);
-    });
-  }
 
-  Future<void> setAuthArticle() async {
-    final resolvedUser = await user;
-    if (resolvedUser != null) {
-      setState(() {
-        articles = QiitaClient.fetchAuthArticle(currentPage, resolvedUser.id);
-      });
-    }
-  }
 
   @override
   void dispose() {
@@ -132,10 +120,12 @@ class _MyPageState extends State<MyPage> {
   }
 
   Future<void> getRefresh() async {
+    final resolvedUser = await user;
     setState(() {
       user = QiitaClient.fetchAuthenticatedUser();
+      articles = QiitaClient.fetchAuthArticle(currentPage, resolvedUser!.id);
     });
-    setAuthArticle();
+
   }
 
   void _scrollListener() {
@@ -149,11 +139,9 @@ class _MyPageState extends State<MyPage> {
     await QiitaClient.fetchAuthenticatedUser();
     final resolvedUser = await user;
     setState(() {
-      currentPage= 1;
-      userId=resolvedUser!.id;
+      user=QiitaClient.fetchAuthenticatedUser();
+      articles=QiitaClient.fetchAuthArticle(currentPage, resolvedUser!.id);
     });
-    await QiitaClient.fetchAuthenticatedUser();
-    await QiitaClient.fetchAuthArticle(currentPage, userId);
   }
 
 
@@ -166,85 +154,85 @@ class _MyPageState extends State<MyPage> {
       body: hasNetError
           ? NetworkError(onTapReload: _reload)
           : isNoLogin
-              ? const NoLogin()
-              : Center(
-                  child: FutureBuilder<User>(
-                    future: user,
-                    builder: (context, userSnapshot) {
-                      return FutureBuilder<List<Article>>(
-                        future: articles,
-                        builder: (BuildContext context,
-                            AsyncSnapshot<List<Article>> articlesSnapshot) {
-                          if (userSnapshot.connectionState ==
-                                  ConnectionState.waiting ||
-                              articlesSnapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                            return const CircularProgressIndicator(
-                                color: Colors.grey);
-                          } else if (userSnapshot.hasError) {
-                            return Center(
-                              child: Text(
-                                  'Failed to load user: ${userSnapshot.error}'),
-                            );
-                          } else if (articlesSnapshot.hasError) {
-                            return Center(
-                              child: Text(
-                                  'Failed to load articles: ${articlesSnapshot.error}'),
-                            );
-                          } else if (userSnapshot.hasData &&
-                              userSnapshot.data != null &&
-                              articlesSnapshot.hasData &&
-                              articlesSnapshot.data != null) {
-                            return RefreshIndicator(
-                              color: Colors.grey,
-                              onRefresh: ()async { refresh();},
-                              child: ListView(
-                                children: [
-                                  if (userSnapshot.data != null)
-                                    if (isRefresh)
-                                      CurrentUserInfo(user: userSnapshot.data)
-                                    else
-                                      NoRefresh(user: userSnapshot.data),
-                                  SizedBox(
-                                    height: isRefresh
-                                        ? deviceHeight - 498
-                                        : deviceHeight - 448,
-                                    child: ListView.separated(
-                                      controller: scrollController,
-                                      itemCount:
-                                          articlesSnapshot.data!.length + 1,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        if (index <
-                                            articlesSnapshot.data!.length) {
-                                          return ArticleGestureDetector(
-                                            article:
-                                                articlesSnapshot.data![index],
-                                            onLoadingChanged: _setLoading,
-                                          );
-                                        } else {
-                                          return const SizedBox();
-                                        }
-                                      },
-                                      separatorBuilder:
-                                          (BuildContext context, int index) =>
-                                              const Divider(
-                                        indent: 70.0,
-                                        height: 0.5,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          } else {
-                            return const SizedBox();
-                          }
-                        },
-                      );
-                    },
-                  ),
-                ),
+          ? const NoLogin()
+          : Center(
+        child: FutureBuilder<User>(
+          future: user,
+          builder: (context, userSnapshot) {
+            return FutureBuilder<List<Article>>(
+              future: articles,
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<Article>> articlesSnapshot) {
+                if (userSnapshot.connectionState ==
+                    ConnectionState.waiting ||
+                    articlesSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                  return const CircularProgressIndicator(
+                      color: Colors.grey);
+                } else if (userSnapshot.hasError) {
+                  return Center(
+                    child: Text(
+                        'Failed to load user: ${userSnapshot.error}'),
+                  );
+                } else if (articlesSnapshot.hasError) {
+                  return Center(
+                    child: Text(
+                        'Failed to load articles: ${articlesSnapshot.error}'),
+                  );
+                } else if (userSnapshot.hasData &&
+                    userSnapshot.data != null &&
+                    articlesSnapshot.hasData &&
+                    articlesSnapshot.data != null) {
+                  return RefreshIndicator(
+                    color: Colors.grey,
+                    onRefresh: ()async { refresh();},
+                    child: ListView(
+                      children: [
+                        if (userSnapshot.data != null)
+                          if (isRefresh)
+                            CurrentUserInfo(user: userSnapshot.data)
+                          else
+                            NoRefresh(user: userSnapshot.data),
+                        SizedBox(
+                          height: isRefresh
+                              ? deviceHeight - 498
+                              : deviceHeight - 448,
+                          child: ListView.separated(
+                            controller: scrollController,
+                            itemCount:
+                            articlesSnapshot.data!.length + 1,
+                            itemBuilder:
+                                (BuildContext context, int index) {
+                              if (index <
+                                  articlesSnapshot.data!.length) {
+                                return ArticleGestureDetector(
+                                  article:
+                                  articlesSnapshot.data![index],
+                                  onLoadingChanged: _setLoading,
+                                );
+                              } else {
+                                return const SizedBox();
+                              }
+                            },
+                            separatorBuilder:
+                                (BuildContext context, int index) =>
+                            const Divider(
+                              indent: 70.0,
+                              height: 0.5,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  return const SizedBox();
+                }
+              },
+            );
+          },
+        ),
+      ),
     );
   }
 }
