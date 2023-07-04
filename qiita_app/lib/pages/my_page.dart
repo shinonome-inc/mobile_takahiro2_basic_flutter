@@ -20,27 +20,16 @@ class MyPage extends StatefulWidget {
 
 class _MyPageState extends State<MyPage> {
   Future<User>? user;
-  late Future<List<Article>> articles = Future.value([]);
-  late int currentPage = 1;
+  Future<List<Article>> articles = Future.value([]);
+  int currentPage = 1;
   String userId = "";
   final ScrollController scrollController = ScrollController();
   bool hasBigIndicator = true;
   bool isNoLogin = false;
   bool isRefresh = false;
-  late double deviceHeight;
+  double deviceHeight=0;
   bool hasNetError = false;
   final redirectWidget = const MyPage();
-  Future<String>? accessToken;
-
-  Future<void>checkAccessToken()async{
-    accessToken = await QiitaClient.getAccessToken() as Future<String>?;
-    if(accessToken==null){
-      setState(() {
-        isNoLogin=true;
-      });
-    }
-  }
-
 
   @override
   void initState() {
@@ -51,7 +40,6 @@ class _MyPageState extends State<MyPage> {
   Future<void> subInitState() async {
     await checkConnectivityStatus();
     checkUser();
-    await checkAccessToken();
     getDeviceHeight();
     if (isNoLogin) {
       _setLoading(false);
@@ -95,8 +83,6 @@ class _MyPageState extends State<MyPage> {
     });
   }
 
-
-
   void checkUser() {
     try {
       setState(() {
@@ -108,6 +94,13 @@ class _MyPageState extends State<MyPage> {
       });
     }
   }
+
+  void setNoLogin() {
+    setState(() {
+      isNoLogin = true;
+    });
+  }
+
   void _setLoading(bool value) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {

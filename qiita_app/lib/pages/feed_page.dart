@@ -21,7 +21,7 @@ class FeedPage extends StatefulWidget {
 class FeedPageState extends State<FeedPage> {
   bool hasBigIndicator = true;
   bool hasSmallIndicator = false;
-  late Future<List<Article>> articles = Future.value([]);
+  Future<List<Article>> articles = Future.value([]);
   final ScrollController scrollController = ScrollController();
   int currentPage = 1;
   String searchWord = '';
