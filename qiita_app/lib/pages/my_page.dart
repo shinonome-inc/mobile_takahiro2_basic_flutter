@@ -60,13 +60,6 @@ class _MyPageState extends State<MyPage> {
       });
     }
   }
-
-  void refresh() {
-    setState(() {
-      isRefresh = true;
-    });
-  }
-
   void getDeviceHeight() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
@@ -176,7 +169,7 @@ class _MyPageState extends State<MyPage> {
                       return RefreshIndicator(
                         color: Colors.grey,
                         onRefresh: () async {
-                          refresh();
+                          _reload();
                         },
                         child: ListView(
                           children: [
