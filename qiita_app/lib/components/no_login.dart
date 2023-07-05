@@ -26,15 +26,7 @@ class NoLogin extends StatelessWidget {
             height: 17,
           ),
           const Text(
-            "マイページ機能を利用するには",
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey,
-              letterSpacing: 1.2,
-            ),
-          ),
-          const Text(
-            "ログインを行っていただく必要があります。",
+            "マイページ機能を利用するには\nログインを行っていただく必要があります。",
             style: TextStyle(
               fontSize: 12,
               color: Colors.grey,

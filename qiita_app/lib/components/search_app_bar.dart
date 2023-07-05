@@ -17,7 +17,7 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
       toolbarHeight: 96,
       elevation: 0.0,
       backgroundColor: Colors.white,
-      automaticallyImplyLeading: fal
+      automaticallyImplyLeading: false,
       title: const Text(
         'Feed',
         style: TextStyle(
