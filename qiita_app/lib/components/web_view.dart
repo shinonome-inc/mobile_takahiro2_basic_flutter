@@ -76,9 +76,7 @@ class _WebViewState extends State<WebView> {
                   ? WebViewWidget(
                       controller: controller,
                     )
-                  : const Center(
-                      child: CircularProgressIndicator(),
-                    )),
+                  : const Center(child: CircularProgressIndicator(color: Colors.grey,))),
         ),
       ),
     );

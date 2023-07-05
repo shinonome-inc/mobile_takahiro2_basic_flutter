@@ -25,7 +25,7 @@ class FeedPageState extends State<FeedPage> {
   final ScrollController scrollController = ScrollController();
   int currentPage = 1;
   String searchWord = '';
-  bool hasNetError = false;
+  bool hasNetError = true;
   final redirectWidget =const FeedPage();
 
   void _setArticles(List<Article> updatedArticles) {

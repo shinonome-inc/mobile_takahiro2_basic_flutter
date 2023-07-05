@@ -36,6 +36,7 @@ class NetworkError extends StatelessWidget {
           ),
           const Text(
             "お手数ですが電波の良い場所で\n再度読み込みをお願いします",
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 12,
               color: Colors.grey,
