@@ -45,42 +45,47 @@ class NoLogin extends StatelessWidget {
             flex: 8,
             child: Container(),
           ),
-          ElevatedButton(
-            onPressed: () {
-              showModalBottomSheet<void>(
-                context: context,
-                useRootNavigator: true,
-                backgroundColor: Colors.transparent,
-                isScrollControlled: true,
-                builder: (BuildContext context) {
-                  return SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.9,
-                    child: const WebView(
-                      url:
-                          'https://qiita.com/api/v2/oauth/authorize?client_id=${QiitaAuthKey.clientId}&scope=read_qiita',
-                    ),
+      Container(
+        height: 50,
+        width: 327,
+        padding: const EdgeInsets.all(0.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  showModalBottomSheet<void>(
+                    context: context,
+                    useRootNavigator: true,
+                    backgroundColor: Colors.transparent,
+                    isScrollControlled: true,
+                    builder: (BuildContext context) {
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.9,
+                        child: const WebView(
+                          url:
+                              'https://qiita.com/api/v2/oauth/authorize?client_id=${QiitaAuthKey.clientId}&scope=read_qiita',
+                        ),
+                      );
+                    },
                   );
                 },
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white,
-              backgroundColor: const Color.fromRGBO(70, 131, 1, 1),
-              padding:
-                  const EdgeInsets.symmetric(vertical: 14.0, horizontal: 130.0),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: const Color.fromRGBO(70, 131, 1, 1),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 14.0, horizontal: 130.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                ),
+                child: const Text(
+                  'ログイン',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
-            child: const Text(
-              'ログイン',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
           Expanded(
             flex: 1,
             child: Container(),

@@ -104,13 +104,8 @@ class FeedPageState extends State<FeedPage> {
   Future<void> checkConnectivityStatus() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
-      debugPrint('インターネットに接続されていません');
       setNetError();
       _setLoading(false);
-    } else if (connectivityResult == ConnectivityResult.mobile) {
-      debugPrint('モバイルデータで接続されています');
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      debugPrint('Wi-Fiで接続されています');
     }
   }
 
@@ -131,14 +126,13 @@ class FeedPageState extends State<FeedPage> {
     if (scrollController.position.pixels ==
         scrollController.position.maxScrollExtent) {
       _addScroll();
-      debugPrint("下までスクロールされました");
     }
   }
   void setLoading(){
     setState(() {
     });
   }
-  Future<void> _reload() async {
+  void _reload() async {
     setState(() {
       hasNetError=false;
       articles =QiitaClient.fetchArticle(searchWord, currentPage);

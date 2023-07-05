@@ -71,7 +71,6 @@ class _TopPageState extends State<TopPage> {
     QiitaClient.fetchAccessToken(widget.redirecturl).then((String? token) {
       if (token != null) {
         QiitaClient.saveAccessToken(token);
-        debugPrint('アクセストークンを取得しました$token');
         _navigateToRootPage(context);
       }
       setLoading(false);

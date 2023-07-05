@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:qiita_app/components/elevated_button.dart';
 
 class NetworkError extends StatelessWidget {
   const NetworkError({Key? key,required this.onTapReload}) : super(key: key);
-  final Future<void> Function() onTapReload;
+  final Function() onTapReload;
 
   @override
   Widget build(BuildContext context) {
@@ -34,15 +35,7 @@ class NetworkError extends StatelessWidget {
             ),
           ),
           const Text(
-            "お手数ですが電波の良い場所で",
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey,
-              letterSpacing: 1.2,
-            ),
-          ),
-          const Text(
-            "再度読み込みをお願いします",
+            "お手数ですが電波の良い場所で\n再度読み込みをお願いします",
             style: TextStyle(
               fontSize: 12,
               color: Colors.grey,
@@ -53,27 +46,7 @@ class NetworkError extends StatelessWidget {
             flex: 8,
             child: Container(),
           ),
-          ElevatedButton(
-            onPressed: () {
-              onTapReload;
-            },
-            style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white,
-              backgroundColor: const Color.fromRGBO(70, 131, 1, 1),
-              padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 130.0),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-            ),
-            child: const Text(
-              '再度読み込みする',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+          GreenElevatedButton(onTap: onTapReload),
           Expanded(
             flex: 1,
             child: Container(),
