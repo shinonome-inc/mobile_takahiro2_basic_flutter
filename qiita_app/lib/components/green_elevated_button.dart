@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class GreenElevatedButton extends StatelessWidget {
   final void Function()? onTap;
-  const GreenElevatedButton({Key? key,required this.onTap}) : super(key: key);
+  final String text;
+  const GreenElevatedButton({Key? key,required this.onTap,required this.text}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +19,9 @@ class GreenElevatedButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(20.0),
           ),
         ),
-        child: const Text(
-          '再度読み込みする',
-          style: TextStyle(
+        child: Text(
+          text,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 15,
             fontWeight: FontWeight.bold,
@@ -29,5 +30,4 @@ class GreenElevatedButton extends StatelessWidget {
       ),
     );
   }
-
 }

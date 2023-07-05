@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qiita_app/components/elevated_button.dart';
+import 'package:qiita_app/components/green_elevated_button.dart';
 
 class NetworkError extends StatelessWidget {
   const NetworkError({Key? key,required this.onTapReload}) : super(key: key);
@@ -46,7 +46,7 @@ class NetworkError extends StatelessWidget {
             flex: 8,
             child: Container(),
           ),
-          GreenElevatedButton(onTap: onTapReload),
+          GreenElevatedButton(onTap: onTapReload,text: "再度読み込みをする"),
           Expanded(
             flex: 1,
             child: Container(),
