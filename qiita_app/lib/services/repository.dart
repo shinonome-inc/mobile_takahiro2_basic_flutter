@@ -33,7 +33,7 @@ class QiitaClient {
       headers: {'content-type': 'application/json'},
       body: json.encode({
         'client_id': dotenv.env['clientId'],
-        'client_secret': dotenv.env['6bd33756702ff37b1ac02b314d0e75063fc4a566'],
+        'client_secret': dotenv.env['clientSecret'],
         'code': redirectUrlCode,
       }),
     );

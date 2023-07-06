@@ -14,17 +14,6 @@ class SettingPage extends StatefulWidget {
 class _SettingPageState extends State<SettingPage> {
   Future<String>? accessToken;
   bool isNoLogin = false;
-
-
-
-
-
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +22,7 @@ class _SettingPageState extends State<SettingPage> {
           color: const Color(0xFFF2F2F2),
           child: ListView(
             children: <Widget>[
-              const SizedBox(
+              Container(
                 height: 32,
               ),
               const ListTile(
@@ -70,7 +59,7 @@ class _SettingPageState extends State<SettingPage> {
                           Icons.arrow_forward_ios_outlined,
                           color: Colors.grey
                       ),
-                      const SizedBox(
+                      Container(
                         width: 16,
                       ),
                     ],
@@ -104,7 +93,7 @@ class _SettingPageState extends State<SettingPage> {
                           Icons.arrow_forward_ios_outlined,
                           color: Colors.grey
                       ),
-                      const SizedBox(
+                      Container(
                         width: 16,
                       ),
                     ],
@@ -132,13 +121,13 @@ class _SettingPageState extends State<SettingPage> {
 
                     ),
                     const Text('v 1.0.0',style: TextStyle(fontSize: 14)),
-                    const SizedBox(
+                    Container(
                       width: 16,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(
+              Container(
                 height: 20,
               ),
               const ListTile(
@@ -160,23 +149,19 @@ class _SettingPageState extends State<SettingPage> {
                         padding: const EdgeInsets.fromLTRB(16, 8.0,8, 0),
                         height: 40,
                         child: const Text('ログアウトする', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
-                      Expanded(
-                        child: Container(
-                        ),
-
-                      ),
+                      Expanded(child: Container(),),
                       const Icon(
                           Icons.arrow_forward_ios_outlined,
                           color: Colors.grey
                       ),
-                      const SizedBox(
+                      Container(
                         width: 16,
                       ),
                     ],
                   ),
                 ),
               ),
-              Expanded(child: Container(),),
+              Expanded(child: Container()),
             ],
           ),
         )
