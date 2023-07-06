@@ -1,6 +1,7 @@
 // ignore_for_file: must_be_immutable
-
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:qiita_app/components/green_elevated_button.dart';
 import 'package:qiita_app/components/login_loading.dart';
 import '../components/web_view.dart';
 import '../qiita_auth_key.dart';
@@ -18,8 +19,9 @@ class TopPage extends StatefulWidget {
 }
 
 class _TopPageState extends State<TopPage> {
-  bool _isLoading = false;
+  bool isLoading = false;
   Future<String>? accessToken;
+  bool hasNetError = false;
 
   @override
   void initState() {
@@ -27,21 +29,34 @@ class _TopPageState extends State<TopPage> {
     QiitaClient.getAccessToken().then((String? accessToken) {
       if (accessToken != null) {
         setLoading(true);
-        debugPrint('アクセストークンは$accessTokenです');
         _navigateToRootPage(context);
         setLoading(false);
       } else if (widget.redirecturl.contains(Url.require_redirect)) {
         setLoading(true);
-        debugPrint('リダイレクトURLは${widget.redirecturl}です');
         _loginToQiita();
         setLoading(false);
       }
     });
   }
 
+  Future<void> checkConnectivityStatus() async {
+    setState(() {});
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      setNetError();
+      setLoading(false);
+    }
+  }
+
+  void setNetError() {
+    setState(() {
+      hasNetError = true;
+    });
+  }
+
   void setLoading(bool value) {
     setState(() {
-      _isLoading = value;
+      isLoading = value;
     });
   }
 
@@ -57,7 +72,6 @@ class _TopPageState extends State<TopPage> {
     QiitaClient.fetchAccessToken(widget.redirecturl).then((String? token) {
       if (token != null) {
         QiitaClient.saveAccessToken(token);
-        debugPrint('アクセストークンを取得しました$token');
         _navigateToRootPage(context);
       }
       setLoading(false);
@@ -69,7 +83,7 @@ class _TopPageState extends State<TopPage> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: _isLoading
+        body: isLoading
             ? const LoginLoading() // ローディング画面を表示する
             : Stack(
                 children: [
@@ -121,45 +135,23 @@ class _TopPageState extends State<TopPage> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  showModalBottomSheet<void>(
-                                    context: context,
-                                    useRootNavigator: true,
-                                    backgroundColor: Colors.transparent,
-                                    isScrollControlled: true,
-                                    builder: (BuildContext context) {
-                                      return SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.9,
-                                        child: const WebView(
-                                          url:
-                                              'https://qiita.com/api/v2/oauth/authorize?client_id=${QiitaAuthKey.clientId}&scope=read_qiita',
-                                        ),
-                                      );
-                                    },
+                              GreenElevatedButton(onTap: (){showModalBottomSheet<void>(
+                                context: context,
+                                useRootNavigator: true,
+                                backgroundColor: Colors.transparent,
+                                isScrollControlled: true,
+                                builder: (BuildContext context) {
+                                  return SizedBox(
+                                    height:
+                                    MediaQuery.of(context).size.height *
+                                        0.9,
+                                    child: const WebView(
+                                      url:
+                                      'https://qiita.com/api/v2/oauth/authorize?client_id=${QiitaAuthKey.clientId}&scope=read_qiita',
+                                    ),
                                   );
                                 },
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  backgroundColor:
-                                      const Color.fromRGBO(70, 131, 1, 1),
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 14.0, horizontal: 130.0),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'ログイン',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
+                              );}, text: "ログイン"),
                             ],
                           ),
                         ),
