@@ -1,9 +1,9 @@
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:http/http.dart' as http;
 import 'package:qiita_app/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../qiita_auth_key.dart';
 
 class QiitaClient {
   static Map<String, String> authorizationRequestHeader = {};
@@ -32,8 +32,8 @@ class QiitaClient {
       Uri.parse(url),
       headers: {'content-type': 'application/json'},
       body: json.encode({
-        'client_id': QiitaAuthKey.clientId,
-        'client_secret': QiitaAuthKey.clientSecret,
+        'client_id': dotenv.env['clientId'],
+        'client_secret': dotenv.env['6bd33756702ff37b1ac02b314d0e75063fc4a566'],
         'code': redirectUrlCode,
       }),
     );
