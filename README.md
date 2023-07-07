@@ -1,5 +1,4 @@
-# プロジェクト名
-Qiita Feed App
+# Qiita Feed App
 
 ## インストール方法
 ```
