@@ -8,7 +8,7 @@ git pull origin main
 cd qiita_app
 ```
 
-##クライアントIDの追加方法<br>
+## クライアントIDの追加方法<br>
 ①qiita_appと同じ階層に[こちら](https://drive.google.com/drive/folders/1NXfoWztNBH0_iZYZeLLhQB11I2blq5-z?usp=sharing)を追加してください<br>
 ②qiita_app/pubspec.yaml-flutter-asseに.envを追加してflutter pub getをターミナルで実行してください。<br>
 ③ターミナルでflutter runを実行してください<br>
