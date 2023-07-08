@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:qiita_app/components/green_elevated_button.dart';
 import 'package:qiita_app/components/web_view.dart';
-import 'package:qiita_app/qiita_auth_key.dart';
 
 class NoLogin extends StatelessWidget {
   const NoLogin({Key? key}) : super(key: key);
@@ -47,9 +47,8 @@ class NoLogin extends StatelessWidget {
               builder: (BuildContext context) {
                 return SizedBox(
                   height: MediaQuery.of(context).size.height * 0.9,
-                  child: const WebView(
-                    url:
-                    'https://qiita.com/api/v2/oauth/authorize?client_id=${QiitaAuthKey.clientId}&scope=read_qiita',
+                  child: WebView(
+                    url: 'https://qiita.com/api/v2/oauth/authorize?client_id=${dotenv.env['clientId']}&scope=read_qiita',
                   ),
                 );
               },
