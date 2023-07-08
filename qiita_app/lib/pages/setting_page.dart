@@ -1,6 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:qiita_app/components/default_app_bar.dart.dart';
+import 'package:qiita_app/pages/top_page.dart';
+import 'package:qiita_app/models/texts.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:qiita_app/services/repository.dart';
 
 
 
@@ -12,8 +16,50 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
+
   Future<String>? accessToken;
   bool isNoLogin = false;
+
+  Future<void>checkAccessToken()async{
+    accessToken = await QiitaClient.getAccessToken() as Future<String>?;
+    if(accessToken==null){
+      setState(() {
+        isNoLogin=true;
+      });
+    }
+  }
+
+  Future<void> deleteAccessToken() async {
+    await QiitaClient.deleteAccessToken();
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) {
+        return TopPage(redirecturl: '',);
+      }),
+    );
+  }
+
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    checkAccessToken();
+    getAppVersion();
+  }
+  Future<String> getAppVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    return packageInfo.version;
+  }
+  void deleteCurrentAccessToken() async {
+    await QiitaClient.deleteAccessToken();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+          builder: (_) => TopPage(redirecturl: 'https://',)),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,6 +81,36 @@ class _SettingPageState extends State<SettingPage> {
               ),
               GestureDetector(
                 onTap: () {
+                  showModalBottomSheet<void>(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    isScrollControlled: true,
+                    builder: (BuildContext context) {
+                      return FractionallySizedBox(
+                        heightFactor: 0.9, // 修正: 画面の高さの90%
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
+                          child: Container(
+                            color: Colors.white,
+                            child: const Scaffold(
+                              appBar: DefaultAppBar(text: 'プライバシーポリシー'),
+                              body: SingleChildScrollView(
+                                child: Padding(
+                                  padding: EdgeInsets.all(16.0),
+                                  child: Text(
+                                    texts.privacyPolicy,
+                                    style: TextStyle(fontSize: 14.0),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
                 },
                 child: Container(
                   color: Colors.white,
@@ -68,6 +144,36 @@ class _SettingPageState extends State<SettingPage> {
               ),
               GestureDetector(
                 onTap: () {
+                  showModalBottomSheet<void>(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    isScrollControlled: true,
+                    builder: (BuildContext context) {
+                      return FractionallySizedBox(
+                        heightFactor: 0.9, // 修正: 画面の高さの90%
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
+                          child: Container(
+                            color: Colors.white,
+                            child: const Scaffold(
+                              appBar: DefaultAppBar(text: '利用規約'),
+                              body: SingleChildScrollView(
+                                child: Padding(
+                                  padding: EdgeInsets.all(16.0),
+                                  child: Text(
+                                    texts.termOfServiceText,
+                                    style: TextStyle(fontSize: 14.0),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
                 },
                 child: Container(
                   color: Colors.white,
@@ -118,9 +224,19 @@ class _SettingPageState extends State<SettingPage> {
                     Expanded(
                       child: Container(
                       ),
-
                     ),
-                    const Text('v 1.0.0',style: TextStyle(fontSize: 14)),
+                    FutureBuilder<String>(
+                      future: getAppVersion(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return Text('v ${snapshot.data}',style: const TextStyle(fontSize: 14));
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else {
+                          return const CircularProgressIndicator();
+                        }
+                      },
+                    ),
                     Container(
                       width: 16,
                     ),
@@ -140,6 +256,7 @@ class _SettingPageState extends State<SettingPage> {
               ),
               GestureDetector(
                 onTap: () {
+                  deleteCurrentAccessToken();
                 },
                 child: Container(
                   color: Colors.white,
@@ -148,7 +265,10 @@ class _SettingPageState extends State<SettingPage> {
                       Container(
                         padding: const EdgeInsets.fromLTRB(16, 8.0,8, 0),
                         height: 40,
-                        child: const Text('ログアウトする', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
+                        child: isNoLogin
+                            ?const Text('ログインしてから出直してください', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold,),)
+                            :const Text('ログアウトする', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold,),),
+                      ),
                       Expanded(child: Container(),),
                       const Icon(
                           Icons.arrow_forward_ios_outlined,
