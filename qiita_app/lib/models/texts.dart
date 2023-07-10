@@ -1,6 +1,6 @@
 // ignore_for_file: camel_case_types
 
-class texts {
+class Texts {
   static const String privacyPolicy= '''
 プライバシーポリシー
 

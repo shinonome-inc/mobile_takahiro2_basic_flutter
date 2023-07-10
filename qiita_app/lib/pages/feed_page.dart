@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:qiita_app/components/default_app_bar.dart.dart';
+import 'package:qiita_app/components/default_app_bar.dart';
 import 'package:qiita_app/components/search_app_bar.dart';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:qiita_app/services/repository.dart';

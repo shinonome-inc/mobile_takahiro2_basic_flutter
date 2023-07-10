@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
-import 'package:qiita_app/components/default_app_bar.dart.dart';
+import 'package:qiita_app/components/default_app_bar.dart';
+import 'package:qiita_app/components/text_sized_box.dart';
 import 'package:qiita_app/pages/top_page.dart';
 import 'package:qiita_app/models/texts.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -86,28 +87,9 @@ class _SettingPageState extends State<SettingPage> {
                     backgroundColor: Colors.transparent,
                     isScrollControlled: true,
                     builder: (BuildContext context) {
-                      return FractionallySizedBox(
-                        heightFactor: 0.9, // 修正: 画面の高さの90%
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(20),
-                          ),
-                          child: Container(
-                            color: Colors.white,
-                            child: const Scaffold(
-                              appBar: DefaultAppBar(text: 'プライバシーポリシー'),
-                              body: SingleChildScrollView(
-                                child: Padding(
-                                  padding: EdgeInsets.all(16.0),
-                                  child: Text(
-                                    texts.privacyPolicy,
-                                    style: TextStyle(fontSize: 14.0),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                      return const TextSizedBox(
+                        privacyPolicyText: Texts.privacyPolicy,
+                        appBarTitle: 'プライバシーポリシー',
                       );
                     },
                   );
@@ -149,28 +131,9 @@ class _SettingPageState extends State<SettingPage> {
                     backgroundColor: Colors.transparent,
                     isScrollControlled: true,
                     builder: (BuildContext context) {
-                      return FractionallySizedBox(
-                        heightFactor: 0.9, // 修正: 画面の高さの90%
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(20),
-                          ),
-                          child: Container(
-                            color: Colors.white,
-                            child: const Scaffold(
-                              appBar: DefaultAppBar(text: '利用規約'),
-                              body: SingleChildScrollView(
-                                child: Padding(
-                                  padding: EdgeInsets.all(16.0),
-                                  child: Text(
-                                    texts.termOfServiceText,
-                                    style: TextStyle(fontSize: 14.0),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                      return const TextSizedBox(
+                        privacyPolicyText: Texts.privacyPolicy,
+                        appBarTitle: '利用規約',
                       );
                     },
                   );
