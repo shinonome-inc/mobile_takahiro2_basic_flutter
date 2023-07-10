@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:qiita_app/components/default_app_bar.dart';
-import 'package:flutter/material.dart';
-import 'package:qiita_app/components/default_app_bar.dart';
 
 class TextSizedBox extends StatelessWidget {
   final String privacyPolicyText;
