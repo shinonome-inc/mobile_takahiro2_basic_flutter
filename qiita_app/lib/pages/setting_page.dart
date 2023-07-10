@@ -18,15 +18,13 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
 
-  Future<String>? accessToken;
+  String? accessToken;
   bool isNoLogin = false;
 
   Future<void>checkAccessToken()async{
-    accessToken = await QiitaClient.getAccessToken() as Future<String>?;
+    accessToken = await QiitaClient.getAccessToken();
     if(accessToken==null){
-      setState(() {
-        isNoLogin=true;
-      });
+      setState(() => isNoLogin = true);
     }
   }
 
@@ -229,7 +227,7 @@ class _SettingPageState extends State<SettingPage> {
                         padding: const EdgeInsets.fromLTRB(16, 8.0,8, 0),
                         height: 40,
                         child: isNoLogin
-                            ?const Text('ログインしてから出直してください', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold,),)
+                            ?const Text('')
                             :const Text('ログアウトする', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold,),),
                       ),
                       Expanded(child: Container(),),
