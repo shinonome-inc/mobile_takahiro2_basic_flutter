@@ -15,5 +15,5 @@ cd qiita_app
 👀下記画像62行目<br>
 <img width="1324" alt="env" src="https://github.com/shinonome-inc/mobile_takahiro2_basic_flutter/assets/88756420/4212d16e-8c9d-4b9b-afed-3642eedb6ffe"><br>
 
-## 動作確認
+## 画面収録動画
 [こちら](https://drive.google.com/file/d/1xcOVZlTZUPmcsUNTaqw-5CKGWkJo-Jy6/view?usp=sharing)からご確認ください。
