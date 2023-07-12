@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
-
-class NoMatch extends StatelessWidget {
-  const NoMatch({Key? key}) : super(key: key);
+// ignore: must_be_immutable
+class NoMatch extends StatelessWidget{
+  Function(String) onArticlesRefresh;
+  NoMatch({Key? key,required this.onArticlesRefresh}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white, // 全体の背景色を白に設定
-      body: Column(
-        children: [
-          Expanded(
-            flex: 1,
-            child: Container(),
+    return RefreshIndicator(
+      color: Colors.grey,
+      onRefresh: () async {
+        onArticlesRefresh("");
+      },
+      child: ListView(
+        children: <Widget>[
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.3,
           ),
           const Text(
             "検索にマッチする記事はありませんでした",
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
               fontFamily: "Noto Sans JP",
@@ -25,15 +29,12 @@ class NoMatch extends StatelessWidget {
           ),
           const Text(
             "条件を変えるなどして再度検索してください",
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 12,
               color: Colors.grey,
               letterSpacing: 1.2,
             ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Container(),
           ),
         ],
       ),

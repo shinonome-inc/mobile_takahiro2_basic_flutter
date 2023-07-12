@@ -139,6 +139,8 @@ class FeedPageState extends State<FeedPage> {
     });
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -157,7 +159,7 @@ class FeedPageState extends State<FeedPage> {
             builder:
                 (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
               if (snapshot.data == null || snapshot.data!.isEmpty) {
-                return const NoMatch();
+                return NoMatch(onArticlesRefresh: _searchArticle);
               } else if (snapshot.hasData) {
                 return RefreshIndicator(
                   color: Colors.grey,
