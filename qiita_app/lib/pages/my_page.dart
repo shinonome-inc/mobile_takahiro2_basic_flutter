@@ -50,9 +50,9 @@ class _MyPageState extends State<MyPage> {
     } else {
       setState(() {
         accessToken = Future.value(token);
-        scrollController.addListener(_scrollListener);
         user = Future.value(QiitaClient.fetchAuthenticatedUser());
       });
+      scrollController.addListener(_scrollListener);
       final resolvedUser = await user;
       setState(() {
         articles = Future.value(
@@ -113,7 +113,8 @@ class _MyPageState extends State<MyPage> {
 
   void _scrollListener() {
     if (scrollController.position.pixels ==
-        scrollController.position.maxScrollExtent) {}
+        scrollController.position.maxScrollExtent) {
+    }
   }
 
   Future<void> _reload() async {
