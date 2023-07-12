@@ -8,7 +8,7 @@ import 'package:qiita_app/components/no_login.dart';
 import 'package:qiita_app/components/no_refresh.dart';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:qiita_app/services/repository.dart';
-import '../components/default_app_bar.dart.dart';
+import '../components/default_app_bar.dart';
 import '../models/user_model.dart';
 
 class MyPage extends StatefulWidget {

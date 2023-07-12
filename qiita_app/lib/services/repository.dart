@@ -99,4 +99,16 @@ class QiitaClient {
       throw Exception('Failed to load user');
     }
   }
+
+  static Future<void> deleteAccessToken() async {
+    final accessToken = await getAccessToken();
+    String url = "https://qiita.com/api/v2/access_tokens/$accessToken";
+    final response = await http.delete(Uri.parse(url));
+    if (response.statusCode == 204) {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.remove('keyAccessToken');
+    } else {
+      throw Exception('Failed to delete');
+    }
+  }
 }
