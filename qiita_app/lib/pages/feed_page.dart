@@ -3,6 +3,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qiita_app/components/default_app_bar.dart';
+import 'package:qiita_app/components/error_request.dart';
 import 'package:qiita_app/components/search_app_bar.dart';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:qiita_app/services/repository.dart';
@@ -28,6 +29,7 @@ class FeedPageState extends State<FeedPage> {
   bool hasNetError = false;
   final redirectWidget =const FeedPage();
   FocusNode focusNode = FocusNode();
+  bool noRequest = false;
 
   void _setArticles(List<Article> updatedArticles) {
     setState(() {
@@ -69,14 +71,19 @@ class FeedPageState extends State<FeedPage> {
       // mountedプロパティのチェック
       _setChildLoading(true);
       currentPage++;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        QiitaClient.fetchArticle(searchWord, currentPage).then((newArticles) {
-            setState(() {
-              articles = articles.then(
-                      (existingArticles) => [...existingArticles, ...newArticles]);
-            });
-            _setChildLoading(false);
-        });
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        try {
+          final newArticles = await QiitaClient.fetchArticle(searchWord, currentPage);
+          setState(() {
+            articles = articles.then(
+                    (existingArticles) => [...existingArticles, ...newArticles]);
+          });
+        } catch (e) {
+          setState(() {
+            noRequest=true;
+          });
+        }
+        _setChildLoading(false);
       });
     }
   }
@@ -89,8 +96,7 @@ class FeedPageState extends State<FeedPage> {
 
   Future<void> subInitState()async{
     checkConnectivityStatus();
-    getArticle();
-    await articles;
+    await getArticle();
     scrollController.addListener(_scrollListener);
     _setLoading(false);
   }
@@ -155,7 +161,9 @@ class FeedPageState extends State<FeedPage> {
         body: hasBigIndicator
             ? const Center(child: CircularProgressIndicator(color: Colors.grey,))
             : hasNetError
-            ?NetworkError(onTapReload:_reload)
+            ? NetworkError(onTapReload:_reload)
+            : noRequest
+            ?ErrorRequest(onArticlesRefresh: _searchArticle)
             : Center(
           child: FutureBuilder<List<Article>>(
             future: articles,
@@ -182,7 +190,6 @@ class FeedPageState extends State<FeedPage> {
                             onLoadingChanged: _setLoading);
                       }
                       else if (hasSmallIndicator) {
-                        // ローディングインジケーターを表示するウィジェットを返す
                         return const Center(
                             child: CupertinoActivityIndicator(
                               radius: 20.0,
