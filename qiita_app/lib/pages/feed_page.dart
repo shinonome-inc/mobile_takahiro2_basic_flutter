@@ -27,6 +27,7 @@ class FeedPageState extends State<FeedPage> {
   String searchWord = '';
   bool hasNetError = false;
   final redirectWidget =const FeedPage();
+  FocusNode focusNode = FocusNode();
 
   void _setArticles(List<Article> updatedArticles) {
     setState(() {
@@ -44,7 +45,6 @@ class FeedPageState extends State<FeedPage> {
     _setArticles(results);
     _setChildLoading(false);
   }
-
   void _setLoading(bool value) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
@@ -127,6 +127,9 @@ class FeedPageState extends State<FeedPage> {
         scrollController.position.maxScrollExtent) {
       _addScroll();
     }
+    if (scrollController.position.pixels > 0) {
+      FocusScope.of(context).unfocus();
+    }
   }
   void setLoading(){
     setState(() {
@@ -177,7 +180,8 @@ class FeedPageState extends State<FeedPage> {
                         return ArticleGestureDetector(
                             article: snapshot.data![index],
                             onLoadingChanged: _setLoading);
-                      } else if (hasSmallIndicator) {
+                      }
+                      else if (hasSmallIndicator) {
                         // ローディングインジケーターを表示するウィジェットを返す
                         return const Center(
                             child: CupertinoActivityIndicator(

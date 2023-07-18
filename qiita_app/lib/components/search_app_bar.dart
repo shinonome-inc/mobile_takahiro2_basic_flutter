@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Function(String) onArticlesChanged;
+  final TextEditingController _textEditingController = TextEditingController();
 
-  const SearchAppBar({
+  SearchAppBar({
     Key? key,
     required this.onArticlesChanged,
   }) : super(key: key);
@@ -40,6 +41,7 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
             width: 343,
             height: 36,
             child: TextFormField(
+              controller: _textEditingController,
               cursorColor: Colors.black,
               style: const TextStyle(
                 fontSize: 17,
@@ -49,10 +51,21 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
                 contentPadding: const EdgeInsets.symmetric(
                   vertical: 10,
                   horizontal: 20,
+                ),suffixIcon: IconButton(
+                icon: const Icon(
+                  Icons.clear,
+                  color:Colors.grey,
                 ),
+                  onPressed: () {
+                    _textEditingController.clear();
+                  }
+              ),
                 filled: true,
                 fillColor: const Color.fromRGBO(192, 192, 192, 0.12),
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: const Icon(
+                    Icons.search,
+                  color:Colors.grey,
+                ),
                 hintText: 'Search',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
