@@ -130,7 +130,7 @@ class _SettingPageState extends State<SettingPage> {
                     isScrollControlled: true,
                     builder: (BuildContext context) {
                       return const TextSizedBox(
-                        privacyPolicyText: Texts.privacyPolicy,
+                        privacyPolicyText: Texts.termOfServiceText,
                         appBarTitle: '利用規約',
                       );
                     },
