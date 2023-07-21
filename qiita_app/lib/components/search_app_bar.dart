@@ -51,7 +51,8 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
                 contentPadding: const EdgeInsets.symmetric(
                   vertical: 10,
                   horizontal: 20,
-                ),suffixIcon: IconButton(
+                ),
+                suffixIcon: IconButton(
                 icon: const Icon(
                   Icons.clear,
                   color:Colors.grey,

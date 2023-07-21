@@ -29,7 +29,7 @@ class FeedPageState extends State<FeedPage> {
   bool hasNetError = false;
   final redirectWidget =const FeedPage();
   FocusNode focusNode = FocusNode();
-  bool noRequest = false;
+  bool hasRequest = false;
 
   void _setArticles(List<Article> updatedArticles) {
     setState(() {
@@ -80,7 +80,7 @@ class FeedPageState extends State<FeedPage> {
           });
         } catch (e) {
           setState(() {
-            noRequest=true;
+            hasRequest=true;
           });
         }
         _setChildLoading(false);
@@ -148,73 +148,84 @@ class FeedPageState extends State<FeedPage> {
     });
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        appBar: hasNetError
-            ? const DefaultAppBar(text: '') as PreferredSizeWidget?
-            : SearchAppBar(onArticlesChanged: _searchArticle),
-        body: hasBigIndicator
-            ? const Center(child: CircularProgressIndicator(color: Colors.grey,))
-            : hasNetError
-            ? NetworkError(onTapReload:_reload)
-            : noRequest
-            ?ErrorRequest(onArticlesRefresh: _searchArticle)
-            : Center(
-          child: FutureBuilder<List<Article>>(
-            future: articles,
-            builder:
-                (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
-              if (snapshot.data == null || snapshot.data!.isEmpty) {
-                return NoMatch(onArticlesRefresh: _searchArticle);
-              } else if (snapshot.hasData) {
-                return RefreshIndicator(
-                  color: Colors.grey,
-                  onRefresh: () async {
-                    // リフレッシュ時の処理を実装する.
-                    await _searchArticle(searchWord);
-                  },
-                  child: ListView.separated(
-                    controller: scrollController,
-                    itemCount: snapshot.data!.length + 1,
-                    // +1はローディングインジケーターのためのアイテム
-                    itemBuilder: (BuildContext context, int index) {
-                      // childLoadingIndicatorがtrueで、かつindexが0の場合、ローディングインジケーターを表示
-                      if (index < snapshot.data!.length) {
-                        return ArticleGestureDetector(
-                            article: snapshot.data![index],
-                            onLoadingChanged: _setLoading);
-                      }
-                      else if (hasSmallIndicator) {
-                        return const Center(
-                            child: CupertinoActivityIndicator(
-                              radius: 20.0,
-                              color: CupertinoColors.inactiveGray,
-                            ));
-                      }
-                      return null;
-                    },
-                    separatorBuilder: (BuildContext context, int index) =>
-                    const Divider(
-                      indent: 70.0,
-                      height: 0.5,
-                    ),
-                  ),
-                );
-              } else if (snapshot.hasError) {
-                return Text(
-                  "データの取得中にエラーが発生しました: ${snapshot.error}",
-                  style: const TextStyle(color: Colors.red),
-                );
-              } else {
-                return const Text('不明なエラーが発生しました。運営までお問い合わせください');
-              }
-            },
-          ),
+        appBar: _buildAppBar(),
+        body: _buildBody(),
+      ),
+    );
+  }
+  _buildAppBar() {
+    return hasNetError
+        ? const DefaultAppBar(text: '')
+        : SearchAppBar(onArticlesChanged: _searchArticle);
+  }
+
+  Widget _buildBody() {
+    if (hasBigIndicator) {
+      return const Center(child: CircularProgressIndicator(color: Colors.grey,));
+    } else if (hasNetError) {
+      return NetworkError(onTapReload: _reload);
+    } else if (hasRequest) {
+      return ErrorRequest(onArticlesRefresh: _searchArticle);
+    } else {
+      return _buildFutureBuilder();
+    }
+  }
+
+  Widget _buildFutureBuilder() {
+    return Center(
+      child: FutureBuilder<List<Article>>(
+        future: articles,
+        builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
+          if (snapshot.data == null || snapshot.data!.isEmpty) {
+            return NoMatch(onArticlesRefresh: _searchArticle);
+          } else if (snapshot.hasData) {
+            return _buildRefreshIndicator(snapshot);
+          } else if (snapshot.hasError) {
+            return Text(
+              "データの取得中にエラーが発生しました: ${snapshot.error}",
+              style: const TextStyle(color: Colors.red),
+            );
+          } else {
+            return const Text('不明なエラーが発生しました。運営までお問い合わせください');
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildRefreshIndicator(AsyncSnapshot<List<Article>> snapshot) {
+    return RefreshIndicator(
+      color: Colors.grey,
+      onRefresh: () async {
+        await _searchArticle(searchWord);
+      },
+      child: ListView.separated(
+        controller: scrollController,
+        itemCount: snapshot.data!.length + 1,
+        itemBuilder: (BuildContext context, int index) {
+          if (index < snapshot.data!.length) {
+            return ArticleGestureDetector(
+              article: snapshot.data![index],
+              onLoadingChanged: _setLoading,
+            );
+          } else if (hasSmallIndicator) {
+            return const Center(
+              child: CupertinoActivityIndicator(
+                radius: 20.0,
+                color: CupertinoColors.inactiveGray,
+              ),
+            );
+          }
+          return null;
+        },
+        separatorBuilder: (BuildContext context, int index) => const Divider(
+          indent: 70.0,
+          height: 0.5,
         ),
       ),
     );
