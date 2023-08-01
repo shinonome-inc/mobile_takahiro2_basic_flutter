@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:qiita_app/components/green_elevated_button.dart';
 import 'package:qiita_app/components/login_loading.dart';
-import '../components/web_view.dart';
+import 'package:qiita_app/components/web_view_screen.dart';
 import '../services/repository.dart';
 import 'package:qiita_app/pages/root_page.dart';
 import '../models/url.model.dart';
@@ -147,7 +147,7 @@ class _TopPageState extends State<TopPage> {
                                       height:
                                       MediaQuery.of(context).size.height *
                                           0.9,
-                                      child: WebView(
+                                      child: WebViewScreen(
                                         url: 'https://qiita.com/api/v2/oauth/authorize?client_id=${dotenv.env['clientId']}&scope=read_qiita',
                                       ),
                                     );

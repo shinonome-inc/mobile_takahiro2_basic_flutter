@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:qiita_app/components/web_view_screen.dart';
 import 'package:qiita_app/models/article.model.dart';
-import 'web_view.dart';
 
 class ArticleGestureDetector extends StatefulWidget {
   const ArticleGestureDetector({
@@ -30,13 +30,12 @@ class _ArticleGestureDetectorState extends State<ArticleGestureDetector> {
       onTap: () {
         showModalBottomSheet<void>(
           context: context,
-          useRootNavigator: true,
           backgroundColor: Colors.transparent,
           isScrollControlled: true,
           builder: (BuildContext context) {
             return SizedBox(
               height: MediaQuery.of(context).size.height * 0.9,
-              child: WebView(
+              child: WebViewScreen(
                 url: widget.article.url,
               ),
             );
