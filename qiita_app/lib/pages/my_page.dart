@@ -23,7 +23,6 @@ class _MyPageState extends State<MyPage> {
   Future<List<Article>> articles = Future.value([]);
   int currentPage = 1;
   String userId = "";
-  final ScrollController scrollController = ScrollController();
   bool hasBigIndicator = true;
   bool isNoLogin = false;
   bool isRefresh = false;
@@ -50,7 +49,6 @@ class _MyPageState extends State<MyPage> {
     } else {
       setState(() {
         accessToken = Future.value(token);
-        scrollController.addListener(_scrollListener);
         user = Future.value(QiitaClient.fetchAuthenticatedUser());
       });
       final resolvedUser = await user;
@@ -96,12 +94,6 @@ class _MyPageState extends State<MyPage> {
     });
   }
 
-  @override
-  void dispose() {
-    scrollController.removeListener(_scrollListener);
-    scrollController.dispose();
-    super.dispose();
-  }
 
   Future<void> getRefresh() async {
     final resolvedUser = await user;
@@ -109,11 +101,6 @@ class _MyPageState extends State<MyPage> {
       user = QiitaClient.fetchAuthenticatedUser();
       articles = QiitaClient.fetchAuthArticle(currentPage, resolvedUser!.id);
     });
-  }
-
-  void _scrollListener() {
-    if (scrollController.position.pixels ==
-        scrollController.position.maxScrollExtent) {}
   }
 
   Future<void> _reload() async {
@@ -181,7 +168,6 @@ class _MyPageState extends State<MyPage> {
                             SizedBox(
                               height: isRefresh ? myPageHeight - 291 : myPageHeight - 251,
                               child: ListView.separated(
-                                controller: scrollController,
                                 itemCount: articlesSnapshot.data!.length + 1,
                                 itemBuilder: (BuildContext context, int index) {
                                   if (index < articlesSnapshot.data!.length) {

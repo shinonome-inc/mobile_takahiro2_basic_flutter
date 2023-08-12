@@ -3,17 +3,16 @@ import 'package:qiita_app/models/url.model.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../pages/top_page.dart';
 import 'default_app_bar.dart';
-
-class WebView extends StatefulWidget {
+class WebViewScreen extends StatefulWidget {
   final String url;
 
-  const WebView({Key? key, required this.url}) : super(key: key);
+  const WebViewScreen({Key? key, required this.url}) : super(key: key);
 
   @override
-  State<WebView> createState() => _WebViewState();
+  State<WebViewScreen> createState() => _WebViewScreenState();
 }
 
-class _WebViewState extends State<WebView> {
+class _WebViewScreenState extends State<WebViewScreen> {
   late WebViewController controller;
   double? pageHeight;
   bool isLoading = true;
@@ -23,7 +22,6 @@ class _WebViewState extends State<WebView> {
     const String javaScript = 'document.documentElement.scrollHeight;';
     final result = await controller.runJavaScriptReturningResult(javaScript);
     setState(() {
-      debugPrint('UPDATE WebView contents height: $result');
       pageHeight = double.parse(result.toString());
     });
   }
@@ -34,7 +32,7 @@ class _WebViewState extends State<WebView> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => TopPage(redirecturl: url)),
-        (route) => false,
+            (route) => false,
       );
     }
   }
@@ -55,6 +53,7 @@ class _WebViewState extends State<WebView> {
           onPageFinished: (String url) {
             _setLoading(false);
             onPageFinished(url, controller: controller);
+            calculateWebViewHeight(url);
           },
         ),
       )
@@ -70,6 +69,7 @@ class _WebViewState extends State<WebView> {
       child: Scaffold(
         appBar: const DefaultAppBar(text: 'Article'),
         body: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
           child: SizedBox(
               height: pageHeight ?? MediaQuery.of(context).size.height * 0.9,
               child: !isLoading
@@ -82,3 +82,4 @@ class _WebViewState extends State<WebView> {
     );
   }
 }
+

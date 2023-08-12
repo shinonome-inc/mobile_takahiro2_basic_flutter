@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 // ignore: must_be_immutable
-class NoMatch extends StatelessWidget{
+class ErrorRequest extends StatelessWidget{
   Function(String) onArticlesRefresh;
-  NoMatch({Key? key,required this.onArticlesRefresh}) : super(key: key);
+  ErrorRequest({Key? key,required this.onArticlesRefresh}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class NoMatch extends StatelessWidget{
             height: MediaQuery.of(context).size.height * 0.3,
           ),
           const Text(
-            "検索にマッチする記事はありませんでした",
+            "回数制限の上限に達しました",
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
@@ -28,7 +28,7 @@ class NoMatch extends StatelessWidget{
             height: 17,
           ),
           const Text(
-            "条件を変えるなどして再度検索してください",
+            "時間をおいてから再度お試しください",
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 12,

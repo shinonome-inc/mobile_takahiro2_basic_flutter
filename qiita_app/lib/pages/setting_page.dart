@@ -130,7 +130,7 @@ class _SettingPageState extends State<SettingPage> {
                     isScrollControlled: true,
                     builder: (BuildContext context) {
                       return const TextSizedBox(
-                        privacyPolicyText: Texts.privacyPolicy,
+                        privacyPolicyText: Texts.termOfServiceText,
                         appBarTitle: '利用規約',
                       );
                     },
@@ -167,9 +167,9 @@ class _SettingPageState extends State<SettingPage> {
                   ),
                 ),
               ),
-              Container(
-                color: Colors.white,
-                child: Row(
+            Container(
+        color: Colors.white,
+        child: Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.fromLTRB(16, 8.0,8.0, 0),
@@ -207,41 +207,55 @@ class _SettingPageState extends State<SettingPage> {
               Container(
                 height: 20,
               ),
-              const ListTile(
-                title: Text('その他',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 12,
-                    )
+              Container(
+                child: isNoLogin
+                    ? Container()
+                    : Column(
+                  children: [
+                    const ListTile(
+                      title: Text(
+                        'その他',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        deleteCurrentAccessToken();
+                      },
+                      child: Container(
+                        color: Colors.white,
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.fromLTRB(16, 8.0, 8, 0),
+                              height: 40,
+                              child: const Text(
+                                'ログアウトする',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Expanded(child: Container()),
+                            const Icon(
+                              Icons.arrow_forward_ios_outlined,
+                              color: Colors.grey,
+                            ),
+                            Container(
+                              width: 16,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              GestureDetector(
-                onTap: () {
-                  deleteCurrentAccessToken();
-                },
-                child: Container(
-                  color: Colors.white,
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.fromLTRB(16, 8.0,8, 0),
-                        height: 40,
-                        child: isNoLogin
-                            ?const Text('')
-                            :const Text('ログアウトする', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold,),),
-                      ),
-                      Expanded(child: Container(),),
-                      const Icon(
-                          Icons.arrow_forward_ios_outlined,
-                          color: Colors.grey
-                      ),
-                      Container(
-                        width: 16,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+
               Expanded(child: Container()),
             ],
           ),
