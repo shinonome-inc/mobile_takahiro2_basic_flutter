@@ -121,6 +121,12 @@ class _SettingPageState extends State<SettingPage> {
               ),
             ),
           ),
+          const Divider(
+            color: Colors.grey, // 区切り線の色
+            thickness: 0.3,
+            height: 0.3,// 区切り線の太さ
+            indent: 16,
+          ),
           GestureDetector(
             onTap: () {
               showModalBottomSheet<void>(
@@ -162,6 +168,12 @@ class _SettingPageState extends State<SettingPage> {
               ),
             ),
           ),
+          const Divider(
+            color: Colors.grey, // 区切り線の色
+            thickness: 0.3,
+            height: 0.3,// 区切り線の太さ
+            indent: 16,
+          ),
           Container(
             color: Colors.white,
             child: Row(
@@ -170,7 +182,7 @@ class _SettingPageState extends State<SettingPage> {
                   padding: const EdgeInsets.fromLTRB(16, 8.0, 8.0, 0),
                   height: 40,
                   child: const Text(
-                    'アプリケーションバージョン',
+                    'アプリバージョン',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -199,6 +211,12 @@ class _SettingPageState extends State<SettingPage> {
               ],
             ),
           ),
+          const Divider(
+            color: Colors.grey, // 区切り線の色
+            thickness: 0.3,
+            height: 0.3,// 区切り線の太さ
+            indent: 16,
+          ),
           Container(
             height: 20,
           ),
@@ -206,13 +224,15 @@ class _SettingPageState extends State<SettingPage> {
             child: isNoLogin
                 ? Container()
                 : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const ListTile(
-                        title: Text(
-                          'その他',
+                      const Padding(
+                        padding: EdgeInsets.fromLTRB(16, 0, 0, 8),
+                        child: Text(
+                          "その他",
                           style: TextStyle(
-                            color: Colors.grey,
                             fontSize: 12,
+                            color: Colors.grey,
                           ),
                         ),
                       ),
@@ -249,6 +269,12 @@ class _SettingPageState extends State<SettingPage> {
                             ],
                           ),
                         ),
+                      ),
+                      const Divider(
+                        color: Colors.grey, // 区切り線の色
+                        thickness: 0.3,
+                        height: 0.3,// 区切り線の太さ
+                        indent: 16,
                       ),
                     ],
                   ),

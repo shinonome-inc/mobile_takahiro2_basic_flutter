@@ -3,11 +3,13 @@ import 'package:qiita_app/models/url.model.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../pages/top_page.dart';
 import 'default_app_bar.dart';
+
 class WebViewScreen extends StatefulWidget {
   final String url;
   final String title;
 
-  const WebViewScreen({Key? key, required this.url,required this.title}) : super(key: key);
+  const WebViewScreen({Key? key, required this.url, required this.title})
+      : super(key: key);
 
   @override
   State<WebViewScreen> createState() => _WebViewScreenState();
@@ -33,7 +35,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => TopPage(redirecturl: url)),
-            (route) => false,
+        (route) => false,
       );
     }
   }
@@ -77,10 +79,12 @@ class _WebViewScreenState extends State<WebViewScreen> {
                   ? WebViewWidget(
                       controller: controller,
                     )
-                  : const Center(child: CircularProgressIndicator(color: Colors.grey,))),
+                  : const Center(
+                      child: CircularProgressIndicator(
+                      color: Colors.grey,
+                    ))),
         ),
       ),
     );
   }
 }
-
