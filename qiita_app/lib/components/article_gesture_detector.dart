@@ -37,6 +37,7 @@ class _ArticleGestureDetectorState extends State<ArticleGestureDetector> {
               height: MediaQuery.of(context).size.height * 0.9,
               child: WebViewScreen(
                 url: widget.article.url,
+                title:"Article" ,
               ),
             );
           },

@@ -5,8 +5,9 @@ import '../pages/top_page.dart';
 import 'default_app_bar.dart';
 class WebViewScreen extends StatefulWidget {
   final String url;
+  final String title;
 
-  const WebViewScreen({Key? key, required this.url}) : super(key: key);
+  const WebViewScreen({Key? key, required this.url,required this.title}) : super(key: key);
 
   @override
   State<WebViewScreen> createState() => _WebViewScreenState();
@@ -67,7 +68,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
         top: Radius.circular(20),
       ),
       child: Scaffold(
-        appBar: const DefaultAppBar(text: 'Article'),
+        appBar: DefaultAppBar(text: widget.title),
         body: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
           child: SizedBox(

@@ -26,7 +26,7 @@ class ModalArticle extends StatelessWidget {
             style: TextStyle(fontFamily: 'Pacifico-Regular', fontSize: 17),
           ),
         ),
-        Expanded(child: WebViewScreen(url: url)),
+        Expanded(child: WebViewScreen(url: url, title: 'Article',)),
       ],
     );
   }
