@@ -107,8 +107,8 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                         ),
                       ),
-                      Expanded(
-                        child: Container(
+                      const Expanded(
+                        child: SizedBox(
                         ),
                       ),
                       const Icon(
@@ -151,10 +151,9 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                         ),
                       ),
-                      Expanded(
-                        child: Container(
+                      const Expanded(
+                        child: SizedBox(
                         ),
-
                       ),
                       const Icon(
                           Icons.arrow_forward_ios_outlined,
@@ -182,8 +181,8 @@ class _SettingPageState extends State<SettingPage> {
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: Container(
+                    const Expanded(
+                      child: SizedBox(
                       ),
                     ),
                     FutureBuilder<String>(
@@ -240,7 +239,10 @@ class _SettingPageState extends State<SettingPage> {
                                 ),
                               ),
                             ),
-                            Expanded(child: Container()),
+                            const Expanded(
+                              child: SizedBox(
+                              ),
+                            ),
                             const Icon(
                               Icons.arrow_forward_ios_outlined,
                               color: Colors.grey,
@@ -255,8 +257,6 @@ class _SettingPageState extends State<SettingPage> {
                   ],
                 ),
               ),
-
-              Expanded(child: Container()),
             ],
           ),
         )
