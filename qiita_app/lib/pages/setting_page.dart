@@ -40,7 +40,11 @@ class _SettingPageState extends State<SettingPage> {
   @override
   void initState() {
     super.initState();
-    checkAccessToken();
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    await checkAccessToken();
     getAppVersion();
   }
 
