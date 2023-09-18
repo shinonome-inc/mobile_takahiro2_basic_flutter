@@ -55,7 +55,7 @@ class _ArticleGestureDetectorState extends State<ArticleGestureDetector> {
         subtitle: Row(
           children: [
             Text(
-              '@${widget.article.user.id}投稿日:',
+              '@${widget.article.user.id} 投稿日:',
               style: const TextStyle(fontSize: 12.0),
               maxLines: 1, //テキストがオーバーフローしないように設定！
             ),
@@ -67,7 +67,7 @@ class _ArticleGestureDetectorState extends State<ArticleGestureDetector> {
               ),
             ),
             const Text(
-              'いいね:',
+              ' いいね:',
               style: TextStyle(fontSize: 12.0),
               maxLines: 1,
             ),
