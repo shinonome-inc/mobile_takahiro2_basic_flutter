@@ -21,12 +21,12 @@ class FeedPage extends StatefulWidget {
 class FeedPageState extends State<FeedPage> {
   bool hasBigIndicator = false;
   bool hasSmallIndicator = false;
-  late Future<List<Article>> articles;
+  Future<List<Article>>? articles;
   final ScrollController scrollController = ScrollController();
   int currentPage = 1;
   String searchWord = 'Search';
   bool hasNetError = false;
-  final redirectWidget =const FeedPage();
+  final redirectWidget = const FeedPage();
   FocusNode focusNode = FocusNode();
   bool hasRequest = false;
 
@@ -46,6 +46,7 @@ class FeedPageState extends State<FeedPage> {
     _setArticles(results);
     _setChildLoading(false);
   }
+
   void _setLoading(bool value) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
@@ -72,14 +73,15 @@ class FeedPageState extends State<FeedPage> {
       currentPage++;
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         try {
-          final newArticles = await QiitaClient.fetchArticle(searchWord, currentPage);
+          final newArticles =
+              await QiitaClient.fetchArticle(searchWord, currentPage);
           setState(() {
-            articles = articles.then(
-                    (existingArticles) => [...existingArticles, ...newArticles]);
+            articles = articles?.then(
+                (existingArticles) => [...existingArticles, ...newArticles]);
           });
         } catch (e) {
           setState(() {
-            hasRequest=true;
+            hasRequest = true;
           });
         }
         _setChildLoading(false);
@@ -87,31 +89,24 @@ class FeedPageState extends State<FeedPage> {
     }
   }
 
-
   @override
   void initState() {
     super.initState();
     checkConnectivityStatus();
     hasBigIndicator = true;
-    debugPrint(hasBigIndicator.toString());
     getArticle().then((_) {
       hasBigIndicator = false;
-      debugPrint(hasBigIndicator.toString());
     });
-
     scrollController.addListener(_scrollListener);
   }
 
-
   Future<void> getArticle() async {
-    List<Article> newArticles = await QiitaClient.fetchArticle("", currentPage);
     setState(() {
-      articles = Future.value(newArticles);
+      articles = Future.value(QiitaClient.fetchArticle("", currentPage));
     });
-    debugPrint(articles.toString());
   }
 
-  void checkConnectivityStatus(){
+  void checkConnectivityStatus() {
     var connectivityResult = (Connectivity().checkConnectivity());
     // ignore: unrelated_type_equality_checks
     if (connectivityResult == ConnectivityResult.none) {
@@ -120,9 +115,9 @@ class FeedPageState extends State<FeedPage> {
     }
   }
 
-  void setNetError(){
+  void setNetError() {
     setState(() {
-      hasNetError=true;
+      hasNetError = true;
     });
   }
 
@@ -145,8 +140,8 @@ class FeedPageState extends State<FeedPage> {
 
   void _reload() async {
     setState(() {
-      hasNetError=false;
-      articles =QiitaClient.fetchArticle(searchWord, currentPage);
+      hasNetError = false;
+      articles = QiitaClient.fetchArticle(searchWord, currentPage);
     });
   }
 
@@ -156,42 +151,39 @@ class FeedPageState extends State<FeedPage> {
       onWillPop: () async => false,
       child: Scaffold(
         appBar: _buildAppBar(),
-        body: _buildBody(),
+        body: _buildFutureBuilder(),
       ),
     );
   }
+
   _buildAppBar() {
     return hasNetError
         ? const DefaultAppBar(text: '')
-        : SearchAppBar(onArticlesChanged: _searchArticle,searchWord: searchWord);
+        : SearchAppBar(
+            onArticlesChanged: _searchArticle, searchWord: searchWord);
   }
 
-  Widget _buildBody() {
-    if (hasBigIndicator) {
-      return const Center(child: CircularProgressIndicator(color: Colors.grey,));
-    } else if (hasNetError) {
-      return NetworkError(onTapReload: _reload);
-    } else if (hasRequest) {
-      return ErrorRequest(onArticlesRefresh: _searchArticle);
-    } else {
-      return _buildFutureBuilder();
-    }
-  }
   Widget _buildFutureBuilder() {
     return Center(
       child: FutureBuilder<List<Article>>(
         future: articles,
         builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            debugPrint("snapshot.hasData: ${snapshot.hasData}");
-            debugPrint("snapshot.data: ${snapshot.data}");
-            return NoMatch(onArticlesRefresh: _searchArticle);
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+                child: CircularProgressIndicator(
+              color: Colors.grey,
+            ));
           } else if (snapshot.hasError) {
-            return Text(
-              "データの取得中にエラーが発生しました: ${snapshot.error}",
-              style: const TextStyle(color: Colors.red),
-            );
+            if (hasNetError) {
+              return NetworkError(onTapReload: _reload);
+            }
+            return ErrorRequest(onArticlesRefresh: _searchArticle);
           } else {
+            if (!snapshot.hasData ||
+                snapshot.data == null ||
+                snapshot.data!.isEmpty) {
+              return NoMatch(onArticlesRefresh: _searchArticle);
+            }
             return _buildRefreshIndicator(snapshot);
           }
         },
@@ -232,5 +224,3 @@ class FeedPageState extends State<FeedPage> {
     );
   }
 }
-
-
