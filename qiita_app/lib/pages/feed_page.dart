@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qiita_app/components/default_app_bar.dart';
 import 'package:qiita_app/components/error_request.dart';
 import 'package:qiita_app/components/search_app_bar.dart';
@@ -11,7 +12,8 @@ import '../components/article_gesture_detector.dart';
 import '../components/network_error.dart';
 import '../components/no_match.dart';
 
-//
+
+final searchWordProvider = StateProvider((ref) => '');
 class FeedPage extends StatefulWidget {
   const FeedPage({Key? key}) : super(key: key);
 
@@ -25,7 +27,7 @@ class FeedPageState extends State<FeedPage> {
   late Future<List<Article>> articles = Future.value([]);
   final ScrollController scrollController = ScrollController();
   int currentPage = 1;
-  String searchWord = '';
+  String searchWord = 'Search';
   bool hasNetError = false;
   final redirectWidget =const FeedPage();
   FocusNode focusNode = FocusNode();
@@ -161,7 +163,7 @@ class FeedPageState extends State<FeedPage> {
   _buildAppBar() {
     return hasNetError
         ? const DefaultAppBar(text: '')
-        : SearchAppBar(onArticlesChanged: _searchArticle);
+        : SearchAppBar(onArticlesChanged: _searchArticle,searchWord: searchWord);
   }
 
   Widget _buildBody() {
@@ -231,3 +233,5 @@ class FeedPageState extends State<FeedPage> {
     );
   }
 }
+
+

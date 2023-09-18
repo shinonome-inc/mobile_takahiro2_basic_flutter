@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Function(String) onArticlesChanged;
+  String searchWord;
   final TextEditingController _textEditingController = TextEditingController();
 
   SearchAppBar({
     Key? key,
     required this.onArticlesChanged,
+    required this.searchWord,
   }) : super(key: key);
 
   @override
@@ -67,7 +70,7 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
                     Icons.search,
                   color:Colors.grey,
                 ),
-                hintText: 'Search',
+                hintText: searchWord,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide.none,
