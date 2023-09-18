@@ -51,6 +51,7 @@ class _TopPageState extends State<TopPage> {
   void setNetError() {
     setState(() {
       hasNetError = true;
+
     });
   }
 

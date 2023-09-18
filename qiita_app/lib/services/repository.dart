@@ -9,17 +9,24 @@ class QiitaClient {
   static Map<String, String> authorizationRequestHeader = {};
 
   static Future<List<Article>> fetchArticle(String searchWord, int page) async {
-    final response = await http.get(Uri.parse(
-        'https://qiita.com/api/v2/items?page=$page&per_page=20&query=body:$searchWord'));
-    if (response.statusCode == 200) {
-      final List<dynamic> jsonArray = json.decode(response.body);
-      List<Article> articles =
-          jsonArray.map((json) => Article.fromJson(json)).toList();
-      return articles;
-    } else {
-      throw Exception('Failed to load articles');
+    try {
+      final response = await http.get(Uri.parse(
+          'https://qiita.com/api/v2/items?page=$page&per_page=20&query=body:$searchWord'));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonArray = await json.decode(response.body);
+        List<Article> articles =
+        jsonArray.map((json) => Article.fromJson(json)).toList();
+        return articles;
+      } else {
+        throw Exception('Failed to load articles. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // エラーメッセージをログに出力
+      rethrow; // 例外を再スローして呼び出し元に伝播
     }
   }
+
 
   //アクセストークンを取得する。
   static Future<String?> fetchAccessToken(String redirectUrl) async {

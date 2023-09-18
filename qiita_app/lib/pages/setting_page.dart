@@ -16,7 +16,7 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
   String? accessToken;
-  bool isNoLogin = false;
+  bool isNoLogin = true;
 
   Future<void> checkAccessToken() async {
     accessToken = await QiitaClient.getAccessToken();

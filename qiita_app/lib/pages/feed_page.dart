@@ -19,9 +19,9 @@ class FeedPage extends StatefulWidget {
 }
 
 class FeedPageState extends State<FeedPage> {
-  bool hasBigIndicator = true;
+  bool hasBigIndicator = false;
   bool hasSmallIndicator = false;
-  late Future<List<Article>> articles = Future.value([]);
+  late Future<List<Article>> articles;
   final ScrollController scrollController = ScrollController();
   int currentPage = 1;
   String searchWord = 'Search';
@@ -87,27 +87,33 @@ class FeedPageState extends State<FeedPage> {
     }
   }
 
+
   @override
   void initState() {
     super.initState();
-    subInitState();
-  }
-
-  Future<void> subInitState()async{
     checkConnectivityStatus();
-    await getArticle();
-    scrollController.addListener(_scrollListener);
-    _setLoading(false);
-  }
-
-  Future<void> getArticle()async{
-    setState(() {
-      articles = QiitaClient.fetchArticle(searchWord, currentPage);
+    hasBigIndicator = true;
+    debugPrint(hasBigIndicator.toString());
+    getArticle().then((_) {
+      hasBigIndicator = false;
+      debugPrint(hasBigIndicator.toString());
     });
+
+    scrollController.addListener(_scrollListener);
   }
 
-  Future<void> checkConnectivityStatus() async {
-    var connectivityResult = await (Connectivity().checkConnectivity());
+
+  Future<void> getArticle() async {
+    List<Article> newArticles = await QiitaClient.fetchArticle("", currentPage);
+    setState(() {
+      articles = Future.value(newArticles);
+    });
+    debugPrint(articles.toString());
+  }
+
+  void checkConnectivityStatus(){
+    var connectivityResult = (Connectivity().checkConnectivity());
+    // ignore: unrelated_type_equality_checks
     if (connectivityResult == ConnectivityResult.none) {
       setNetError();
       _setLoading(false);
@@ -136,10 +142,7 @@ class FeedPageState extends State<FeedPage> {
       FocusScope.of(context).unfocus();
     }
   }
-  void setLoading(){
-    setState(() {
-    });
-  }
+
   void _reload() async {
     setState(() {
       hasNetError=false;
@@ -174,23 +177,22 @@ class FeedPageState extends State<FeedPage> {
       return _buildFutureBuilder();
     }
   }
-
   Widget _buildFutureBuilder() {
     return Center(
       child: FutureBuilder<List<Article>>(
         future: articles,
         builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
-          if (snapshot.data == null || snapshot.data!.isEmpty) {
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            debugPrint("snapshot.hasData: ${snapshot.hasData}");
+            debugPrint("snapshot.data: ${snapshot.data}");
             return NoMatch(onArticlesRefresh: _searchArticle);
-          } else if (snapshot.hasData) {
-            return _buildRefreshIndicator(snapshot);
           } else if (snapshot.hasError) {
             return Text(
               "データの取得中にエラーが発生しました: ${snapshot.error}",
               style: const TextStyle(color: Colors.red),
             );
           } else {
-            return const Text('不明なエラーが発生しました。運営までお問い合わせください');
+            return _buildRefreshIndicator(snapshot);
           }
         },
       ),
