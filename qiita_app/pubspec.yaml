@@ -19,6 +19,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   http: ^0.13.6
   flutter_keyboard_visibility: ^5.4.1
+  flutter_riverpod: ^2.4.0
 
 dev_dependencies:
   flutter_test:
