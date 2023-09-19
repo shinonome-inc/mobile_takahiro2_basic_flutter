@@ -27,7 +27,6 @@ class QiitaClient {
     }
   }
 
-
   //アクセストークンを取得する。
   static Future<String?> fetchAccessToken(String redirectUrl) async {
     const String url = 'https://qiita.com/api/v2/access_tokens';
