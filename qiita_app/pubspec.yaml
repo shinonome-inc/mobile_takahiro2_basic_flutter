@@ -24,6 +24,7 @@ dev_dependencies:
 flutter:
   assets:
     - images/
+    - .env
   fonts:
     - family: Pacifico
       fonts:
