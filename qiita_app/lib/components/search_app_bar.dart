@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-// ignore: must_be_immutable
+
 class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Function(String) onArticlesChanged;
-  String searchWord;
+  final String searchWord;
   final TextEditingController _textEditingController = TextEditingController();
 
   SearchAppBar({

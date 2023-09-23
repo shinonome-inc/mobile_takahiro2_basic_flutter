@@ -58,6 +58,7 @@ class _MyPageState extends State<MyPage> {
       });
     }
   }
+
   void getDeviceHeight() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
