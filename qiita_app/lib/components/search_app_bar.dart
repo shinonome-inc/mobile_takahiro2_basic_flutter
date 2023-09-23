@@ -4,16 +4,21 @@ import 'package:flutter/material.dart';
 class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Function(String) onArticlesChanged;
   final String searchWord;
-  final TextEditingController _textEditingController = TextEditingController();
+  final TextEditingController textEditingController;
 
-  SearchAppBar({
+  const SearchAppBar({
     Key? key,
     required this.onArticlesChanged,
     required this.searchWord,
+    required this.textEditingController
   }) : super(key: key);
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight + 60);
+  void dispose() {
+    // （2） 必ず必要な処理
+    textEditingController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +49,7 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
             width: 343,
             height: 36,
             child: TextFormField(
-              controller: _textEditingController,
+              controller: textEditingController,
               cursorColor: Colors.black,
               style: const TextStyle(
                 fontSize: 17,
@@ -61,7 +66,7 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
                   color:Colors.grey,
                 ),
                   onPressed: () {
-                    _textEditingController.clear();
+                    textEditingController.clear();
                   }
               ),
                 filled: true,
@@ -70,13 +75,15 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
                     Icons.search,
                   color:Colors.grey,
                 ),
-                hintText: searchWord,
+                hintText: 'Search',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide.none,
                 ),
               ),
-              onFieldSubmitted: (search) => onArticlesChanged(search),
+              onFieldSubmitted: (search){
+                onArticlesChanged(search);
+              }
             ),
           ),
         ),

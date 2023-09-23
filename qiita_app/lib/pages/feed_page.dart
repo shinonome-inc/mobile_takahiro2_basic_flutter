@@ -29,6 +29,7 @@ class FeedPageState extends State<FeedPage> {
   final redirectWidget = const FeedPage();
   FocusNode focusNode = FocusNode();
   bool hasRequest = false;
+  TextEditingController textEditingController = TextEditingController();
 
   void _setArticles(List<Article> updatedArticles) {
     setState(() {
@@ -160,7 +161,7 @@ class FeedPageState extends State<FeedPage> {
     return hasNetError
         ? const DefaultAppBar(text: '')
         : SearchAppBar(
-            onArticlesChanged: _searchArticle, searchWord: searchWord);
+            onArticlesChanged: _searchArticle, searchWord: searchWord, textEditingController: textEditingController);
   }
 
   Widget _buildFutureBuilder() {
