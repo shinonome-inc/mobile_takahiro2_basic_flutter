@@ -20,8 +20,8 @@ class _SettingPageState extends State<SettingPage> {
 
   Future<void> checkAccessToken() async {
     accessToken = await QiitaClient.getAccessToken();
-    if (accessToken == null) {
-      setState(() => isNoLogin = true);
+    if (accessToken != null) {
+      setState(() => isNoLogin = false);
     }
   }
 
