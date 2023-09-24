@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:qiita_app/components/article_gesture_detector.dart';
-import 'package:qiita_app/components/current_user_info.dart';
 import 'package:qiita_app/components/network_error.dart';
 import 'package:qiita_app/components/no_login.dart';
 import 'package:qiita_app/components/no_refresh.dart';
@@ -161,31 +160,31 @@ class _MyPageState extends State<MyPage> {
                         },
                         child: ListView(
                           children: [
-                            if (userSnapshot.data != null)
-                              if (isRefresh)
-                                CurrentUserInfo(user: userSnapshot.data)
-                              else
-                                NoRefresh(user: userSnapshot.data),
-                            SizedBox(
-                              height: isRefresh ? myPageHeight - 291 : myPageHeight - 251,
-                              child: ListView.separated(
-                                itemCount: articlesSnapshot.data!.length + 1,
-                                itemBuilder: (BuildContext context, int index) {
-                                  if (index < articlesSnapshot.data!.length) {
-                                    return ArticleGestureDetector(
-                                      article: articlesSnapshot.data![index],
-                                      onLoadingChanged: _setLoading,
-                                    );
-                                  } else {
-                                    return const SizedBox();
-                                  }
-                                },
-                                separatorBuilder: (BuildContext context, int index) =>
-                                const Divider(
-                                  indent: 70.0,
-                                  height: 0.5,
+                            NoRefresh(user: userSnapshot.data),
+                            Column(
+                              children: [
+                                SizedBox(
+                                  height: isRefresh ? myPageHeight - 291 : myPageHeight - 251,
+                                  child: ListView.separated(
+                                    itemCount: articlesSnapshot.data!.length + 1,
+                                    itemBuilder: (BuildContext context, int index) {
+                                      if (index < articlesSnapshot.data!.length) {
+                                        return ArticleGestureDetector(
+                                          article: articlesSnapshot.data![index],
+                                          onLoadingChanged: _setLoading,
+                                        );
+                                      } else {
+                                        return const SizedBox();
+                                      }
+                                    },
+                                    separatorBuilder: (BuildContext context, int index) =>
+                                    const Divider(
+                                      indent: 70.0,
+                                      height: 0.5,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
                           ],
                         ),

@@ -18,13 +18,6 @@ class ArticleGestureDetector extends StatefulWidget {
 
 class _ArticleGestureDetectorState extends State<ArticleGestureDetector> {
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    widget.onLoadingChanged(false);
-  }
-
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {

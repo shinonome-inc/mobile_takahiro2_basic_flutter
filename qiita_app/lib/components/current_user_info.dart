@@ -40,34 +40,30 @@ class CurrentUserInfo extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      user.id.toString(),
+                      user.id,
                       style: const TextStyle(
                         fontSize: 12,
                         color: Color(0xFF828282),
                       ),
                     ),
-                    Expanded(
-                      flex: 1,
+                    /*Expanded(
                       child: Container(),
-                    ),
+                    ),*/
                     Container(
                       constraints: const BoxConstraints(
                         maxHeight: 99,
                         maxWidth: 327,
                       ),
-                      child: Flexible(
-                        child: Text(
+                      child:Text(
                           user.description,
                           style: const TextStyle(fontSize: 12.0),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 3,
                         ),
                       ),
-                    ),
-                    Expanded(
-                      flex: 1,
+/*                    Expanded(
                       child: Container(),
-                    ),
+                    ),*/
                     Row(
                       children: [
                         Text('${user.followeesCount.toString()}フォロー中'),

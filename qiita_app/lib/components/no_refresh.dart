@@ -55,14 +55,13 @@ class NoRefresh extends StatelessWidget {
                         maxHeight: 99,
                         maxWidth: 327,
                       ),
-                      child: Flexible(
-                        child: Text(
+                      child: Text(
                           user.description,
                           style: const TextStyle(fontSize: 12.0),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 3,
                         ),
-                      ),
+
                     ),
                     Expanded(
                       flex: 1,
