@@ -69,16 +69,21 @@ class _MyPageState extends State<MyPage> {
   Future<void> checkConnectivityStatus() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
-      setNetError();
+      //ネットワークに接続されていない時
+      setNetError(true);
       _setLoading(false);
+    }else{
+      //ネットに接続されている時
+      setNetError(false);
     }
   }
 
-  void setNetError() {
+  void setNetError(bool error) {
     setState(() {
-      hasNetError = true;
+      hasNetError = error;
     });
   }
+
 
   void setNoLogin() {
     setState(() {
@@ -103,12 +108,15 @@ class _MyPageState extends State<MyPage> {
   }
 
   Future<void> _reload() async {
-    await QiitaClient.fetchAuthenticatedUser();
-    final resolvedUser = await user;
-    setState(() {
-      user = QiitaClient.fetchAuthenticatedUser();
-      articles = QiitaClient.fetchAuthArticle(currentPage, resolvedUser!.id);
-    });
+    checkConnectivityStatus();
+    if(!isNoLogin){
+      QiitaClient.fetchAuthenticatedUser();
+      final resolvedUser = await user;
+      setState(() {
+        user = QiitaClient.fetchAuthenticatedUser();
+        articles = QiitaClient.fetchAuthArticle(currentPage, resolvedUser!.id);
+      });
+    }
   }
 
   @override
