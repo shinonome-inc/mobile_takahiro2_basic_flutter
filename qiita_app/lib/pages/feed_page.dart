@@ -3,7 +3,6 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qiita_app/components/default_app_bar.dart';
-import 'package:qiita_app/components/error_request.dart';
 import 'package:qiita_app/components/search_app_bar.dart';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:qiita_app/services/repository.dart';
@@ -175,10 +174,7 @@ class FeedPageState extends State<FeedPage> {
               color: Colors.grey,
             ));
           } else if (snapshot.hasError) {
-            if (hasNetError) {
-              return NetworkError(onTapReload: _reload);
-            }
-            return ErrorRequest(onArticlesRefresh: _searchArticle);
+            return NetworkError(onTapReload: _reload);
           } else {
             if (!snapshot.hasData ||
                 snapshot.data == null ||
