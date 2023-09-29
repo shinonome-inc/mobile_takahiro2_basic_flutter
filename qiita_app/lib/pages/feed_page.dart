@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:qiita_app/components/default_app_bar.dart';
 import 'package:qiita_app/components/search_app_bar.dart';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:qiita_app/services/repository.dart';
+
 import '../components/article_gesture_detector.dart';
 import '../components/network_error.dart';
 import '../components/no_match.dart';
@@ -66,7 +68,7 @@ class FeedPageState extends State<FeedPage> {
     }
   }
 
-  void _addScroll() {
+  Future<void> _addScroll() async {
     if (mounted) {
       // mountedプロパティのチェック
       _setChildLoading(true);
@@ -106,18 +108,24 @@ class FeedPageState extends State<FeedPage> {
     });
   }
 
-  void checkConnectivityStatus() {
-    var connectivityResult = (Connectivity().checkConnectivity());
+  Future<void> checkConnectivityStatus() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
     // ignore: unrelated_type_equality_checks
     if (connectivityResult == ConnectivityResult.none) {
-      setNetError();
+      debugPrint("ネットに接続失敗");
+      setNetError(true);
+      _setLoading(false);
+    } else {
+      //ネットに接続されている時
+      debugPrint("ネットに接続");
+      setNetError(false);
       _setLoading(false);
     }
   }
 
-  void setNetError() {
+  void setNetError(bool error) {
     setState(() {
-      hasNetError = true;
+      hasNetError = error;
     });
   }
 
@@ -128,19 +136,17 @@ class FeedPageState extends State<FeedPage> {
     super.dispose();
   }
 
-  void _scrollListener() {
+  Future<void> _scrollListener() async {
     if (scrollController.position.pixels ==
         scrollController.position.maxScrollExtent) {
-      _addScroll();
-    }
-    if (scrollController.position.pixels > 0) {
-      FocusScope.of(context).unfocus();
+      await _addScroll();
     }
   }
 
-  void _reload() async {
+  Future<void> _reload() async {
+    debugPrint("リロードが実行されました");
+    await checkConnectivityStatus();
     setState(() {
-      hasNetError = false;
       articles = QiitaClient.fetchArticle(searchWord, currentPage);
     });
   }
@@ -149,23 +155,19 @@ class FeedPageState extends State<FeedPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async => false,
-      child: Scaffold(
-        appBar: _buildAppBar(),
-        body: _buildFutureBuilder(),
-      ),
+      child: _buildFutureBuilder(),
     );
   }
 
-  _buildAppBar() {
-    return hasNetError
-        ? const DefaultAppBar(text: '')
-        : SearchAppBar(
-            onArticlesChanged: _searchArticle, searchWord: searchWord, textEditingController: textEditingController);
-  }
-
   Widget _buildFutureBuilder() {
-    return Center(
-      child: FutureBuilder<List<Article>>(
+    return Scaffold(
+      appBar: hasNetError
+          ? const DefaultAppBar(text: '') as PreferredSizeWidget?
+          : SearchAppBar(
+              onArticlesChanged: _searchArticle,
+              searchWord: searchWord,
+              textEditingController: textEditingController),
+      body: FutureBuilder<List<Article>>(
         future: articles,
         builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -173,7 +175,7 @@ class FeedPageState extends State<FeedPage> {
                 child: CircularProgressIndicator(
               color: Colors.grey,
             ));
-          } else if (snapshot.hasError) {
+          } else if (snapshot.hasError || hasNetError) {
             return NetworkError(onTapReload: _reload);
           } else {
             if (!snapshot.hasData ||
@@ -192,7 +194,7 @@ class FeedPageState extends State<FeedPage> {
     return RefreshIndicator(
       color: Colors.grey,
       onRefresh: () async {
-        await _searchArticle(searchWord);
+        await _reload();
       },
       child: ListView.separated(
         controller: scrollController,

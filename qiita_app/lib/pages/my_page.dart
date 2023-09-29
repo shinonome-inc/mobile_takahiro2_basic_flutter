@@ -148,15 +148,11 @@ class _MyPageState extends State<MyPage> {
                                   ConnectionState.waiting) {
                             return const CircularProgressIndicator(
                                 color: Colors.grey);
-                          } else if (userSnapshot.hasError) {
+                          } else if (userSnapshot.hasError ||
+                              articlesSnapshot.hasError) {
                             return Center(
                               child: Text(
-                                  'Failed to load user: ${userSnapshot.error}'),
-                            );
-                          } else if (articlesSnapshot.hasError) {
-                            return Center(
-                              child: Text(
-                                  'Failed to load articles: ${articlesSnapshot.error}'),
+                                  'Failed to load user: ${userSnapshot.error}${articlesSnapshot.error}'),
                             );
                           } else if (userSnapshot.hasData &&
                               userSnapshot.data != null &&
