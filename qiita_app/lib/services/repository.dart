@@ -1,7 +1,8 @@
 import 'dart:convert';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:qiita_app/models/article.model.dart';
 import 'package:http/http.dart' as http;
+import 'package:qiita_app/models/article.model.dart';
 import 'package:qiita_app/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,11 +12,9 @@ class QiitaClient {
   static Future<Map<String, String>> getHeader() async {
     final accessToken = await getAccessToken();
     final accessTokenIsSaved = await tokenIsSaved();
-    return accessTokenIsSaved ?
-    {
-      'Authorization': 'Bearer $accessToken'
-    } : {};
+    return accessTokenIsSaved ? {'Authorization': 'Bearer $accessToken'} : {};
   }
+
   static Future<bool> tokenIsSaved() async {
     final accessToken = await getAccessToken();
     return accessToken != null;
@@ -23,7 +22,8 @@ class QiitaClient {
 
   static Future<List<Article>> fetchArticle(String searchWord, int page) async {
     final header = await getHeader();
-    final url = 'https://qiita.com/api/v2/items?page=$page&per_page=20&query=body:$searchWord';
+    final url =
+        'https://qiita.com/api/v2/items?page=$page&per_page=20&query=body:$searchWord';
     final response = await http.get(
       Uri.parse(url),
       headers: header,
@@ -31,7 +31,7 @@ class QiitaClient {
     if (response.statusCode == 200) {
       final List<dynamic> jsonArray = json.decode(response.body);
       List<Article> articles =
-      jsonArray.map((json) => Article.fromJson(json)).toList();
+          jsonArray.map((json) => Article.fromJson(json)).toList();
       return articles;
     } else {
       throw Exception('Failed to load articles');
@@ -56,7 +56,7 @@ class QiitaClient {
     );
     if (response.statusCode == 201) {
       final body =
-      json.decode(response.body) as Map<String, dynamic>; //Json形式に変換
+          json.decode(response.body) as Map<String, dynamic>; //Json形式に変換
       final String accessToken = body["token"].toString();
       authorizationRequestHeader = {
         'Authorization': 'Bearer $accessToken',
@@ -78,20 +78,17 @@ class QiitaClient {
   }
 
   static Future<List<Article>> fetchAuthArticle(int page, String userId) async {
-    final accessToken = await getAccessToken();
-    final url =
-        'https://qiita.com/api/v2/items?page=$page&per_page=20&query=user:$userId';
+    final header = await getHeader();
+    const url =
+        'https://qiita.com//api/v2/authenticated_user/items?page=1&per_page=20';
     final response = await http.get(
       Uri.parse(url),
-      headers: {
-        'Authorization': 'Bearer $accessToken',
-      },
+      headers: header,
     );
-
     if (response.statusCode == 200) {
-      final List<dynamic> jsonData = json.decode(response.body);
-      final List<Article> articles =
-      jsonData.map((dynamic item) => Article.fromJson(item)).toList();
+      final List<dynamic> jsonArray = json.decode(response.body);
+      List<Article> articles =
+          jsonArray.map((json) => Article.fromJson(json)).toList();
       return articles;
     } else {
       throw Exception('Failed to load articles');
@@ -110,7 +107,7 @@ class QiitaClient {
     if (response.statusCode == 200) {
       final dynamic jsonData = json.decode(response.body);
       User user = User.fromJson(jsonData
-      as Map<String, dynamic>); //型チェック！Map<String, dynamic>かどうか判定する。
+          as Map<String, dynamic>); //型チェック！Map<String, dynamic>かどうか判定する。
       return user;
     } else {
       throw Exception('Failed to load user');

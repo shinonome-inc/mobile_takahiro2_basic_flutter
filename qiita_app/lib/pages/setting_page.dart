@@ -1,10 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:qiita_app/components/default_app_bar.dart';
 import 'package:qiita_app/components/text_sized_box.dart';
-import 'package:qiita_app/pages/top_page.dart';
 import 'package:qiita_app/models/texts.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+import 'package:qiita_app/pages/top_page.dart';
 import 'package:qiita_app/services/repository.dart';
 
 class SettingPage extends StatefulWidget {
@@ -128,7 +128,7 @@ class _SettingPageState extends State<SettingPage> {
           const Divider(
             color: Colors.grey, // 区切り線の色
             thickness: 0.3,
-            height: 0.3,// 区切り線の太さ
+            height: 0.3, // 区切り線の太さ
             indent: 16,
           ),
           GestureDetector(
@@ -175,7 +175,7 @@ class _SettingPageState extends State<SettingPage> {
           const Divider(
             color: Colors.grey, // 区切り線の色
             thickness: 0.3,
-            height: 0.3,// 区切り線の太さ
+            height: 0.3, // 区切り線の太さ
             indent: 16,
           ),
           Container(
@@ -218,7 +218,7 @@ class _SettingPageState extends State<SettingPage> {
           const Divider(
             color: Colors.grey, // 区切り線の色
             thickness: 0.3,
-            height: 0.3,// 区切り線の太さ
+            height: 0.3, // 区切り線の太さ
             indent: 16,
           ),
           Container(
@@ -228,7 +228,7 @@ class _SettingPageState extends State<SettingPage> {
             child: isNoLogin
                 ? Container()
                 : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Padding(
                         padding: EdgeInsets.fromLTRB(16, 0, 0, 8),
@@ -273,12 +273,6 @@ class _SettingPageState extends State<SettingPage> {
                             ],
                           ),
                         ),
-                      ),
-                      const Divider(
-                        color: Colors.grey, // 区切り線の色
-                        thickness: 0.3,
-                        height: 0.3,// 区切り線の太さ
-                        indent: 16,
                       ),
                     ],
                   ),

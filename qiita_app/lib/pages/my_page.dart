@@ -1,12 +1,14 @@
 import 'dart:async';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:qiita_app/components/article_gesture_detector.dart';
 import 'package:qiita_app/components/network_error.dart';
 import 'package:qiita_app/components/no_login.dart';
-import 'package:qiita_app/components/no_refresh.dart';
+import 'package:qiita_app/components/userInfo.dart';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:qiita_app/services/repository.dart';
+
 import '../components/default_app_bar.dart';
 import '../models/user_model.dart';
 
@@ -48,12 +50,11 @@ class _MyPageState extends State<MyPage> {
     } else {
       setState(() {
         accessToken = Future.value(token);
-        user = Future.value(QiitaClient.fetchAuthenticatedUser());
+        user = QiitaClient.fetchAuthenticatedUser();
       });
       final resolvedUser = await user;
       setState(() {
-        articles = Future.value(
-            QiitaClient.fetchAuthArticle(currentPage, resolvedUser!.id));
+        articles = QiitaClient.fetchAuthArticle(currentPage, resolvedUser!.id);
       });
     }
   }
@@ -67,13 +68,15 @@ class _MyPageState extends State<MyPage> {
   }
 
   Future<void> checkConnectivityStatus() async {
+    debugPrint("ネットに接続チェック");
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
       //ネットワークに接続されていない時
       setNetError(true);
       _setLoading(false);
-    }else{
+    } else {
       //ネットに接続されている時
+      debugPrint("ネットに接続");
       setNetError(false);
     }
   }
@@ -83,7 +86,6 @@ class _MyPageState extends State<MyPage> {
       hasNetError = error;
     });
   }
-
 
   void setNoLogin() {
     setState(() {
@@ -108,12 +110,15 @@ class _MyPageState extends State<MyPage> {
   }
 
   Future<void> _reload() async {
-    checkConnectivityStatus();
-    if(!isNoLogin){
+    await checkConnectivityStatus();
+    if (!isNoLogin) {
+      debugPrint("ログインしています");
       QiitaClient.fetchAuthenticatedUser();
-      final resolvedUser = await user;
       setState(() {
         user = QiitaClient.fetchAuthenticatedUser();
+      });
+      final resolvedUser = await user;
+      setState(() {
         articles = QiitaClient.fetchAuthArticle(currentPage, resolvedUser!.id);
       });
     }
@@ -167,44 +172,9 @@ class _MyPageState extends State<MyPage> {
                                   },
                                   child: ListView(
                                     children: [
-                                      NoRefresh(user: userSnapshot.data),
-                                      Column(
-                                        children: [
-                                          SizedBox(
-                                            height: isRefresh
-                                                ? myPageHeight - 291
-                                                : myPageHeight - 251,
-                                            child: ListView.separated(
-                                              itemCount: articlesSnapshot
-                                                      .data!.length +
-                                                  1,
-                                              itemBuilder:
-                                                  (BuildContext context,
-                                                      int index) {
-                                                if (index <
-                                                    articlesSnapshot
-                                                        .data!.length) {
-                                                  return ArticleGestureDetector(
-                                                    article: articlesSnapshot
-                                                        .data![index],
-                                                    onLoadingChanged:
-                                                        _setLoading,
-                                                  );
-                                                } else {
-                                                  return const SizedBox();
-                                                }
-                                              },
-                                              separatorBuilder:
-                                                  (BuildContext context,
-                                                          int index) =>
-                                                      const Divider(
-                                                indent: 70.0,
-                                                height: 0.5,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                      UserInfo(user: userSnapshot.data),
+                                      articleInfo(
+                                          articlesSnapshot, myPageHeight),
                                     ],
                                   ),
                                 );
@@ -218,6 +188,35 @@ class _MyPageState extends State<MyPage> {
                     },
                   ),
                 ),
+    );
+  }
+
+  Column articleInfo(AsyncSnapshot<List<Article>> articlesSnapshot, double h) {
+    return Column(
+      children: [
+        SizedBox(
+          height: h - 251,
+          child: ListView.separated(
+            itemCount: articlesSnapshot.data!.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index < articlesSnapshot.data!.length) {
+                debugPrint(articles.toString());
+                return ArticleGestureDetector(
+                  article: articlesSnapshot.data![index],
+                  onLoadingChanged: _setLoading,
+                );
+              } else {
+                return const SizedBox();
+              }
+            },
+            separatorBuilder: (BuildContext context, int index) =>
+                const Divider(
+              indent: 70.0,
+              height: 0.5,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
