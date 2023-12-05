@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:qiita_app/components/article_gesture_detector.dart';
 import 'package:qiita_app/components/network_error.dart';
 import 'package:qiita_app/components/no_login.dart';
-import 'package:qiita_app/components/user_Info.dart';
+import 'package:qiita_app/components/user_info.dart';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:qiita_app/services/repository.dart';
 
