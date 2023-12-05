@@ -1,17 +1,17 @@
 import 'dart:async';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qiita_app/components/default_app_bar.dart';
-import 'package:qiita_app/components/error_request.dart';
 import 'package:qiita_app/components/search_app_bar.dart';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:qiita_app/services/repository.dart';
+
 import '../components/article_gesture_detector.dart';
 import '../components/network_error.dart';
 import '../components/no_match.dart';
 
-//
 class FeedPage extends StatefulWidget {
   const FeedPage({Key? key}) : super(key: key);
 
@@ -20,16 +20,17 @@ class FeedPage extends StatefulWidget {
 }
 
 class FeedPageState extends State<FeedPage> {
-  bool hasBigIndicator = true;
+  bool hasBigIndicator = false;
   bool hasSmallIndicator = false;
-  late Future<List<Article>> articles = Future.value([]);
+  Future<List<Article>>? articles;
   final ScrollController scrollController = ScrollController();
   int currentPage = 1;
-  String searchWord = '';
-  bool hasNetError = false;
-  final redirectWidget =const FeedPage();
+  String searchWord = 'Search';
+  bool hasNetError = true;
+  final redirectWidget = const FeedPage();
   FocusNode focusNode = FocusNode();
   bool hasRequest = false;
+  TextEditingController textEditingController = TextEditingController();
 
   void _setArticles(List<Article> updatedArticles) {
     setState(() {
@@ -47,6 +48,7 @@ class FeedPageState extends State<FeedPage> {
     _setArticles(results);
     _setChildLoading(false);
   }
+
   void _setLoading(bool value) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
@@ -66,21 +68,22 @@ class FeedPageState extends State<FeedPage> {
     }
   }
 
-  void _addScroll() {
+  Future<void> _addScroll() async {
     if (mounted) {
       // mountedプロパティのチェック
       _setChildLoading(true);
       currentPage++;
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         try {
-          final newArticles = await QiitaClient.fetchArticle(searchWord, currentPage);
+          final newArticles =
+              await QiitaClient.fetchArticle(searchWord, currentPage);
           setState(() {
-            articles = articles.then(
-                    (existingArticles) => [...existingArticles, ...newArticles]);
+            articles = articles?.then(
+                (existingArticles) => [...existingArticles, ...newArticles]);
           });
         } catch (e) {
           setState(() {
-            hasRequest=true;
+            hasRequest = true;
           });
         }
         _setChildLoading(false);
@@ -91,33 +94,38 @@ class FeedPageState extends State<FeedPage> {
   @override
   void initState() {
     super.initState();
-    subInitState();
-  }
-
-  Future<void> subInitState()async{
     checkConnectivityStatus();
-    await getArticle();
+    hasBigIndicator = true;
+    getArticle().then((_) {
+      hasBigIndicator = false;
+    });
     scrollController.addListener(_scrollListener);
-    _setLoading(false);
   }
 
-  Future<void> getArticle()async{
+  Future<void> getArticle() async {
     setState(() {
-      articles = QiitaClient.fetchArticle(searchWord, currentPage);
+      articles = Future.value(QiitaClient.fetchArticle("", currentPage));
     });
   }
 
   Future<void> checkConnectivityStatus() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
+    // ignore: unrelated_type_equality_checks
     if (connectivityResult == ConnectivityResult.none) {
-      setNetError();
+      debugPrint("ネットに接続失敗");
+      setNetError(true);
+      _setLoading(false);
+    } else {
+      //ネットに接続されている時
+      debugPrint("ネットに接続");
+      setNetError(false);
       _setLoading(false);
     }
   }
 
-  void setNetError(){
+  void setNetError(bool error) {
     setState(() {
-      hasNetError=true;
+      hasNetError = error;
     });
   }
 
@@ -128,23 +136,18 @@ class FeedPageState extends State<FeedPage> {
     super.dispose();
   }
 
-  void _scrollListener() {
+  Future<void> _scrollListener() async {
     if (scrollController.position.pixels ==
         scrollController.position.maxScrollExtent) {
-      _addScroll();
-    }
-    if (scrollController.position.pixels > 0) {
-      FocusScope.of(context).unfocus();
+      await _addScroll();
     }
   }
-  void setLoading(){
+
+  Future<void> _reload() async {
+    debugPrint("リロードが実行されました");
+    await checkConnectivityStatus();
     setState(() {
-    });
-  }
-  void _reload() async {
-    setState(() {
-      hasNetError=false;
-      articles =QiitaClient.fetchArticle(searchWord, currentPage);
+      articles = QiitaClient.fetchArticle(searchWord, currentPage);
     });
   }
 
@@ -152,46 +155,35 @@ class FeedPageState extends State<FeedPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async => false,
-      child: Scaffold(
-        appBar: _buildAppBar(),
-        body: _buildBody(),
-      ),
+      child: _buildFutureBuilder(),
     );
-  }
-  _buildAppBar() {
-    return hasNetError
-        ? const DefaultAppBar(text: '')
-        : SearchAppBar(onArticlesChanged: _searchArticle);
-  }
-
-  Widget _buildBody() {
-    if (hasBigIndicator) {
-      return const Center(child: CircularProgressIndicator(color: Colors.grey,));
-    } else if (hasNetError) {
-      return NetworkError(onTapReload: _reload);
-    } else if (hasRequest) {
-      return ErrorRequest(onArticlesRefresh: _searchArticle);
-    } else {
-      return _buildFutureBuilder();
-    }
   }
 
   Widget _buildFutureBuilder() {
-    return Center(
-      child: FutureBuilder<List<Article>>(
+    return Scaffold(
+      appBar: hasNetError
+          ? const DefaultAppBar(text: '') as PreferredSizeWidget?
+          : SearchAppBar(
+              onArticlesChanged: _searchArticle,
+              searchWord: searchWord,
+              textEditingController: textEditingController),
+      body: FutureBuilder<List<Article>>(
         future: articles,
         builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
-          if (snapshot.data == null || snapshot.data!.isEmpty) {
-            return NoMatch(onArticlesRefresh: _searchArticle);
-          } else if (snapshot.hasData) {
-            return _buildRefreshIndicator(snapshot);
-          } else if (snapshot.hasError) {
-            return Text(
-              "データの取得中にエラーが発生しました: ${snapshot.error}",
-              style: const TextStyle(color: Colors.red),
-            );
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+                child: CircularProgressIndicator(
+              color: Colors.grey,
+            ));
+          } else if (snapshot.hasError || hasNetError) {
+            return NetworkError(onTapReload: _reload);
           } else {
-            return const Text('不明なエラーが発生しました。運営までお問い合わせください');
+            if (!snapshot.hasData ||
+                snapshot.data == null ||
+                snapshot.data!.isEmpty) {
+              return NoMatch(onArticlesRefresh: _searchArticle);
+            }
+            return _buildRefreshIndicator(snapshot);
           }
         },
       ),
@@ -202,7 +194,7 @@ class FeedPageState extends State<FeedPage> {
     return RefreshIndicator(
       color: Colors.grey,
       onRefresh: () async {
-        await _searchArticle(searchWord);
+        await _reload();
       },
       child: ListView.separated(
         controller: scrollController,

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:qiita_app/models/user_model.dart';
 
-class NoRefresh extends StatelessWidget {
+class UserInfo extends StatelessWidget {
   final User? user;
 
-  const NoRefresh({Key? key, this.user}) : super(key: key);
+  const UserInfo({Key? key, this.user}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -55,13 +55,11 @@ class NoRefresh extends StatelessWidget {
                         maxHeight: 99,
                         maxWidth: 327,
                       ),
-                      child: Flexible(
-                        child: Text(
-                          user.description,
-                          style: const TextStyle(fontSize: 12.0),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 3,
-                        ),
+                      child: Text(
+                        user.description,
+                        style: const TextStyle(fontSize: 12.0),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 3,
                       ),
                     ),
                     Expanded(
@@ -104,7 +102,10 @@ class NoRefresh extends StatelessWidget {
         ],
       );
     } else {
-      return const Center(child: CircularProgressIndicator(color: Colors.grey,));
+      return const Center(
+          child: CircularProgressIndicator(
+        color: Colors.grey,
+      ));
     }
   }
 }

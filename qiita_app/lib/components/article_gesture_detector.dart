@@ -18,13 +18,6 @@ class ArticleGestureDetector extends StatefulWidget {
 
 class _ArticleGestureDetectorState extends State<ArticleGestureDetector> {
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    widget.onLoadingChanged(false);
-  }
-
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -37,6 +30,7 @@ class _ArticleGestureDetectorState extends State<ArticleGestureDetector> {
               height: MediaQuery.of(context).size.height * 0.9,
               child: WebViewScreen(
                 url: widget.article.url,
+                title:"Article" ,
               ),
             );
           },
@@ -54,7 +48,7 @@ class _ArticleGestureDetectorState extends State<ArticleGestureDetector> {
         subtitle: Row(
           children: [
             Text(
-              '@${widget.article.user.id}投稿日:',
+              '${widget.article.user.id} 投稿日:',
               style: const TextStyle(fontSize: 12.0),
               maxLines: 1, //テキストがオーバーフローしないように設定！
             ),
@@ -66,7 +60,7 @@ class _ArticleGestureDetectorState extends State<ArticleGestureDetector> {
               ),
             ),
             const Text(
-              'いいね:',
+              ' いいね:',
               style: TextStyle(fontSize: 12.0),
               maxLines: 1,
             ),

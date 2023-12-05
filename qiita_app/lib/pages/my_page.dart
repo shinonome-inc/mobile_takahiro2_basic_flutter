@@ -1,13 +1,14 @@
 import 'dart:async';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:qiita_app/components/article_gesture_detector.dart';
-import 'package:qiita_app/components/current_user_info.dart';
 import 'package:qiita_app/components/network_error.dart';
 import 'package:qiita_app/components/no_login.dart';
-import 'package:qiita_app/components/no_refresh.dart';
+import 'package:qiita_app/components/user_info.dart';
 import 'package:qiita_app/models/article.model.dart';
 import 'package:qiita_app/services/repository.dart';
+
 import '../components/default_app_bar.dart';
 import '../models/user_model.dart';
 
@@ -49,15 +50,15 @@ class _MyPageState extends State<MyPage> {
     } else {
       setState(() {
         accessToken = Future.value(token);
-        user = Future.value(QiitaClient.fetchAuthenticatedUser());
+        user = QiitaClient.fetchAuthenticatedUser();
       });
       final resolvedUser = await user;
       setState(() {
-        articles = Future.value(
-            QiitaClient.fetchAuthArticle(currentPage, resolvedUser!.id));
+        articles = QiitaClient.fetchAuthArticle(currentPage, resolvedUser!.id);
       });
     }
   }
+
   void getDeviceHeight() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
@@ -67,16 +68,22 @@ class _MyPageState extends State<MyPage> {
   }
 
   Future<void> checkConnectivityStatus() async {
+    debugPrint("ネットに接続チェック");
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
-      setNetError();
+      //ネットワークに接続されていない時
+      setNetError(true);
       _setLoading(false);
+    } else {
+      //ネットに接続されている時
+      debugPrint("ネットに接続");
+      setNetError(false);
     }
   }
 
-  void setNetError() {
+  void setNetError(bool error) {
     setState(() {
-      hasNetError = true;
+      hasNetError = error;
     });
   }
 
@@ -94,7 +101,6 @@ class _MyPageState extends State<MyPage> {
     });
   }
 
-
   Future<void> getRefresh() async {
     final resolvedUser = await user;
     setState(() {
@@ -104,12 +110,18 @@ class _MyPageState extends State<MyPage> {
   }
 
   Future<void> _reload() async {
-    await QiitaClient.fetchAuthenticatedUser();
-    final resolvedUser = await user;
-    setState(() {
-      user = QiitaClient.fetchAuthenticatedUser();
-      articles = QiitaClient.fetchAuthArticle(currentPage, resolvedUser!.id);
-    });
+    await checkConnectivityStatus();
+    if (!isNoLogin) {
+      debugPrint("ログインしています");
+      QiitaClient.fetchAuthenticatedUser();
+      setState(() {
+        user = QiitaClient.fetchAuthenticatedUser();
+      });
+      final resolvedUser = await user;
+      setState(() {
+        articles = QiitaClient.fetchAuthArticle(currentPage, resolvedUser!.id);
+      });
+    }
   }
 
   @override
@@ -121,84 +133,86 @@ class _MyPageState extends State<MyPage> {
       body: hasNetError
           ? NetworkError(onTapReload: _reload)
           : isNoLogin
-          ? const NoLogin()
-          : Center(
-        child: FutureBuilder<User>(
-          future: user,
-          builder: (context, userSnapshot) {
-            return FutureBuilder<List<Article>>(
-              future: articles,
-              builder: (BuildContext context,
-                  AsyncSnapshot<List<Article>> articlesSnapshot) {
-                if (userSnapshot.connectionState ==
-                    ConnectionState.waiting ||
-                    articlesSnapshot.connectionState ==
-                        ConnectionState.waiting) {
-                  return const CircularProgressIndicator(
-                      color: Colors.grey);
-                } else if (userSnapshot.hasError) {
-                  return Center(
-                    child: Text(
-                        'Failed to load user: ${userSnapshot.error}'),
-                  );
-                } else if (articlesSnapshot.hasError) {
-                  return Center(
-                    child: Text(
-                        'Failed to load articles: ${articlesSnapshot.error}'),
-                  );
-                } else if (userSnapshot.hasData &&
-                    userSnapshot.data != null &&
-                    articlesSnapshot.hasData &&
-                    articlesSnapshot.data != null) {
-                  return LayoutBuilder(
-                    builder: (context, constraints) {
-                      double myPageHeight = constraints.maxHeight;
-                      return RefreshIndicator(
-                        color: Colors.grey,
-                        onRefresh: () async {
-                          _reload();
+              ? const NoLogin()
+              : Center(
+                  child: FutureBuilder<User>(
+                    future: user,
+                    builder: (context, userSnapshot) {
+                      return FutureBuilder<List<Article>>(
+                        future: articles,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<List<Article>> articlesSnapshot) {
+                          if (userSnapshot.connectionState ==
+                                  ConnectionState.waiting ||
+                              articlesSnapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                            return const CircularProgressIndicator(
+                                color: Colors.grey);
+                          } else if (userSnapshot.hasError ||
+                              articlesSnapshot.hasError) {
+                            return Center(
+                              child: Text(
+                                  'Failed to load user: ${userSnapshot.error}${articlesSnapshot.error}'),
+                            );
+                          } else if (userSnapshot.hasData &&
+                              userSnapshot.data != null &&
+                              articlesSnapshot.hasData &&
+                              articlesSnapshot.data != null) {
+                            return LayoutBuilder(
+                              builder: (context, constraints) {
+                                double myPageHeight = constraints.maxHeight;
+                                return RefreshIndicator(
+                                  color: Colors.grey,
+                                  onRefresh: () async {
+                                    _reload();
+                                  },
+                                  child: ListView(
+                                    children: [
+                                      UserInfo(user: userSnapshot.data),
+                                      articleInfo(
+                                          articlesSnapshot, myPageHeight),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          } else {
+                            return const SizedBox();
+                          }
                         },
-                        child: ListView(
-                          children: [
-                            if (userSnapshot.data != null)
-                              if (isRefresh)
-                                CurrentUserInfo(user: userSnapshot.data)
-                              else
-                                NoRefresh(user: userSnapshot.data),
-                            SizedBox(
-                              height: isRefresh ? myPageHeight - 291 : myPageHeight - 251,
-                              child: ListView.separated(
-                                itemCount: articlesSnapshot.data!.length + 1,
-                                itemBuilder: (BuildContext context, int index) {
-                                  if (index < articlesSnapshot.data!.length) {
-                                    return ArticleGestureDetector(
-                                      article: articlesSnapshot.data![index],
-                                      onLoadingChanged: _setLoading,
-                                    );
-                                  } else {
-                                    return const SizedBox();
-                                  }
-                                },
-                                separatorBuilder: (BuildContext context, int index) =>
-                                const Divider(
-                                  indent: 70.0,
-                                  height: 0.5,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
                       );
                     },
-                  );
-                } else {
-                  return const SizedBox();
-                }
-              },
-            );
-          },
+                  ),
+                ),
+    );
+  }
+
+  Column articleInfo(AsyncSnapshot<List<Article>> articlesSnapshot, double h) {
+    return Column(
+      children: [
+        SizedBox(
+          height: h - 251,
+          child: ListView.separated(
+            itemCount: articlesSnapshot.data!.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index < articlesSnapshot.data!.length) {
+                debugPrint(articles.toString());
+                return ArticleGestureDetector(
+                  article: articlesSnapshot.data![index],
+                  onLoadingChanged: _setLoading,
+                );
+              } else {
+                return const SizedBox();
+              }
+            },
+            separatorBuilder: (BuildContext context, int index) =>
+                const Divider(
+              indent: 70.0,
+              height: 0.5,
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 }

@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:qiita_app/components/green_elevated_button.dart';
 
 class NetworkError extends StatelessWidget {
-  const NetworkError({Key? key,required this.onTapReload}) : super(key: key);
+  const NetworkError({Key? key, required this.onTapReload}) : super(key: key);
   final Function() onTapReload;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white, // 全体の背景色を白に設定
-      body:
-      Column(
+      body: Column(
         children: [
           Expanded(
             flex: 8,
@@ -47,7 +46,7 @@ class NetworkError extends StatelessWidget {
             flex: 8,
             child: Container(),
           ),
-          GreenElevatedButton(onTap: onTapReload,text: "再度読み込みをする"),
+          GreenElevatedButton(onTap: onTapReload, text: "再度読み込みをする"),
           Expanded(
             flex: 1,
             child: Container(),

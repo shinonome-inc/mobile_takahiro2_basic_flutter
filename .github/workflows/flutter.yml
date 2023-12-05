@@ -9,9 +9,11 @@ jobs:
   runs-on: ubuntu-latest
   steps:
    - uses: actions/checkout@v3
+
    - uses: subosito/flutter-action@v2.3.0
      with:
-      flutter-version: '3.7.7'
+      sdk: latest
+      flutter-version: '3.13.4'
    - name: Install dependencies and analyze project source
      run: |
        for d in */ ; do

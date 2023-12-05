@@ -57,6 +57,8 @@ class BottomNavigationPageState extends State<RootPage> {
           currentIndex: _selectedIndex,
           selectedItemColor: Colors.green,
           onTap: _onItemTapped,
+          selectedFontSize: 10,
+          unselectedFontSize: 10,
         ),
       ),
     );

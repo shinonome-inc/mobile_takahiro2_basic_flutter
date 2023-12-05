@@ -18,7 +18,7 @@ class User {
 
   factory User.fromJson(Map<dynamic, dynamic> json) {
     return User(
-        id: (json['id'].toString()),
+        id: '@${json['id'].toString()}',
         iconUrl: json['profile_image_url'] ?? 'NoIconUrl',
         userName: json['name'] ?? 'NoUserName',
         description: json['description'] ?? 'NoDescription',

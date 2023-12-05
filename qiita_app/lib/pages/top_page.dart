@@ -51,6 +51,7 @@ class _TopPageState extends State<TopPage> {
   void setNetError() {
     setState(() {
       hasNetError = true;
+
     });
   }
 
@@ -149,6 +150,7 @@ class _TopPageState extends State<TopPage> {
                                           0.9,
                                       child: WebViewScreen(
                                         url: 'https://qiita.com/api/v2/oauth/authorize?client_id=${dotenv.env['clientId']}&scope=read_qiita',
+                                        title: "Qiita Auth",
                                       ),
                                     );
                                   },
