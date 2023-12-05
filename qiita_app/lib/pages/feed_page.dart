@@ -26,7 +26,7 @@ class FeedPageState extends State<FeedPage> {
   final ScrollController scrollController = ScrollController();
   int currentPage = 1;
   String searchWord = 'Search';
-  bool hasNetError = false;
+  bool hasNetError = true;
   final redirectWidget = const FeedPage();
   FocusNode focusNode = FocusNode();
   bool hasRequest = false;

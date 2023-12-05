@@ -23,6 +23,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
           fontFamily: 'Pacifico',
         ),
       ),
+      centerTitle: true,
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1.0),
         child: Container(
